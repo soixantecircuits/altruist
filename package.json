@@ -2,11 +2,14 @@
   "name": "altruist",
   "version": "0.0.1",
   "description": "Share thru a gateway",
-  "scripts":{
+  "scripts": {
     "start": "node index.js"
   },
   "main": "index.js",
   "repository": "git@github.com:soixantecircuits/altruist.git",
   "author": "Soixante circuits",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "mailchimp-api-v3": "1.6.0"
+  }
 }
