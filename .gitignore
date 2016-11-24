@@ -112,3 +112,4 @@ jspm_packages
 .yarn-integrity
 
 config/config.json
+mock/fakedata.json

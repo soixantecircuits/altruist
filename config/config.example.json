@@ -1,7 +1,8 @@
 {
   "actioner":{
       "mailchimp":{
-      "apiKey":""
-    }
+        "apiKey":"",
+        "listID":""
+      }
   }
 }
