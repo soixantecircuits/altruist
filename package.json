@@ -1,12 +1,12 @@
 {
-  "name": "altruism",
+  "name": "altruist",
   "version": "0.0.1",
   "description": "Share thru a gateway",
   "scripts":{
     "start": "node index.js"
   },
   "main": "index.js",
-  "repository": "git@bitbucket.org:soixantecircuits/altruism.git",
+  "repository": "git@github.com:soixantecircuits/altruist.git",
   "author": "Soixante circuits",
   "license": "MIT"
 }
