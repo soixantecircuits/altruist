@@ -1,16 +1,22 @@
 {
   "name": "altruist",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Altruist lets you share your content with others",
-  "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/soixantecircuits/altruist.git"
+  "main": "index.js",
+  "repository": "git@github.com:soixantecircuits/altruist.git",
+  "dependencies": {
+    "express": "^4.14.0",
+    "fs-extra": "^1.0.0",
+    "mailchimp-api-v3": "1.6.0",
+    "morgan": "^1.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
   },
   "keywords": [
     "API",
@@ -18,18 +24,17 @@
     "share",
     "tool"
   ],
-  "author": "hugohil <hugo@soixantecircuits.fr>",
-  "license": "MIT",
+  "author": { "name" : "Soixante circuits",
+    "email" : "contact@soixantecircuits.fr",
+    "url" : "http://soixantecircuits.fr/"
+  },
+  "contributors": [
+    "hugohil <hugo@soixantecircuits.fr>",
+    "gabrielstuff <gabriel@soixantecircuits.fr>"
+  ],
   "bugs": {
     "url": "https://github.com/soixantecircuits/altruist/issues"
   },
   "homepage": "https://github.com/soixantecircuits/altruist#readme",
-  "dependencies": {
-    "express": "^4.14.0",
-    "fs-extra": "^1.0.0",
-    "morgan": "^1.7.0"
-  },
-  "devDependencies": {
-    "nodemon": "^1.11.0"
-  }
+  "license": "MIT"
 }
