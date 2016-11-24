@@ -1,7 +1,7 @@
 {
-  "actioner":{
-      "mailchimp":{
-      "apiKey":""
+  "actions": {
+    "mailchimp": {
+      "apiKey": "abcd-xyz"
     }
   }
 }
