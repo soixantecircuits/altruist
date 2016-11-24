@@ -10,9 +10,10 @@
   "main": "index.js",
   "repository": "git@github.com:soixantecircuits/altruist.git",
   "dependencies": {
+    "chalk": "^1.1.3",
     "express": "^4.14.0",
-    "morgan": "^1.7.0",
-    "mailchimp-api-v3": "1.6.0"
+    "mailchimp-api-v3": "1.6.0",
+    "morgan": "^1.7.0"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"
@@ -23,9 +24,10 @@
     "share",
     "tool"
   ],
-  "author": { "name" : "Soixante circuits",
-    "email" : "contact@soixantecircuits.fr",
-    "url" : "http://soixantecircuits.fr/"
+  "author": {
+    "name": "Soixante circuits",
+    "email": "contact@soixantecircuits.fr",
+    "url": "http://soixantecircuits.fr/"
   },
   "contributors": [
     "hugohil <hugo@soixantecircuits.fr>",
