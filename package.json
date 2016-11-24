@@ -1,0 +1,9 @@
+{
+  "name": "altruism",
+  "version": "0.0.1",
+  "description": "Share thru a gateway",
+  "main": "index.js",
+  "repository": "git@bitbucket.org:soixantecircuits/altruism.git",
+  "author": "Soixante circuits",
+  "license": "MIT"
+}
