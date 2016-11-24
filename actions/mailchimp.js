@@ -14,8 +14,8 @@ var fname = fakeData.receiver.fname
 mailchimp.post(`/lists/${config.actioner.mailchimp.listID}`, {
   email_address : email,
   merge_fields:{
-    LNAME: 'DELATTRE',
-    FNAME: 'GABRIEL'
+    LNAME: lname,
+    FNAME: fname
   }
 })
 .then(function(results) {
