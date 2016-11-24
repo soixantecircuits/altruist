@@ -1,3 +1,3 @@
-# Altruist.js
+# Altruist
 
-A micro service for sharing through an REST API
+> Altruist lets you share your content with others
