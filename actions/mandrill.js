@@ -24,7 +24,7 @@ function mapMandrillGlobals (obj) {
 function mapMandrillTargeted (obj) {
   return {
     rcpt: obj.target,
-    vars: obj.vars.map(v => mapMandrillGlobals(v))
+    vars: obj.vars ? obj.vars.map(v => mapMandrillGlobals(v)) : []
   }
 }
 
