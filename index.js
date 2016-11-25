@@ -1,3 +1,5 @@
+'use strict'
+
 const config = require('./config/config.json')
 const express = require('express')
 const morgan = require('morgan')
@@ -19,7 +21,7 @@ app.get('/', (req, res) => { res.send('See https://github.com/soixantecircuits/a
 
 router.get('/status', (req, res) => { res.send('up') })
 
-for (action in config.actions) {
+for (let action in config.actions) {
   const module = `${__dirname}/actions/${action}.js`
   router.post(`/actions/${action}`, (req, res) => {
     fs.access(module, (err) => {
@@ -34,7 +36,6 @@ for (action in config.actions) {
   })
 }
 
-app.listen(config.server.port, function(){
-  console.log(`altruist runs on: http://localhost:${config.server.port}`)
-  console.log(`Point your browser at: http://localhost:${config.server.port}/api/${version}/actions/{action} to test`)
+app.listen(config.server.port, () => {
+  console.log(`altruist running on: http://localhost:${config.server.port}`)
 })

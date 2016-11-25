@@ -3,7 +3,7 @@
 const Mailchimp = require('mailchimp-api-v3')
 const config = require('../config/config.json')
 
-const API_KEY = config.actions.mailchimp.apiKey
+const API_KEY = config.actions.mailchimp.APIkey
 const mailchimp = (API_KEY) ? new Mailchimp(API_KEY) : null
 
 module.exports = (options) => {
@@ -21,10 +21,12 @@ module.exports = (options) => {
       .post(`/lists/${config.actions.mailchimp.listID}`, {
         members: [member]
       }).then((results) => {
+        console.log(results)
         if (results.errors.length) return reject(results.errors)
         resolve(results)
       })
       .catch((err) => {
+        console.log(err)
         reject(err.errors)
       })
   })

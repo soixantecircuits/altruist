@@ -4,8 +4,14 @@
   },
   "actions": {
     "mailchimp": {
-      "apiKey": "abcd-xyz",
+      "APIkey": "abcd-xyz",
       "listID": "1234"
+    },
+    "mandrill": {
+      "APIkey": "",
+      "from": "Altruist 🚀 <altruist@example.com>",
+      "subject": "Altruist",
+      "template": "altruist-test"
     }
   }
 }
