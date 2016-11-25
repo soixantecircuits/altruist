@@ -92,8 +92,8 @@ In your `config.json` file, you'll need to add the following configuration objec
 curl -X POST -H "Content-Type: application/json" -d '{
   "email": ["mail@example.com", "johndoe@example.com"],
   "vars": {
-  "globals": [{
-    "name": "Altruist"
+    "globals": [{
+      "name": "Altruist"
     }],
     "targeted": [{
       "target": "mail@example.com",
