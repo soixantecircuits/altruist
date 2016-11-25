@@ -6,20 +6,24 @@ const config = require('../config/config.json')
 const API_KEY = config.actions.mailchimp.APIkey
 const mailchimp = (API_KEY) ? new Mailchimp(API_KEY) : null
 
-module.exports = (options) => {
-  const member = {
-    email_address: options.email,
+function mapListMember (member) {
+  return {
+    email_address: member.email,
     merge_fields: {
-      LNAME: options.lname,
-      FNAME: options.fname
+      LNAME: member.lname,
+      FNAME: member.fname
     },
     status: 'subscribed'
   }
+}
+
+module.exports = (options) => {
+  const members = Array.isArray(options) ? options.map(m => mapListMember(m)) : [ mapListMember(options) ]
 
   return new Promise((resolve, reject) => {
     mailchimp
       .post(`/lists/${config.actions.mailchimp.listID}`, {
-        members: [member]
+        members: members
       }).then((results) => {
         if (results.errors.length) return reject(results.errors)
         resolve(results)
