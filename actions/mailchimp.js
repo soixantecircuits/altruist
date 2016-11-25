@@ -21,7 +21,6 @@ module.exports = (options) => {
       .post(`/lists/${config.actions.mailchimp.listID}`, {
         members: [member]
       }).then((results) => {
-        console.log(results)
         if (results.errors.length) return reject(results.errors)
         resolve(results)
       })
