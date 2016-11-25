@@ -10,6 +10,7 @@
   "main": "index.js",
   "repository": "git@github.com:soixantecircuits/altruist.git",
   "dependencies": {
+    "body-parser": "^1.15.2",
     "cors": "^2.8.1",
     "express": "^4.14.0",
     "fs-extra": "^1.0.0",

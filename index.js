@@ -1,8 +1,9 @@
 const config = require('./config/config.json')
 const express = require('express')
 const morgan = require('morgan')
-cors = require('cors')
+const bodyparser = require('body-parser')
 const fs = require('fs-extra')
+const cors = require('cors')
 
 const router = express.Router()
 const app = express()
@@ -11,6 +12,7 @@ const version = 'v1'
 
 app.use(morgan('dev'))
 app.use(cors())
+app.use(bodyparser.json())
 app.use(`/api/${version}`, router)
 
 app.get('/', (req, res) => { res.send('See https://github.com/soixantecircuits/altruist for details.') })
@@ -24,7 +26,7 @@ for (action in config.actions) {
       if (err) {
         res.status(404).send('No such action.')
       } else {
-        require(module)()
+        require(module)(req.body)
           .then(response => res.send(response))
           .catch(reason => res.status(500).send(reason))
       }
