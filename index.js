@@ -1,11 +1,12 @@
 'use strict'
 
-const config = require('./config/config.json')
 const express = require('express')
 const morgan = require('morgan')
 const bodyparser = require('body-parser')
 const fs = require('fs-extra')
 const cors = require('cors')
+
+const config = require(process.argv[2] ? process.argv[2] : './config/config.json')
 
 const router = express.Router()
 const app = express()

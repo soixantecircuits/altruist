@@ -11,7 +11,7 @@ Install dependencies:
 then, provide a configuration file based on the template we provide:
 
 ```sh
-$ cp config/config.example.json config/congif.json
+$ cp config/config.example.json config/config.json
 ```
 
 for details about what to write in this file, See the `Actions` section below.
@@ -19,7 +19,7 @@ for details about what to write in this file, See the `Actions` section below.
 ## Run
 
 ```sh
-$ npm start
+$ npm start [./path/to/custom-config.json]
 $ # or
 $ yarn start
 ```

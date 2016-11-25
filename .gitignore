@@ -111,6 +111,7 @@ jspm_packages
 # Yarn Integrity file
 .yarn-integrity
 
-config/config.json
+config/*.json
+!config/config.example.json
 mock/fakedata.json
 mock/fakedata.json
