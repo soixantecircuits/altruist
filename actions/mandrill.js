@@ -46,12 +46,12 @@ module.exports = (options) => {
     mandrillOptions: {
       template_name: template,
       template_content: {},
-        message: {
-          merge: true,
-          merge_language: 'handlebars',
-          global_merge_vars: options.vars.globals ? options.vars.globals.map(v => mapMandrillGlobals(v)) : [],
-          merge_vars: options.vars.targeted ? options.vars.targeted.map(v => mapMandrillTargeted(v)) : [],
-        }
+      message: {
+        merge: true,
+        merge_language: 'handlebars',
+        global_merge_vars: options.vars.globals ? options.vars.globals.map(v => mapMandrillGlobals(v)) : [],
+        merge_vars: options.vars.targeted ? options.vars.targeted.map(v => mapMandrillTargeted(v)) : [],
+      }
     }
   }
 
