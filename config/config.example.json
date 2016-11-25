@@ -1,11 +1,11 @@
 {
-  "server":{
+  "server": {
     "port": 6060
   },
   "actions": {
     "mailchimp": {
       "apiKey": "abcd-xyz",
-      "listID":""
+      "listID": "1234"
     }
   }
 }

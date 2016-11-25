@@ -19,13 +19,14 @@ router.get('/status', (req, res) => { res.send('up') })
 
 for (action in config.actions) {
   const module = `${__dirname}/actions/${action}.js`
-  router.get(`/actions/${action}`, (req, res) => {
+  router.post(`/actions/${action}`, (req, res) => {
     fs.access(module, (err) => {
       if (err) {
-        res.status(403).send('no such action')
+        res.status(404).send('No such action.')
       } else {
-        const response = require(module).init()
-        res.send(response)
+        require(module)()
+          .then(response => res.send(response))
+          .catch(reason => res.status(500).send(reason))
       }
     })
   })

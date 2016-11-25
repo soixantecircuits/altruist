@@ -21,6 +21,6 @@ To test, use the mock folder:
 
 `yarn start`
 
-The API is in v1 so every routes is prefixed with v1. You can find your actions under :  
+The API is in v1 so every routes is prefixed with v1. You can find your actions under :
 
-http://localhost:6060/api/v1/actions/{action}
+`http://localhost:6060/api/v1/actions/{action}`
