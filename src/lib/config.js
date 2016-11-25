@@ -1,0 +1,1 @@
+module.exports = require(process.argv[2] ? `${process.cwd()}/${process.argv[2]}` : `${process.cwd()}/config/config.json`)

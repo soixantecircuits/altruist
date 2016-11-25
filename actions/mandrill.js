@@ -3,7 +3,7 @@
 const nodemailer = require('nodemailer')
 const mandrill = require('nodemailer-mandrill-transport')
 
-const config = require('../config/config.json')
+const config = require('../src/lib/config')
 const API_KEY = config.actions.mandrill.APIkey
 const from = config.actions.mandrill.from
 const subject = config.actions.mandrill.subject

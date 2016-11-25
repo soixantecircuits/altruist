@@ -6,7 +6,9 @@ const bodyparser = require('body-parser')
 const fs = require('fs-extra')
 const cors = require('cors')
 
-const config = require(process.argv[2] ? process.argv[2] : './config/config.json')
+const config = require('./lib/config')
+console.log('index.js - ', config)
+
 
 const router = express.Router()
 const app = express()
@@ -23,7 +25,7 @@ app.get('/', (req, res) => { res.send('See https://github.com/soixantecircuits/a
 router.get('/status', (req, res) => { res.send('up') })
 
 for (let action in config.actions) {
-  const module = `${__dirname}/actions/${action}.js`
+  const module = `${process.cwd()}/actions/${action}.js`
   router.post(`/actions/${action}`, (req, res) => {
     fs.access(module, (err) => {
       if (err) {
