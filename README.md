@@ -49,15 +49,23 @@ In your `config.json` file, you'll need to add the following configuration objec
 
 `POST /api/v1/actions/mailchimp`
 
-with an `application/json` body:
-
-```js
-{
-  "email": "me@example.com" // required
-  "fname": "John", // optionnal
-  "lname": "Doe" // optionnal
-}
+```cURL
+curl -X POST -H "Content-Type: application/json" -d '{
+  "email": "me@example.com",
+  "fname": "John",
+  "lname": "Doe"
+}' "http://localhost:7070/api/v1/actions/mailchimp"
 ```
+
+#### Options
+
+|name|type|required|description|
+|:---|:---|:---:|:---|
+|**email**|`string`|&times;|email to be suscribed|
+|**fname**|`string`|&minus;|firstname of the account|
+|**lname**|`string`|&minus;|lastname of the account|
+
+&rarr; to subscribe multiple accounts, simply pass an array of objects following the above scheme.
 
 ### Mandrill transactionnal emails
 
@@ -77,6 +85,8 @@ In your `config.json` file, you'll need to add the following configuration objec
 ```
 
 #### Usage
+
+`POST /api/v1/actions/mandrill`
 
 ```cURL
 curl -X POST -H "Content-Type: application/json" -d '{
@@ -108,3 +118,15 @@ curl -X POST -H "Content-Type: application/json" -d '{
   </body>
 </html>
 ```
+
+&rarr; [more](https://mandrill.zendesk.com/hc/en-us/articles/205582537-Using-Handlebars-for-Dynamic-Content) about Mandrill variables
+
+#### Options
+
+|name|type|required|description|
+|:---|:---|:---:|:---|
+|**email**|`string|array`|&times;|address(es) that will receive the email|
+|**vars.globals**|`array`|&minus;|array of object defining your Mandrill `merge_vars` (with key = name and value = content)|
+|**vars.targeted**|`array`|&minus;||
+|**vars.targeted.target**|`string`|&minus;|address targeted|
+|**vars.targeted.vars**|`array`|&minus;|create/override `merge_vars` for the concerned address. Works the same as `vars.global`|
