@@ -1,6 +1,7 @@
 const config = require('./config/config.json')
 const express = require('express')
 const morgan = require('morgan')
+cors = require('cors')
 const fs = require('fs-extra')
 
 const router = express.Router()
@@ -9,6 +10,7 @@ const app = express()
 const version = 'v1'
 
 app.use(morgan('dev'))
+app.use(cors())
 app.use(`/api/${version}`, router)
 
 app.get('/', (req, res) => { res.send('See https://github.com/soixantecircuits/altruist for details.') })
