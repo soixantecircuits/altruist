@@ -25,7 +25,7 @@ module.exports = (options) => {
         resolve(results)
       })
       .catch((err) => {
-        reject(err)
+        reject(err.errors)
       })
   })
 }
