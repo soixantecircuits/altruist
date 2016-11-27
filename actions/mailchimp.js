@@ -19,13 +19,15 @@ function mapListMember (member) {
 
 module.exports = (options) => {
   const members = Array.isArray(options) ? options.map(m => mapListMember(m)) : [ mapListMember(options) ]
-
   return new Promise((resolve, reject) => {
     mailchimp
       .post(`/lists/${config.actions.mailchimp.listID}`, {
         members: members
       }).then((results) => {
-        if (results.errors.length) return reject(results.errors)
+        if (results.errors.length) {
+          console.log(`error on post ${results.errors[0]}`)
+          return reject(results.errors)
+        }
         resolve(results)
       })
       .catch((err) => {

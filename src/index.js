@@ -18,7 +18,11 @@ const version = 'v1'
 app.use(morgan('dev'))
 app.use(cors())
 app.use(bodyparser.json())
+app.use(bodyparser.urlencoded({ extended: true }))
 app.use(`/api/${version}`, router)
+
+// Support pre-flight https://github.com/expressjs/cors#enabling-cors-pre-flight
+app.options('*', cors())
 
 app.get('/', (req, res) => { res.send('See https://github.com/soixantecircuits/altruist for details.') })
 
@@ -33,7 +37,10 @@ for (let action in config.actions) {
       } else {
         require(module)(req.body)
           .then(response => res.send(response))
-          .catch(reason => res.status(500).send(reason))
+          .catch(reason => {
+            console.log(reason)
+            res.status(500).send(reason)
+          })
       }
     })
   })
