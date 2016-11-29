@@ -130,3 +130,12 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |**vars.targeted**|`array`|&minus;||
 |**vars.targeted.target**|`string`|&minus;|address targeted|
 |**vars.targeted.vars**|`array`|&minus;|create/override `merge_vars` for the concerned address. Works the same as `vars.global`|
+
+## Contribute
+
+Thanks for helping us! 👏
+
+Please follow:
+
+* [JavaScript standard style](http://standardjs.com/)
+* [This git branching model](nvie.com/posts/a-successful-git-branching-model/)
