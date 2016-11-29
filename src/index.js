@@ -7,8 +7,6 @@ const fs = require('fs-extra')
 const cors = require('cors')
 
 const config = require('./lib/config')
-console.log('index.js - ', config)
-
 
 const router = express.Router()
 const app = express()
@@ -16,9 +14,13 @@ const app = express()
 const version = 'v1'
 
 app.use(morgan('dev'))
+
 app.use(cors())
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: true }))
+const formdataParser = require('multer')().fields([])
+app.use(formdataParser)
+
 app.use(`/api/${version}`, router)
 
 // Support pre-flight https://github.com/expressjs/cors#enabling-cors-pre-flight
@@ -47,5 +49,5 @@ for (let action in config.actions) {
 }
 
 app.listen(config.server.port, () => {
-  console.log(`altruist running on: http://localhost:${config.server.port}`)
+  console.log(`altruist running on: http://localhost:${config.server.port} with actions: [ ${Object.keys(config.actions)} ]`)
 })

@@ -2,6 +2,12 @@
 
 > Altruist lets you share your content with others
 
+Altruist supports the following data formats:
+
+* raw `application/json`
+* URL-encoded
+* form-data
+
 ## Installation
 
 Install dependencies:
