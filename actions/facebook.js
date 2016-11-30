@@ -2,53 +2,30 @@
 
 const graph = require('fbgraph')
 const config = require('../src/lib/config')
+const index = require('../src/index')
 
-const accessToken = config.actions.facebook.accessToken
-const userId = config.actions.facebook.userId
-graph.setAccessToken(accessToken)
+const appId = config.actions.facebook.appId
+const appSecret = config.actions.facebook.appSecret
+const accessToken = index.accessToken
 
 module.exports = (options) => {
+  // try {
+  //   options.vars = options.vars ?
+  //     typeof options.vars === 'object'
+  //       ? options.vars
+  //       : JSON.parse(options.vars)
+  //     : {}
+  // } catch (e) {
+  //   return new Promise((resolve, reject) => reject(e.toString()))
+  // }
 
-}
+  return new Promise((resolve, reject) => {
+    graph.setAccessToken(accessToken)
+    graph.post('/feed', { message: 'Does this look infected ?' }, function (err, res) {
+      if (err)
+        return reject(err)
 
-// return new Promise((resolve, reject) => {
-//   var http = new XMLHttpRequest();
-//   var url = 'graph.facebook.com/' + userId + '/feed'
-//   var params = 'message=yup&access_token=' + accessToken
-//   http.open('POST', url, true)
-
-//   http.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-
-//   http.onreadystatechange = function () {
-//     if (http.readyState == 4 && http.status == 200) {
-//       console.log("done")
-//       resolve(http.response)
-//     }
-//     else
-//       reject()
-//   }
-//   http.send(params)
-// })
-
-console.log(userId + ' id')
-
-return new Promise((resolve, reject) => {
-  graph.post(userId + "/feed?access_token=007", 'test', function (err, res) {
-    if (res) {
-      resolve(res)
-      // returns the post id
-      console.log(res); // { id: xxxxx}
-    }
-    else
-      reject(err)
+      return resolve(res)
+    })
   })
-})
-
-
-// return new Promise((resolve, reject) => {
-//   graph.post('/feed', 'Does this look infected ?', function (err, res) {
-//     if (err)
-//       return reject(err)
-//     resolve(res)
-//   })
-// })
+}
