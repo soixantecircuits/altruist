@@ -21,7 +21,7 @@ module.exports = (options) => {
 
   return new Promise((resolve, reject) => {
     graph.setAccessToken(accessToken)
-    graph.post('/feed', { message: 'Does this look infected ?' }, function (err, res) {
+    graph.post('/feed', { message: 'This is a test message' }, function (err, res) {
       if (err)
         return reject(err)
 
