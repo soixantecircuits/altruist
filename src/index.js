@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
   res.send('See https://github.com/soixantecircuits/altruist for details. <br> <a href="/login/facebook">Log in Facebook</a>')})
 
 // Route facebook login
-app.get('/login/facebook', passport.authenticate('facebook', { scope: ['manage_pages', 'publish_pages', 'publish_actions'] }))
+app.get('/login/facebook', passport.authenticate('facebook', { scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions'] }))
 app.get('/login/facebook/return', passport.authenticate('facebook', { failureRedirect: '/' }), function (req, res) { res.redirect('/') })
 
 router.get('/status', (req, res) => {
