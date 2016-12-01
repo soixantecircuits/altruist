@@ -6,26 +6,42 @@ const config = require('../src/lib/config')
 
 const appId = config.actions.facebook.appId
 const appSecret = config.actions.facebook.appSecret
-const accessToken = facebookSession.accessToken
+const userAccessToken = facebookSession.accessToken
+var pageAccessToken = ''
+var pageId = config.actions.facebook.pageId
+
+function PostMessage (postMessage, resolve, reject) {
+  graph.post(`/${pageId}/feed`, { message: postMessage }, function (err, res) {
+    if (err) {
+      return reject(err)
+    }
+    return resolve(res)
+  })
+}
 
 module.exports = (options) => {
   if (options.message === 'undefined' || options.message === '') {
-    console.log('POST request to facebook without a message')
     return new Promise((resolve, reject) => {
+      console.log('POST request to facebook without a message')
       return reject('Could not get message in request.')
     })
   }
 
   return new Promise((resolve, reject) => {
-    var postMessage = options.message
-    console.log(postMessage)
-    graph.setAccessToken(accessToken)
-    graph.post('/feed', { message: postMessage }, function (err, res) {
-      if (err) {
-        return reject(err)
-      }
+    pageId = pageId !== 'undefined' ? `${pageId}` : ''
+    graph.setAccessToken(userAccessToken)
 
-      return resolve(res)
-    })
+    if (pageId !== '') {
+      graph.get(`/${pageId}`, { fields: 'access_token' }, (err, res) => {
+        if (err) {
+          return reject(err)
+        }
+        pageAccessToken = res.access_token
+        graph.setAccessToken(pageAccessToken)
+        PostMessage(options.message, resolve, reject)
+      })
+    } else {
+      PostMessage(options.message, resolve, reject)
+    }
   })
 }

@@ -10,8 +10,6 @@ passport.use(new FacebookStrategy({
 },
   function (accessToken, refreshToken, profile, done) {
     exports.accessToken = accessToken
-    console.log('login token ' + exports.accessToken)
-
     return done(null, profile)
   }
 ))
