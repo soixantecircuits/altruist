@@ -20,8 +20,8 @@ app.use(morgan('dev'))
 app.use(cors())
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: true }))
-app.use(require('cookie-parser')());
-app.use(require('express-session')({ secret: 'this_is_a_secret', resave: true, saveUninitialized: true }));
+app.use(require('cookie-parser')())
+app.use(require('express-session')({ secret: 'this_is_a_secret', resave: true, saveUninitialized: true }))
 
 // Handle sessions with passport
 app.use(passport.initialize())
@@ -31,13 +31,15 @@ app.use(passport.session())
 app.options('*', cors())
 
 app.use(`/api/${version}`, router)
-app.get('/', (req, res) => { res.send('See https://github.com/soixantecircuits/altruist for details. <br> <a href="/login/facebook">Log in Facebook</a>') })
+app.get('/', (req, res) => {
+  res.send('See https://github.com/soixantecircuits/altruist for details. <br> <a href="/login/facebook">Log in Facebook</a>')})
 
 // Route facebook login
 app.get('/login/facebook', passport.authenticate('facebook', { scope: ['manage_pages', 'publish_pages', 'publish_actions'] }))
 app.get('/login/facebook/return', passport.authenticate('facebook', { failureRedirect: '/' }), function (req, res) { res.redirect('/') })
 
-router.get('/status', (req, res) => { res.send('up') })
+router.get('/status', (req, res) => {
+  res.send('up')})
 
 for (let action in config.actions) {
   const module = `${process.cwd()}/actions/${action}.js`
