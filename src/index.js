@@ -6,7 +6,7 @@ const bodyparser = require('body-parser')
 const fs = require('fs-extra')
 const cors = require('cors')
 const passport = require('passport')
-const FacebookStrategy = require('passport-facebook').Strategy
+const facebookSession = require('./lib/facebookSession')
 
 const config = require('./lib/config')
 
@@ -14,26 +14,6 @@ const router = express.Router()
 const app = express()
 
 const version = 'v1'
-
-passport.use(new FacebookStrategy({
-  clientID: config.actions.facebook.appId,
-  clientSecret: config.actions.facebook.appSecret,
-  callbackURL: 'http://localhost:6060/login/facebook/return'
-},
-  function (accessToken, refreshToken, profile, done) {
-    console.log(`accesstoken: ${accessToken}`)
-    exports.accessToken = accessToken
-    return done(null, profile)
-  }
-))
-
-passport.serializeUser(function (user, cb) {
-  cb(null, user)
-})
-
-passport.deserializeUser(function (obj, cb) {
-  cb(null, obj)
-})
 
 app.use(morgan('dev'))
 
@@ -54,13 +34,11 @@ app.options('*', cors())
 
 app.use(`/api/${version}`, router)
 app.get('/', (req, res) => {
-  res.send('See https://github.com/soixantecircuits/altruist for details.')})
+  res.send('See https://github.com/soixantecircuits/altruist for details. <br> <a href="/login/facebook">Log in Facebook</a>')})
 
 // Route facebook login
 app.get('/login/facebook', passport.authenticate('facebook', { scope: ['manage_pages', 'publish_pages', 'publish_actions'] }))
-app.get('/login/facebook/return', passport.authenticate('facebook', { failureRedirect: '/' }), function (req, res) {
-  res.redirect('/')
-})
+app.get('/login/facebook/return', passport.authenticate('facebook', { failureRedirect: '/' }), function (req, res) { res.redirect('/') })
 
 router.get('/status', (req, res) => {
   res.send('up')})
@@ -72,7 +50,6 @@ for (let action in config.actions) {
       if (err) {
         res.status(404).send('No such action.')
       } else {
-        console.log(req.user)
         require(module)(req.body, req)
           .then(response => res.send(response))
           .catch(reason => {
