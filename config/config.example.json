@@ -12,6 +12,10 @@
       "from": "Altruist 🚀 <altruist@example.com>",
       "subject": "Altruist",
       "template": "altruist-test"
+    },
+    "facebook": {
+      "appId": "",
+      "appSecret": ""
     }
   }
 }
