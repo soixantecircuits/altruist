@@ -6,10 +6,9 @@ const config = require('./config')
 passport.use(new FacebookStrategy({
   clientID: config.actions.facebook.appId,
   clientSecret: config.actions.facebook.appSecret,
-  callbackURL: 'http://localhost:6060/login/facebook/return'
+  callbackURL: 'http://localhost:' + config.server.port + '/login/facebook/return'
 },
   function (accessToken, refreshToken, profile, done) {
-
     exports.accessToken = accessToken
     console.log('login token ' + exports.accessToken)
 
