@@ -1,12 +1,13 @@
 'use strict'
 
+const facebookSession = require('../src/lib/facebookSession')
 const graph = require('fbgraph')
 const config = require('../src/lib/config')
-const index = require('../src/index')
 
 const appId = config.actions.facebook.appId
 const appSecret = config.actions.facebook.appSecret
-const accessToken = index.accessToken
+console.log(facebookSession)
+const accessToken = facebookSession.accessToken
 
 module.exports = (options) => {
   // try {
@@ -20,6 +21,7 @@ module.exports = (options) => {
   // }
 
   return new Promise((resolve, reject) => {
+    console.log('facebook token ' + accessToken)
     graph.setAccessToken(accessToken)
     graph.post('/feed', { message: 'This is a test message' }, function (err, res) {
       if (err)
