@@ -137,6 +137,40 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |**vars.targeted.target**|`string`|&minus;|address targeted|
 |**vars.targeted.vars**|`array`|&minus;|create/override `merge_vars` for the concerned address. Works the same as `vars.global`|
 
+### Facebook user and page post
+
+#### Setup
+
+In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+
+```js
+"actions": {
+  "facebook": {
+    "appId": "abcd-xyz",
+    "appSecret": "shhh"
+  }
+}
+```
+
+#### Usage
+
+Before being able to post, you will need to log in facebook by going to: `/login/facebook` and authorizing the application.
+When logged in, you can post a message on your feed:
+
+`POST /api/v1/actions/facebook`
+
+```cURL
+curl -X POST -H "Content-Type: application/json" -d '{
+	"message": "Roses are red, I want my bed."
+}' "http://localhost:7070/api/v1/actions/facebook"
+```
+
+#### Options
+
+|name|type|required|description|
+|:---|:---|:---:|:---|
+|**message**|`string`|&times;|message to post on your feed|
+
 ## Contribute
 
 Thanks for helping us! 👏
