@@ -9,7 +9,6 @@ const passport = require('passport')
 const facebookSession = require('./lib/facebookSession')
 
 const config = require('./lib/config')
-console.log('index.js - ', config)
 
 const router = express.Router()
 const app = express()
@@ -17,13 +16,14 @@ const app = express()
 const version = 'v1'
 
 app.use(morgan('dev'))
+
 app.use(cors())
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: true }))
+const formdataParser = require('multer')().fields([])
+app.use(formdataParser)
 app.use(require('cookie-parser')())
 app.use(require('express-session')({ secret: 'this_is_a_secret', resave: true, saveUninitialized: true }))
-
-// Handle sessions with passport
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -48,7 +48,7 @@ for (let action in config.actions) {
       if (err) {
         res.status(404).send('No such action.')
       } else {
-        require(module)(req.body)
+        require(module)(req.body, req)
           .then(response => res.send(response))
           .catch(reason => {
             console.log(reason)
@@ -60,5 +60,5 @@ for (let action in config.actions) {
 }
 
 app.listen(config.server.port, () => {
-  console.log(`altruist running on: http://localhost:${config.server.port}`)
+  console.log(`altruist running on: http://localhost:${config.server.port} with actions: [ ${Object.keys(config.actions)} ]`)
 })

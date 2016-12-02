@@ -19,6 +19,7 @@
     "fs-extra": "^1.0.0",
     "mailchimp-api-v3": "1.6.0",
     "morgan": "^1.7.0",
+    "multer": "^1.2.0",
     "nodemailer": "^2.6.4",
     "nodemailer-mandrill-transport": "^1.2.0",
     "passport": "^0.3.2",
