@@ -2,6 +2,12 @@
 
 > Altruist lets you share your content with others
 
+Altruist supports the following data formats:
+
+* raw `application/json`
+* URL-encoded
+* form-data
+
 ## Installation
 
 Install dependencies:
@@ -130,3 +136,47 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |**vars.targeted**|`array`|&minus;||
 |**vars.targeted.target**|`string`|&minus;|address targeted|
 |**vars.targeted.vars**|`array`|&minus;|create/override `merge_vars` for the concerned address. Works the same as `vars.global`|
+
+### Facebook user and page post
+
+#### Setup
+
+In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+
+```js
+"actions": {
+  "facebook": {
+    "appId": "abcd-xyz",
+    "appSecret": "shhh"
+  }
+}
+```
+
+#### Usage
+
+Before being able to post, you will need to log in facebook by going to: `/login/facebook` and authorizing the application.
+When logged in, you can post a message on your feed:
+
+`POST /api/v1/actions/facebook`
+
+```cURL
+curl -X POST -H "Content-Type: application/json" -d '{
+	"message": "Roses are red, I want my bed."
+}' "http://localhost:7070/api/v1/actions/facebook"
+```
+
+#### Options
+
+|name|type|required|description|
+|:---|:---|:---:|:---|
+|**message**|`string`|required if no picture|message to post on your feed|
+|**pictureUrl**|`string`|required if no message and no image upload|url of the picture to post on your feed|
+
+## Contribute
+
+Thanks for helping us! 👏
+
+Please follow:
+
+* [JavaScript standard style](http://standardjs.com/)
+* [This git branching model](nvie.com/posts/a-successful-git-branching-model/)
