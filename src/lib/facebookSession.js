@@ -11,6 +11,7 @@ passport.use(new FacebookStrategy({
 },
   function (accessToken, refreshToken, profile, done) {
     localStorage.setItem('userAccessToken', accessToken)
+    localStorage.setItem('userProfile', JSON.stringify(profile))
     return done(null, profile)
   }
 ))
@@ -24,3 +25,4 @@ passport.deserializeUser(function (obj, cb) {
 })
 
 exports.FacebookStrategy = FacebookStrategy
+exports.user

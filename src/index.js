@@ -42,7 +42,11 @@ app.get('/', (req, res) => {
 
 // Route facebook login
 app.get('/login/facebook', passport.authenticate('facebook', { scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions'] }))
-app.get('/login/facebook/return', passport.authenticate('facebook', { failureRedirect: '/' }), function (req, res) { res.redirect('/') })
+app.get('/login/facebook/return', passport.authenticate('facebook', { failureRedirect: '/' })
+  , function (req, res) {
+    facebookSession.user = req.user
+    res.redirect('/')
+  })
 
 router.get('/status', (req, res) => {
   res.send('up')})
