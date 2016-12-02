@@ -37,7 +37,7 @@ function HandlePostRequest (options, resolve, reject) {
   if (options.pictureUrl != undefined && options.pictureUrl !== '') {
     PostPictureFromUrl(currentId, options.pictureUrl, options.message != undefined ? options.message : '', resolve, reject)
   }  else {
-    PostMessage(options.message, resolve, reject)
+    PostMessage(currentId, options.message, resolve, reject)
   }
 }
 
