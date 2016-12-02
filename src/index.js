@@ -6,6 +6,10 @@ const bodyparser = require('body-parser')
 const fs = require('fs-extra')
 const cors = require('cors')
 const passport = require('passport')
+const LocalStorage = require('node-localstorage').LocalStorage
+var localStorage = new LocalStorage('./scratch')
+exports.localStorage = localStorage
+
 const facebookSession = require('./lib/facebookSession')
 
 const config = require('./lib/config')

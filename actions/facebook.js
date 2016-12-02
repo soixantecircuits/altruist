@@ -1,14 +1,25 @@
 'use strict'
 
+var localStorage = require('../src/index').localStorage
 const facebookSession = require('../src/lib/facebookSession')
 const graph = require('fbgraph')
 const config = require('../src/lib/config')
 
 const appId = config.actions.facebook.appId
 const appSecret = config.actions.facebook.appSecret
-const userAccessToken = facebookSession.accessToken
-var pageAccessToken = ''
+const userAccessToken = localStorage.getItem('userAccessToken')
+var pageAccessToken = localStorage.getItem('pageAccessToken')
 var pageId = config.actions.facebook.pageId
+
+function StoreUserAccessToken (token) {
+  userAccessToken = token
+  localStorage.setItem('userAccessToken', userAccessToken)
+}
+
+function StorePageAccessToken (token) {
+  pageAccessToken = token
+  localStorage.setItem('pageAccessToken', pageAccessToken)
+}
 
 function PostMessage (postMessage, resolve, reject) {
   graph.post(`/${pageId}/feed`, { message: postMessage }, function (err, res) {
@@ -36,7 +47,7 @@ module.exports = (options) => {
         if (err) {
           return reject(err)
         }
-        pageAccessToken = res.access_token
+        StorePageAccessToken(res.access_token)
         graph.setAccessToken(pageAccessToken)
         PostMessage(options.message, resolve, reject)
       })

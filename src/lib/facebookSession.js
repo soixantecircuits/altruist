@@ -1,5 +1,6 @@
 const passport = require('passport')
 const FacebookStrategy = require('passport-facebook').Strategy
+var localStorage = require('../index').localStorage
 
 const config = require('./config')
 
@@ -9,7 +10,7 @@ passport.use(new FacebookStrategy({
   callbackURL: 'http://localhost:' + config.server.port + '/login/facebook/return'
 },
   function (accessToken, refreshToken, profile, done) {
-    exports.accessToken = accessToken
+    localStorage.setItem('userAccessToken', accessToken)
     return done(null, profile)
   }
 ))
