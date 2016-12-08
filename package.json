@@ -18,7 +18,8 @@
     "morgan": "^1.7.0",
     "multer": "^1.2.0",
     "nodemailer": "^2.6.4",
-    "nodemailer-mandrill-transport": "^1.2.0"
+    "nodemailer-mandrill-transport": "^1.2.0",
+	"twit": "^2.2.5"
   },
   "devDependencies": {
     "nodemon": "^1.11.0"
