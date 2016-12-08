@@ -60,7 +60,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
   "email": "me@example.com",
   "fname": "John",
   "lname": "Doe"
-}' "http://localhost:7070/api/v1/actions/mailchimp"
+}' "http://localhost:6060/api/v1/actions/mailchimp"
 ```
 
 #### Options
@@ -75,7 +75,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 ### Mandrill transactionnal emails
 
-### Setup
+#### Setup
 
 In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
 
@@ -108,7 +108,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
       }]
     }]
   }
-}' "http://localhost:7070/api/v1/actions/mandrill"
+}' "http://localhost:6060/api/v1/actions/mandrill"
 ```
 
 ```html
@@ -136,6 +136,39 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |**vars.targeted**|`array`|&minus;||
 |**vars.targeted.target**|`string`|&minus;|address targeted|
 |**vars.targeted.vars**|`array`|&minus;|create/override `merge_vars` for the concerned address. Works the same as `vars.global`|
+
+### Twitter
+
+#### Setup
+
+In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+
+```json
+  "actions": {
+    "twitter": {
+      "consumer_key":			"<your_consumer_key>",
+      "consumer_secret":		"<your_consumer_secret>",
+      "access_token":			"<your_access_token>",
+      "access_token_secret":	"<your_access_token_secret>"
+    }
+  }
+```
+
+#### Usage
+
+```cURL
+curl -X POST -H "Content-Type: application/json" -d '{
+	"message":	"Hello Twitter !",
+	"media":	"/path/to/img"
+}' "http://localhost:6060/api/v1/actions/twitter"
+```
+
+#### Options
+
+|name|type|required|description|
+|:---|:---|:---:|:---|
+|**message**|`string`|&times;|new tweet message|
+|**media**|`string`|&minus;|path to an image on your filesystem|
 
 ## Contribute
 
