@@ -45,6 +45,7 @@ module.exports = (options) => {
     subject,
     mandrillOptions: {
       template_name: template,
+      images: [],
       template_content: {},
       message: {
         merge: true,
@@ -54,6 +55,14 @@ module.exports = (options) => {
       }
     }
   }
+
+  options.images.forEach((image) => {
+    params.mandrillOptions.images.push({
+      type: 'image/png',
+      name: image.name,
+      content: image.content
+    })
+  })
 
   return new Promise((resolve, reject) => {
     transport
