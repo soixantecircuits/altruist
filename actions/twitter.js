@@ -1,9 +1,10 @@
 'use strict'
 
-var fs = require('fs')
-var Twit = require('twit')
-var request = require('request').defaults({encoding: null})
-var config = require('../config/config.json')
+var fs = require('fs'),
+    Twit = require('twit'),
+    mime = require('mime'),
+    request = require('request').defaults({encoding: null}),
+    config = require('../config/config.json')
 
 var T = new Twit({
   consumer_key: config.actions.twitter.consumer_key,
@@ -13,60 +14,83 @@ var T = new Twit({
   timeout_ms: 60 * 1000
 })
 
-function updateWithMedia (mediaData, message, resolve, reject) {
+var globalResolve, globalReject, twitMessage
+
+function twitSuccess (message) { globalResolve('altruist - twitter.js - ' + message) }
+function twitFailure (message) { globalReject('altruist - twitter.js - ' + message) }
+
+function updateStatus (mediaIdStr) {
+  console.log(mediaIdStr)
+  T.post('statuses/update', { status: twitMessage, media_ids: [mediaIdStr] }, function (err, data, response) {
+    if (!err) { twitSuccess('Success')
+    } else { twitFailure(err) }
+  })
+}
+
+function uploadImage (mediaData) {
   T.post('media/upload',
     {media_data: mediaData},
     function (err, data, response) {
       if (!err) {
-        var mediaIdStr = data.media_id_string
-        var metaParams = { media_id: mediaIdStr, alt_text: { text: message } }
-        T.post('media/metadata/create', metaParams, function (err, data, response) {
-          if (!err) {
-            T.post('statuses/update', {status: message, media_ids: [mediaIdStr]}, function (err, data, response) {
-              if (!err) {
-                return resolve('altruist - twitter.js - Success')
-              } else { return reject('altruist - twitter.js - ' + err) }
-            })
-          } else { return reject('altruist - twitter.js - ' + err) }
-        })
-      } else { return reject('altruist - twitter.js - ' + err) }
+        updateStatus(data.media_id_string)
+      } else { twitFailure(err) }
+  })
+}
+
+function handleHttpUrl (media) {
+  request.get(media, function (err, response, body) {
+    if (response.statusCode !== 200)
+      twitFailure('Error: http response status code ' + response.statusCode)
+    if (!err) {
+      uploadImage(body.toString('base64'), twitMessage)
+    } else { twitFailure(err) }
+  })
+}
+
+function handleLocalFile (media) {
+  // Only MP4 format is supported for videos
+  if (mime.lookup(media) === 'video/mp4')
+  {
+    T.postMediaChunked({file_path: media}, function (err, data, response) {
+      if (!err) {
+        updateStatus(data.media_id_string)
+      } else { twitFailure(err) }
     })
+  } else {
+    uploadImage(fs.readFileSync(media, { encoding: 'base64' }))
+  }
 }
 
 module.exports = (options) => {
   return new Promise((resolve, reject) => {
+    globalResolve = resolve
+    globalReject = reject
+    // The 'message' field has to be defined in request
     if (options.message === undefined || options.message === '') {
-      return reject('altruist - twitter.js - Error: No text message in request')
+      twitFailure('Error: No text message in request')
+    } else {
+      twitMessage = options.message
     }
-    // Reading 'media' value from request
+    // Supported formats: JPG, PNG, GIF, WEBP, MP4
     if (options.media !== undefined && options.media !== '') {
-      // Regular expressions
+      // Regular expressions to match base64 or http url
       var base64Match = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
       var httpMatch = /^https?:\/\//i
       if (base64Match.test(options.media)) {
         // Base64 string
-        return updateWithMedia(options.media, options.message, resolve, reject)
+        uploadImage(options.media)
       } else if (httpMatch.test(options.media)) {
         // HTTP URL
-        request.get(options.media, function (err, response, body) {
-          if (!err && response.statusCode === 200) {
-            return updateWithMedia(body.toString('base64'), options.message, resolve, reject)
-          } else {
-            return reject('altruist - twitter.js - ' + err)
-          }
-        })
+        handleHttpUrl(options.media)
       } else if (fs.existsSync(options.media)) {
         // Filesystem path
-        var data = fs.readFileSync(options.media, { encoding: 'base64' })
-        return updateWithMedia(data, options.message, resolve, reject)
-      } else { return reject('altruist - twitter.js - Error: media request not well formated') }
+        handleLocalFile(options.media)
+      } else {
+        twitFailure('Error: media request not well formated')
+      }
     } else {
-      // No media in request
-      T.post('statuses/update', {status: options.message}, function (err, data, response) {
-        if (!err) {
-          return resolve('altruist - twitter.js - Success')
-        } else { return reject('altruist - twitter.js - ' + err) }
-      })
+      // Text-only tweet
+      updateStatus(undefined)
     }
   })
 }

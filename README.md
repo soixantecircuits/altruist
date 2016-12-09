@@ -159,7 +159,7 @@ In your `config.json` file, you'll need to add the following configuration objec
 ```cURL
 curl -X POST -H "Content-Type: application/json" -d '{
 	"message":	"Hello Twitter !",
-	"media":	"/path/to/img"
+	"media":	"/path/to/media"
 }' "http://localhost:6060/api/v1/actions/twitter"
 ```
 
@@ -168,7 +168,16 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |name|type|required|description|
 |:---|:---|:---:|:---|
 |**message**|`string`|&times;|new tweet message|
-|**media**|`string`|&minus;|path to an image on your filesystem|
+|**media**|`string`|&minus;|image or video|
+
+The 'media' option must be one of the following:
+ * path to a file on your system (example: `/path/to/image.png`)
+ * url (example: `http://some_site.com/image.png`)
+ * base64 encoded string
+
+Supported formats are **JPG**, **PNG**, **GIF**, **WEBP** (for images) and **MP4** (for videos)
+
+_**Note**: MP4 files MUST be local files on your system (no url or base64)_
 
 ## Contribute
 
