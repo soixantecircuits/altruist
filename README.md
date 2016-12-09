@@ -105,6 +105,10 @@ curl -X POST -H "Content-Type: application/json" -d '{
       "target": "mail@example.com",
       "vars": [{
         "hello": "Hello mail,"
+      }],
+      "images": [{
+        "name": 'image',
+        "content": this.$store.state.session.selectedMedia
       }]
     }]
   }
@@ -121,6 +125,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
   <body>
     {{#if hello}}<h2>{{hello}}</h2>{{/if}}
     <p>{{#if name}}{{name}} says{{/if}} hello !</p>
+    <img src="{{cid:image}}" />
   </body>
 </html>
 ```
@@ -136,6 +141,9 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |**vars.targeted**|`array`|&minus;||
 |**vars.targeted.target**|`string`|&minus;|address targeted|
 |**vars.targeted.vars**|`array`|&minus;|create/override `merge_vars` for the concerned address. Works the same as `vars.global`|
+|**images**|`array`|&minus;||
+|**images.name**|`string`|&minus;|name of the image that you will retrieve via `cid:name`|
+|**images.content**|`string`|&minus;|Can be either a path the image (in the filesystem or via http) or straight base64 datas|
 
 ## Contribute
 

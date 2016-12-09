@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs')
 const nodemailer = require('nodemailer')
 const mandrill = require('nodemailer-mandrill-transport')
 
@@ -25,6 +26,32 @@ function mapMandrillTargeted (obj) {
   return {
     rcpt: obj.target,
     vars: obj.vars ? obj.vars.map(v => mapMandrillGlobals(v)) : []
+  }
+}
+
+function getMedia (content) {
+  const base64Match = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
+  const httpMatch = /^https?:\/\//i
+
+  if (base64Match.test(content)) {
+    return content
+  } else if (httpMatch.test(content)) {
+    request.get(content, (err, response, body) => {
+      if (!err && response.statusCode === 200) {
+        return body.toString('base64')
+      } else {
+        console.log(err)
+      }
+    })
+  } else if (fs.existsSync(content)) {
+    try {
+      const data = fs.readFileSync(content, { encoding: 'base64' })
+      return data
+    } catch (ex) {
+      console.log(ex)
+    }
+  } else {
+    console.log('Altruist - Error with request')
   }
 }
 
@@ -60,7 +87,7 @@ module.exports = (options) => {
     params.mandrillOptions.images.push({
       type: 'image/png',
       name: image.name,
-      content: image.content
+      content: getMedia(image.content)
     })
   })
 
