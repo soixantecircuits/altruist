@@ -169,7 +169,8 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**message**|`string`|&times;|message to post on your feed|
+|**message**|`string`|required if no picture|message to post on your feed|
+|**pictureUrl**|`string`|required if no message and no image upload|url of the picture to post on your feed|
 
 ## Contribute
 

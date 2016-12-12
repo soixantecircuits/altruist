@@ -10,12 +10,11 @@ const LocalStorage = require('node-localstorage').LocalStorage
 var localStorage = new LocalStorage('./scratch')
 exports.localStorage = localStorage
 
-const facebookSession = require('./lib/facebookSession')
-
 const config = require('./lib/config')
 
 const router = express.Router()
 const app = express()
+exports.app = app
 
 const version = 'v1'
 
@@ -31,6 +30,13 @@ app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveU
 app.use(passport.initialize())
 app.use(passport.session())
 
+passport.serializeUser(function (user, cb) {
+  cb(null, user)
+})
+passport.deserializeUser(function (obj, cb) {
+  cb(null, obj)
+})
+
 app.use(`/api/${version}`, router)
 
 // Support pre-flight https://github.com/expressjs/cors#enabling-cors-pre-flight
@@ -38,18 +44,15 @@ app.options('*', cors())
 
 app.use(`/api/${version}`, router)
 app.get('/', (req, res) => {
-  res.send('See https://github.com/soixantecircuits/altruist for details. <br> <a href="/login/facebook">Log in Facebook</a>')})
+  res.send('See https://github.com/soixantecircuits/altruist for details. <br> <a href="/login/facebook">Log in Facebook</a>')
+})
 
 // Route facebook login
-app.get('/login/facebook', passport.authenticate('facebook', { scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions'] }))
-app.get('/login/facebook/return', passport.authenticate('facebook', { failureRedirect: '/' })
-  , function (req, res) {
-    facebookSession.user = req.user
-    res.redirect('/')
-  })
+require(`${process.cwd()}/actions/facebook`).auth()
 
 router.get('/status', (req, res) => {
-  res.send('up')})
+  res.send('up')
+})
 
 for (let action in config.actions) {
   const module = `${process.cwd()}/actions/${action}.js`
@@ -58,7 +61,7 @@ for (let action in config.actions) {
       if (err) {
         res.status(404).send('No such action.')
       } else {
-        require(module)(req.body, req)
+        require(module).run(req.body, req)
           .then(response => res.send(response))
           .catch(reason => {
             console.log(reason)

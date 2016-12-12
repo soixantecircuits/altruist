@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 const nodemailer = require('nodemailer')
 const mandrill = require('nodemailer-mandrill-transport')
@@ -28,7 +28,7 @@ function mapMandrillTargeted (obj) {
   }
 }
 
-module.exports = (options) => {
+function run (options) {
   try {
     options.vars = options.vars ?
       typeof options.vars === 'object'
@@ -50,7 +50,7 @@ module.exports = (options) => {
         merge: true,
         merge_language: 'handlebars',
         global_merge_vars: options.vars.globals ? options.vars.globals.map(v => mapMandrillGlobals(v)) : [],
-        merge_vars: options.vars.targeted ? options.vars.targeted.map(v => mapMandrillTargeted(v)) : [],
+        merge_vars: options.vars.targeted ? options.vars.targeted.map(v => mapMandrillTargeted(v)) : []
       }
     }
   }
@@ -63,3 +63,5 @@ module.exports = (options) => {
       })
   })
 }
+
+module.exports.run = run
