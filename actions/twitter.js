@@ -4,7 +4,7 @@ const fs = require('fs')
 const Twit = require('twit')
 const mime = require('mime')
 const request = require('request').defaults({encoding: null})
-const config = require('../config/config.json')
+const config = require('../src/lib/config')
 
 const T = new Twit({
   consumer_key: config.actions.twitter.consumer_key,
