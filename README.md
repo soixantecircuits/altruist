@@ -161,7 +161,8 @@ When logged in, you can post a message on your feed:
 
 ```cURL
 curl -X POST -H "Content-Type: application/json" -d '{
-	"message": "Roses are red, I want my bed."
+	"message": "Roses are red, I want my bed.",
+  	"pictureUrl": "https://dncache-mauganscorp.netdna-ssl.com/thumbseg/1161/1161843-bigthumbnail.jpg"
 }' "http://localhost:7070/api/v1/actions/facebook"
 ```
 

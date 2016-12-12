@@ -92,11 +92,11 @@ function auth () {
 function run (options, request) {
   if (facebookSession.userAccessToken == undefined) {
     return new Promise((resolve, reject) => {
-      return reject('No user accessToken found. Please log in at "/login/facebook"')
+      return reject({ 'error': 'invalid TOKEN', 'details': 'No facebook user access token found in local storage. Please log in at "/login/facebook".' })
     })
-  } else if ((options.message == undefined || options.message === '') && options.pictureUrl == undefined) {
+  } else if ((options.message == undefined || options.message === '') && (options.pictureUrl == undefined || options.pictureUrl === '')) {
     return new Promise((resolve, reject) => {
-      return reject('No message in request.')
+      return reject({ 'error': 'invalid argument', 'details': 'No message or picture in facebook POST request.' })
     })
   }
 
