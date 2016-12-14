@@ -24,7 +24,9 @@ app.use(morgan('dev'))
 app.use(cors())
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: true }))
+app.use(upload.fields([{ name: 'file' }]))
 app.use(require('cookie-parser')())
+
 app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }))
 
 app.use(passport.initialize())
@@ -56,7 +58,7 @@ router.get('/status', (req, res) => {
 
 for (let action in config.actions) {
   const module = `${process.cwd()}/actions/${action}.js`
-  router.post(`/actions/${action}`, upload.single('file'), (req, res) => {
+  router.post(`/actions/${action}`, (req, res) => {
     fs.access(module, (err) => {
       if (err) {
         res.status(404).send('No such action.')

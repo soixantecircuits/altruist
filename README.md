@@ -147,24 +147,39 @@ In your `config.json` file, you'll need to add the following configuration objec
 "actions": {
   "facebook": {
     "appId": "abcd-xyz",
-    "appSecret": "shhh"
+    "appSecret": "shhh",
+    "loginUrl": "/login/facebook",
+    "callbackUrl": "/login/facebook/return",
+    "failureUrl": "/",
+    "successUrl": "/"
   }
 }
 ```
 
 #### Usage
 
-Before being able to post, you will need to log in facebook by going to: `/login/facebook` and authorizing the application.
-When logged in, you can post a message on your feed:
+Before being able to post, you will need to log in facebook by going to the url matching `loginUrl` in your config file and authorizing the application.
+When logged in, you can post on your feed using JSON or form-data :
 
 `POST /api/v1/actions/facebook`
 
 ```cURL
 curl -X POST -H "Content-Type: application/json" -d '{
 	"message": "Roses are red, I want my bed.",
-  	"pictureUrl": "https://dncache-mauganscorp.netdna-ssl.com/thumbseg/1161/1161843-bigthumbnail.jpg"
+	"pictureUrl": "https://dncache-mauganscorp.netdna-ssl.com/thumbseg/1161/1161843-bigthumbnail.jpg"
 }' "http://localhost:7070/api/v1/actions/facebook"
 ```
+
+```cURL
+curl -X POST -H "Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW"
+ -F "message=Now you see me"
+  -F "file=@cool_cat.jpg"
+   "http://localhost:6060/api/v1/actions/facebook"
+```
+
+When you log in, an array of pages you manage is stored in `facebookSession.userAccounts`.
+You can switch the current used id to post on a page or on your feed by calling the funtion `switchToId(newId)` and it will set the access token accordingly.
+To switch back to your account, you can call `switchToId('me')` or just call it with you account's id.
 
 #### Options
 
@@ -172,6 +187,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |:---|:---|:---:|:---|
 |**message**|`string`|required if no picture|message to post on your feed|
 |**pictureUrl**|`string`|required if no message and no image upload|url of the picture to post on your feed|
+|**file**|`file`|required if no pictureUrl and no message|picture to upload and post on your feed (Only in form-data)|
 
 ## Contribute
 

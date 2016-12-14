@@ -10,7 +10,6 @@ const config = require('../src/lib/config')
 
 var facebookSession = localStorage.getItem('facebookSession')
 facebookSession = facebookSession ? JSON.parse(facebookSession) : {}
-var pageId = config.actions.facebook.pageId
 
 function saveSession () {
   localStorage.setItem('facebookSession', JSON.stringify(facebookSession))
@@ -18,11 +17,6 @@ function saveSession () {
 
 function storeUserAccessToken (token) {
   facebookSession.userAccessToken = token
-  saveSession()
-}
-
-function storePageAccessToken (token) {
-  facebookSession.pageAccessToken = token
   saveSession()
 }
 
@@ -39,9 +33,8 @@ function getPagesList (callback) {
       facebookSession.userAccounts = res.data
       saveSession()
     } else {
-      console.log(!res ? 'An error occured' : res.error)
+      console.log(!res ? 'An error occured while getting accounts' : res.error)
     }
-
     callback(res)
   })
 }
@@ -49,6 +42,24 @@ function getPagesList (callback) {
 function setCurrentId (newId) {
   facebookSession.currentId = newId
   saveSession()
+}
+
+// Set the currentId and the current access token according to newId
+function switchToId (newId) {
+  if (newId === 'me') {
+    setCurrentId(facebookSession.userProfile.id)
+    fb.setAccessToken(facebookSession.userAccessToken)
+  } else {
+    for (var i = 0; i < facebookSession.userAccounts.length; ++i) {
+      if (facebookSession.userAccounts[i].id === newId) {
+        setCurrentId(newId)
+        return fb.setAccessToken(facebookSession.userAccounts[i].access_token)
+      }
+    }
+  }
+  // If newId was not found in facebookSession.userAccounts, assume it is the user's id
+  setCurrentId(newId)
+  fb.setAccessToken(facebookSession.userAccessToken)
 }
 
 function handlePostRequest (options, resolve, reject) {
@@ -88,21 +99,11 @@ function postUploadedPicture (objectId, pictureData, postMessage, resolve, rejec
   })
 }
 
-function getPageToken (options, resolve, reject, callback) {
-  fb.api(`/${pageId}`, { fields: ['access_token'] }, (res) => {
-    if (!res || res.error) {
-      return reject(!res ? "An error occured while getting page's token" : res.error)
-    }
-    storePageAccessToken(res.access_token)
-    callback(options, resolve, reject)
-  })
-}
-
 function auth () {
   passport.use(new FacebookStrategy({
     clientID: config.actions.facebook.appId,
     clientSecret: config.actions.facebook.appSecret,
-    callbackURL: 'http://localhost:' + config.server.port + '/login/facebook/return'
+    callbackURL: config.actions.facebook.callbackURL
   },
     function (accessToken, refreshToken, profile, done) {
       storeUserAccessToken(accessToken)
@@ -111,18 +112,18 @@ function auth () {
     }
   ))
 
-  app.get('/login/facebook', passport.authenticate('facebook', { scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions'] }))
-  app.get('/login/facebook/return', passport.authenticate('facebook', { failureRedirect: '/' })
+  app.get(config.actions.facebook.loginUrl, passport.authenticate('facebook', { scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions'] }))
+  app.get(config.actions.facebook.callbackUrl, passport.authenticate('facebook', { failureRedirect: config.actions.facebook.failureUrl })
     , function (req, res) {
       storeUserProfile(req.user)
       getPagesList(() => {
-        res.redirect('/')
+        res.redirect(config.actions.facebook.successUrl)
       })
     })
 }
 
 function run (options, request) {
-  if (!facebookSession.userAccessToken) {
+  if (!facebookSession || !facebookSession.userAccessToken) {
     return new Promise((resolve, reject) => {
       return reject({ 'error': 'invalid TOKEN', 'details': 'No facebook user access token found in local storage. Please log in at "/login/facebook".' })
     })
@@ -132,41 +133,28 @@ function run (options, request) {
     })
   }
 
-  if (request.file) {
+  // If multer detects a file upload, get the first file and set options to upload to facebook
+  if (request.files && request.files.file) {
     options = {
       caption: options.message,
-      filename: request.file.originalname,
-      data: request.file.buffer,
-      contentType: request.file.mimetype
+      filename: request.files.file[0].originalname,
+      data: request.files.file[0].buffer,
+      contentType: request.files.file[0].mimetype
     }
   }
 
   return new Promise((resolve, reject) => {
-    pageId = pageId ? `${pageId}` : ''
-    fb.setAccessToken(facebookSession.userAccessToken)
-    setCurrentId(facebookSession.userProfile.id)
-
-    if (pageId !== '') {
-      if (!facebookSession.pageAccessToken) {
-        getPageToken(options, resolve, reject, (options, resolve, reject) => {
-          fb.setAccessToken(facebookSession.pageAccessToken)
-          setCurrentId(pageId)
-          handlePostRequest(options, resolve, reject)
-        })
-      } else {
-        fb.setAccessToken(facebookSession.pageAccessToken)
-        setCurrentId(pageId)
-        handlePostRequest(options, resolve, reject)
-      }
+    if (facebookSession.currentId) {
+      switchToId(facebookSession.currentId)
     } else {
-      handlePostRequest(options, resolve, reject)
+      switchToId('me')
     }
+    handlePostRequest(options, resolve, reject)
   })
 }
 
 module.exports = {
   auth: auth,
   run: run,
-  FacebookStrategy: FacebookStrategy,
-  facebookSession: facebookSession
+  switchToId: switchToId
 }
