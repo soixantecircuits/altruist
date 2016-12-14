@@ -7,9 +7,10 @@ const fs = require('fs-extra')
 const cors = require('cors')
 const passport = require('passport')
 const LocalStorage = require('node-localstorage').LocalStorage
-var localStorage = new LocalStorage('./scratch')
+var localStorage = new LocalStorage('./storage/')
 exports.localStorage = localStorage
-
+const multer = require('multer')
+const upload = multer({ storage: multer.memoryStorage() })
 const config = require('./lib/config')
 
 const router = express.Router()
@@ -23,10 +24,9 @@ app.use(morgan('dev'))
 app.use(cors())
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: true }))
-const formdataParser = require('multer')().fields([])
-app.use(formdataParser)
 app.use(require('cookie-parser')())
 app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }))
+
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -56,7 +56,7 @@ router.get('/status', (req, res) => {
 
 for (let action in config.actions) {
   const module = `${process.cwd()}/actions/${action}.js`
-  router.post(`/actions/${action}`, (req, res) => {
+  router.post(`/actions/${action}`, upload.single('file'), (req, res) => {
     fs.access(module, (err) => {
       if (err) {
         res.status(404).send('No such action.')

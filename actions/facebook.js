@@ -1,17 +1,16 @@
 'use strict'
 
+const passport = require('passport')
+const graph = require('fbgraph')
+const FacebookStrategy = require('passport-facebook').Strategy
 const app = require('../src/index').app
 var localStorage = require('../src/index').localStorage
-const passport = require('passport')
-const FacebookStrategy = require('passport-facebook').Strategy
 
-const graph = require('fbgraph')
 const config = require('../src/lib/config')
 
 var facebookSession = localStorage.getItem('facebookSession')
-facebookSession = facebookSession != undefined ? JSON.parse(facebookSession) : {}
+facebookSession = typeof facebookSession !== undefined ? JSON.parse(facebookSession) : {}
 var pageId = config.actions.facebook.pageId
-var currentId
 
 function saveSession () {
   localStorage.setItem('facebookSession', JSON.stringify(facebookSession))
@@ -32,11 +31,29 @@ function storeUserProfile (profile) {
   saveSession()
 }
 
+function getPagesList (callback) {
+  graph.setAccessToken(facebookSession.userAccessToken)
+  graph.get('/me/accounts', null, (err, res) => {
+    if (typeof err === undefined) {
+      facebookSession.userAccounts = res.data
+      saveSession()
+    }
+    callback(res, err)
+  })
+}
+
+function setCurrentId (pageId) {
+  facebookSession.currentId = pageId
+  saveSession()
+}
+
 function handlePostRequest (options, resolve, reject) {
-  if (options.pictureUrl != undefined && options.pictureUrl !== '') {
-    postPictureFromUrl(currentId, options.pictureUrl, options.message != undefined ? options.message : '', resolve, reject)
+  if (typeof options.pictureUrl !== undefined && options.pictureUrl !== '') {
+    postPictureFromUrl(facebookSession.currentId, options.pictureUrl, typeof options.message !== undefined ? options.message : '', resolve, reject)
+  } else if (typeof options.message !== undefined && options.message !== '') {
+    postMessage(facebookSession.currentId, options.message, resolve, reject)
   } else {
-    postMessage(currentId, options.message, resolve, reject)
+    postUploadedPicture(facebookSession.currentId, options, null, resolve, reject)
   }
 }
 
@@ -51,6 +68,15 @@ function postMessage (objectId, postMessage, resolve, reject) {
 
 function postPictureFromUrl (objectId, pictureUrl, postMessage, resolve, reject) {
   graph.post(`/${objectId}/photos`, { url: pictureUrl, caption: postMessage }, function (err, res) {
+    if (err) {
+      return reject(err)
+    }
+    return resolve(res)
+  })
+}
+
+function postUploadedPicture (objectId, pictureData, postMessage, resolve, reject) {
+  graph.post(`/${objectId}/photos`, pictureData, function (err, res) {
     if (err) {
       return reject(err)
     }
@@ -85,36 +111,41 @@ function auth () {
   app.get('/login/facebook/return', passport.authenticate('facebook', { failureRedirect: '/' })
     , function (req, res) {
       storeUserProfile(req.user)
+      getPagesList()
       res.redirect('/')
     })
 }
 
 function run (options, request) {
-  if (facebookSession.userAccessToken == undefined) {
+  if (typeof facebookSession.userAccessToken === undefined) {
     return new Promise((resolve, reject) => {
       return reject({ 'error': 'invalid TOKEN', 'details': 'No facebook user access token found in local storage. Please log in at "/login/facebook".' })
     })
-  } else if ((options.message == undefined || options.message === '') && (options.pictureUrl == undefined || options.pictureUrl === '')) {
+  } else if ((typeof options.message === undefined || options.message === '') && (typeof options.pictureUrl === undefined || options.pictureUrl === '') && typeof request.file === undefined) {
     return new Promise((resolve, reject) => {
       return reject({ 'error': 'invalid argument', 'details': 'No message or picture in facebook POST request.' })
     })
   }
 
+  if (typeof request.file !== undefined) {
+    options = request.file.buffer
+  }
+
   return new Promise((resolve, reject) => {
-    pageId = pageId != undefined ? `${pageId}` : ''
+    pageId = typeof pageId !== undefined ? `${pageId}` : ''
     graph.setAccessToken(facebookSession.userAccessToken)
-    currentId = facebookSession.userProfile.id
+    setCurrentId(facebookSession.userProfile.id)
 
     if (pageId !== '') {
-      if (facebookSession.pageAccessToken == undefined) {
+      if (typeof facebookSession.pageAccessToken !== undefined) {
         getPageToken(options, resolve, reject, (options, resolve, reject) => {
           graph.setAccessToken(facebookSession.pageAccessToken)
-          currentId = pageId
+          setCurrentId(pageId)
           handlePostRequest(options, resolve, reject)
         })
       } else {
         graph.setAccessToken(facebookSession.pageAccessToken)
-        currentId = pageId
+        setCurrentId(pageId)
         handlePostRequest(options, resolve, reject)
       }
     } else {
