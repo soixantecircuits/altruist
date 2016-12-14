@@ -72,6 +72,8 @@ app.get('/', (req, res) => {
   res.send(`
     <h1>Altruist</h1>
     <h3>Available auth URLs:</h3>
+    <small>${req.query.success ? `${req.query.success} auth success` : ''}</small>
+    <small>${req.query.failure ? `${req.query.failure} auth failure` : ''}</small>
     <ul>
       ${authRedirect.map(({name, URL}) => `<li><a href="${URL}">${name}</a></li>`).join('')}
     </ul>
