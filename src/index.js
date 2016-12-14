@@ -52,7 +52,7 @@ for (let action in config.actions) {
   fs.access(modulePath, (err) => {
     const module = require(modulePath)
     typeof (module.auth) === 'function' && module.auth(app)
-    typeof (module.redirectURL) === 'string' && authRedirect.push({ name: action, URL: module.redirectURL })
+    typeof (module.loginURL) === 'string' && authRedirect.push({ name: action, URL: module.loginURL })
     router.post(`/actions/${action}`, (req, res) => {
       if (err) {
         res.status(404).send('No such action.')

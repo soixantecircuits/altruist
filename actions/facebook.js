@@ -2,16 +2,22 @@
 
 const passport = require('passport')
 const FacebookStrategy = require('passport-facebook').Strategy
-const fb = require('fb')
+const FB = require('fb')
+const fb = new FB.Facebook()
 const config = require('../src/lib/config')
 const localStorage = require('../src/lib/localStorage')
 
-const session = localStorage.getItem('facebookSession')
+const session = localStorage.getItem('facebook-session')
 const facebookSession = session ? JSON.parse(session) : {}
-let currentID = null
+let currentID = facebookSession.currentID
+
+const callbackURL = config.actions.facebook.callbackURL || '/login/facebook'
+const loginURL = config.actions.facebook.loginURL || '/login/facebook/return'
+const failureURL = config.actions.facebook.failureURL || '/?failure=facebook'
+const successURL = config.actions.facebook.successURL || '/?success=facebook'
 
 function saveSession () {
-  localStorage.setItem('facebookSession', JSON.stringify(facebookSession))
+  localStorage.setItem('facebook-session', JSON.stringify(facebookSession))
 }
 
 function storeUserAccessToken (token) {
@@ -21,6 +27,13 @@ function storeUserAccessToken (token) {
 
 function storeUserProfile (profile) {
   facebookSession.userProfile = profile
+  saveSession()
+}
+
+function setCurrent (ID, token) {
+  currentID = ID
+  facebookSession.currentID = ID
+  fb.setAccessToken(token)
   saveSession()
 }
 
@@ -38,60 +51,61 @@ function getPagesList (callback) {
   })
 }
 
-function setCurrentID (newID) {
-  facebookSession.currentID = newID
+// Set the currentID and the current access token according to newID
+function setID (newID) {
+  if (newID === facebookSession.userProfile.ID) {
+    setCurrent('me', facebookSession.userAccessToken)
+  } else {
+    facebookSession.userAccounts.forEach((account) => {
+      ;(account.id === newID) && setCurrent(newID, account.access_token)
+    })
+  }
   saveSession()
 }
 
-// Set the currentID and the current access token according to newId
-function switchToID (newID) {
-  if (newID === 'me') {
-    setCurrentID(facebookSession.userProfile.ID)
-    fb.setAccessToken(facebookSession.userAccessToken)
+function getMediaType (media) {
+  if (media) {
+    if (media.isBinary) {
+      return media.contentType.indexOf(/video/gi) > 0 ? 'videos' : 'photos'
+    } else {
+      // this will only match filepath, but since there's no such things as base64 videos it's no issue
+      return /(\.mov|\.mpe?g?4?|\.wmv)/gi.test(media) ? 'videos' : 'photos'
+    }
   } else {
-    for (var i = 0; i < facebookSession.userAccounts.length; ++i) {
-      if (facebookSession.userAccounts[i].ID === newID) {
-        setCurrentID(newID)
-        return fb.setAccessToken(facebookSession.userAccounts[i].access_token)
+    return null
+  }
+}
+
+function handlePostRequest ({message, media}, resolve, reject) {
+  const isMedia = (media)
+  const mediaType = getMediaType(media)
+  const datas = {}
+  datas[isMedia ? 'caption' : 'message'] = message
+
+  const reHTTP = /^https?:\/\//i
+  const reBase64 = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
+
+  if (media) {
+    if (reHTTP.test(media)) {
+      datas.URL = media
+    } else if (reBase64.test(media)) {
+      // ???
+    } else if (media.isBinary) {
+      datas.source = {
+        value: media.data,
+        options: {
+          contentType: media.contentType,
+          filename: media.filename
+        }
       }
+    } else {
+      datas.source = require('fs').createReadStream(media)
     }
   }
-  // If newID was not found in facebookSession.userAccounts, assume it is the user's ID
-  setCurrentID(newID)
-  fb.setAccessToken(facebookSession.userAccessToken)
-}
 
-function handlePostRequest (options, resolve, reject) {
-  const message = options.message || ''
-  if (options.pictureURL) {
-    postPictureFromURL(currentID, options.pictureURL, message, resolve, reject)
-  } else if (message.length) {
-    postMessage(currentID, message, resolve, reject)
-  }
-}
-
-function postMessage (objectID, postMessage, resolve, reject) {
-  fb.api(`/${objectID}/feed`, 'post', { message: postMessage }, function (res) {
+  fb.api(`/${currentID}/${isMedia ? mediaType : 'feed'}`, 'post', datas, (res) => {
     if (!res || res.error) {
-      return reject(!res ? 'An error occured while posting a message.' : res.error)
-    }
-    return resolve(res)
-  })
-}
-
-function postPictureFromURL (objectID, pictureURL, postMessage, resolve, reject) {
-  fb.api(`/${objectID}/photos`, 'post', { URL: pictureURL, caption: postMessage }, function (res) {
-    if (!res || res.error) {
-      return reject(!res ? 'An error occured while posting a picture.' : res.error)
-    }
-    return resolve(res)
-  })
-}
-
-function postUploadedPicture (objectID, pictureData, postMessage, resolve, reject) {
-  fb.api(`/${objectID}/photos`, 'post', { source: { value: pictureData.data, options: { contentType: pictureData.contentType, filename: pictureData.filename } }, caption: postMessage }, function (res) {
-    if (!res || res.error) {
-      return reject(!res ? 'An error occured while uploading a picture.' : res.error)
+      return reject(res.error ? res.error : 'An error occured while posting.')
     }
     return resolve(res)
   })
@@ -101,22 +115,24 @@ function auth (app) {
   passport.use(new FacebookStrategy({
     clientID: config.actions.facebook.appID,
     clientSecret: config.actions.facebook.appSecret,
-    callbackURL: config.actions.facebook.callbackURL
+    callbackURL
   }, function (accessToken, refreshToken, profile, done) {
     storeUserAccessToken(accessToken)
     storeUserProfile(profile)
     return done(null, profile)
   }))
 
-  app.get(config.actions.facebook.loginURL, passport.authenticate('facebook', {
+  app.get(loginURL, passport.authenticate('facebook', {
     scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions']
   }))
-  app.get(config.actions.facebook.callbackURL, passport.authenticate('facebook', {
-    failureRedirect: config.actions.facebook.failureURL
-  }), function (req, res) {
+  app.get(callbackURL, passport.authenticate('facebook', {
+    failureRedirect: failureURL
+  }), (req, res) => {
     storeUserProfile(req.user)
     getPagesList(() => {
-      res.redirect(config.actions.facebook.successURL)
+      const id = config.actions.facebook.pageID || facebookSession.userProfile.ID
+      setID(id)
+      res.redirect(successURL)
     })
   })
 }
@@ -124,18 +140,24 @@ function auth (app) {
 function run (options, request) {
   if (!facebookSession || !facebookSession.userAccessToken) {
     return new Promise((resolve, reject) => {
-      return reject({ 'error': 'invalid TOKEN', 'details': 'No facebook user access token found in local storage. Please log in at "/login/facebook".' })
+      return reject({
+        error: 'invalid TOKEN',
+        details: 'No facebook user access token found in local storage. Please log in at "/login/facebook".'
+      })
     })
-  } else if ((!options.message || options.message === '') && (!options.pictureURL || options.pictureURL === '') && !request.file) {
+  } else if ((!options.message || options.message === '') && (!options.media || options.media === '') && !request.file) {
     return new Promise((resolve, reject) => {
-      return reject({ 'error': 'invalid argument', 'details': 'No message or picture in facebook POST request.' })
+      return reject({
+        error: 'invalid argument',
+        details: 'No message or media in facebook POST request.'
+      })
     })
   }
 
   // If multer detects a file upload, get the first file and set options to upload to facebook
   if (request.files && request.files.file) {
-    options = {
-      caption: options.message,
+    options.media = {
+      isBinary: true,
       filename: request.files.file[0].originalname,
       data: request.files.file[0].buffer,
       contentType: request.files.file[0].mimetype
@@ -143,17 +165,12 @@ function run (options, request) {
   }
 
   return new Promise((resolve, reject) => {
-    // if (facebookSession.currentID) {
-    //   switchToID(facebookSession.currentID)
-    // } else {
-    //   switchToID('me')
-    // }
     handlePostRequest(options, resolve, reject)
   })
 }
 
 module.exports = {
+  loginURL,
   auth,
-  run,
-  redirectURL: config.actions.facebook.loginURL
+  run
 }

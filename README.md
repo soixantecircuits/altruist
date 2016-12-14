@@ -165,9 +165,18 @@ When logged in, you can post on your feed using JSON or form-data :
 ```cURL
 curl -X POST -H "Content-Type: application/json" -d '{
   "message": "Hello Facebook!",
-  "pictureURL": "http://example.com/my-image.jpg"
+  "media": "/path/to/my/img.jpg"
 }' "http://localhost:7070/api/v1/actions/facebook"
 ```
+
+The 'media' option must be one of the following:
+ * path to a file on your system (example: `/path/to/image.png`)
+ * url (example: `http://some_site.com/image.png`)
+ * ~~base64 encoded string~~ *(soon)*
+
+Supported formats are **JPG**, **PNG**, **GIF**, **WEBP** (for images) and **MOV**, **WMV** or **MP4** (for videos)
+
+*Note: For videos, there are no caption for now.*
 
 <!-- When you log in, an array of pages you manage is stored in `facebookSession.userAccounts`.
 You can switch the current used id to post on a page or on your feed by calling the funtion `switchToID(newId)` and it will set the access token accordingly.
@@ -180,7 +189,7 @@ _**Note**: MP4 files MUST be local files on your system (no url or base64)_
 |name|type|required|description|
 |:---|:---|:---:|:---|
 |**message**|`string`|*if no picture*|message to post on your feed|
-|**pictureURL**|`string`|*if no message*|URL of the picture to post on your feed|
+|**media**|`string`|*if no message*|image or video|
 
 ### Twitter
 
@@ -210,6 +219,8 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 #### Options
 
+|name|type|required|description|
+|:---|:---|:---:|:---|
 |**message**|`string`|&times;|new tweet message|
 |**media**|`string`|&minus;|image or video|
 
