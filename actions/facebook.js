@@ -85,7 +85,7 @@ function handlePostRequest ({message, media}, resolve, reject) {
   const reHTTP = /^https?:\/\//i
   const reBase64 = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
 
-  if (media) {
+  if (isMedia) {
     if (reHTTP.test(media)) {
       datas.URL = media
     } else if (reBase64.test(media)) {
