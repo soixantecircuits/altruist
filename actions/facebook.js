@@ -91,23 +91,23 @@ function auth () {
 }
 
 function run (options, request) {
-  if (facebookSession.userAccessToken == undefined) {
+  if (facebookSession.userAccessToken === undefined) {
     return new Promise((resolve, reject) => {
       return reject({ 'error': 'invalid TOKEN', 'details': 'No facebook user access token found in local storage. Please log in at "/login/facebook".' })
     })
-  } else if ((options.message == undefined || options.message === '') && (options.pictureUrl == undefined || options.pictureUrl === '')) {
+  } else if ((options.message === undefined || options.message === '') && (options.pictureUrl === undefined || options.pictureUrl === '')) {
     return new Promise((resolve, reject) => {
       return reject({ 'error': 'invalid argument', 'details': 'No message or picture in facebook POST request.' })
     })
   }
 
   return new Promise((resolve, reject) => {
-    pageId = pageId != undefined ? `${pageId}` : ''
+    pageId = pageId !== undefined ? `${pageId}` : ''
     graph.setAccessToken(facebookSession.userAccessToken)
     currentId = facebookSession.userProfile.id
 
     if (pageId !== '') {
-      if (facebookSession.pageAccessToken == undefined) {
+      if (facebookSession.pageAccessToken === undefined) {
         getPageToken(options, resolve, reject, (options, resolve, reject) => {
           graph.setAccessToken(facebookSession.pageAccessToken)
           currentId = pageId
