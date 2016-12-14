@@ -3,10 +3,8 @@
 const passport = require('passport')
 const FacebookStrategy = require('passport-facebook').Strategy
 const fb = require('fb')
-const app = require('../src/index').app
-const localStorage = require('../src/index').localStorage
-
 const config = require('../src/lib/config')
+const localStorage = require('../src/lib/localStorage')
 
 const session = localStorage.getItem('facebookSession')
 const facebookSession = session ? JSON.parse(session) : {}
@@ -99,27 +97,28 @@ function postUploadedPicture (objectID, pictureData, postMessage, resolve, rejec
   })
 }
 
-function auth () {
+function auth (app) {
   passport.use(new FacebookStrategy({
     clientID: config.actions.facebook.appID,
     clientSecret: config.actions.facebook.appSecret,
     callbackURL: config.actions.facebook.callbackURL
-  },
-    function (accessToken, refreshToken, profile, done) {
-      storeUserAccessToken(accessToken)
-      storeUserProfile(profile)
-      return done(null, profile)
-    }
-  ))
+  }, function (accessToken, refreshToken, profile, done) {
+    storeUserAccessToken(accessToken)
+    storeUserProfile(profile)
+    return done(null, profile)
+  }))
 
-  app.get(config.actions.facebook.loginURL, passport.authenticate('facebook', { scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions'] }))
-  app.get(config.actions.facebook.callbackURL, passport.authenticate('facebook', { failureRedirect: config.actions.facebook.failureURL })
-    , function (req, res) {
-      storeUserProfile(req.user)
-      getPagesList(() => {
-        res.redirect(config.actions.facebook.successURL)
-      })
+  app.get(config.actions.facebook.loginURL, passport.authenticate('facebook', {
+    scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions']
+  }))
+  app.get(config.actions.facebook.callbackURL, passport.authenticate('facebook', {
+    failureRedirect: config.actions.facebook.failureURL
+  }), function (req, res) {
+    storeUserProfile(req.user)
+    getPagesList(() => {
+      res.redirect(config.actions.facebook.successURL)
     })
+  })
 }
 
 function run (options, request) {

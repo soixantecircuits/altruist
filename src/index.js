@@ -8,14 +8,9 @@ const bodyparser = require('body-parser')
 const fs = require('fs-extra')
 const cors = require('cors')
 const passport = require('passport')
-const LocalStorage = require('node-localstorage').LocalStorage
-
-const localStorage = new LocalStorage(config.storageDir)
-exports.localStorage = localStorage
 
 const router = express.Router()
 const app = express()
-exports.app = app
 
 const authRedirect = []
 
@@ -56,7 +51,7 @@ for (let action in config.actions) {
   const modulePath = `${process.cwd()}/actions/${action}.js`
   fs.access(modulePath, (err) => {
     const module = require(modulePath)
-    typeof (module.auth) === 'function' && module.auth()
+    typeof (module.auth) === 'function' && module.auth(app)
     typeof (module.redirectURL) === 'string' && authRedirect.push({ name: action, URL: module.redirectURL })
     router.post(`/actions/${action}`, (req, res) => {
       if (err) {
