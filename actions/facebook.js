@@ -126,5 +126,6 @@ function run (options, request) {
 
 module.exports = {
   auth,
-  run
+  run,
+  redirectURL: '/login/facebook'
 }

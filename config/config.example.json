@@ -1,4 +1,6 @@
 {
+  "storageDir": "./scratch",
+  "secret": "my-secret",
   "server": {
     "port": 6060
   },
