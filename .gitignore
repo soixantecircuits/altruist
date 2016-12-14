@@ -111,6 +111,9 @@ jspm_packages
 # Yarn Integrity file
 .yarn-integrity
 
+# VS Code
+.vscode/*
+
 config/*.json
 !config/config.example.json
 mock/fakedata.json
