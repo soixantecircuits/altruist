@@ -1,17 +1,17 @@
 'use strict'
 
 const app = require('../src/index').app
-var localStorage = require('../src/index').localStorage
+const localStorage = require('../src/index').localStorage
 const passport = require('passport')
 const FacebookStrategy = require('passport-facebook').Strategy
 
 const graph = require('fbgraph')
 const config = require('../src/lib/config')
 
-var facebookSession = localStorage.getItem('facebookSession')
-facebookSession = facebookSession != undefined ? JSON.parse(facebookSession) : {}
-var pageId = config.actions.facebook.pageId
-var currentId
+const session = localStorage.getItem('facebookSession')
+const facebookSession = session ? JSON.parse(session) : {}
+let pageId = config.actions.facebook.pageId
+let currentId = null
 
 function saveSession () {
   localStorage.setItem('facebookSession', JSON.stringify(facebookSession))
@@ -33,10 +33,11 @@ function storeUserProfile (profile) {
 }
 
 function handlePostRequest (options, resolve, reject) {
-  if (options.pictureUrl != undefined && options.pictureUrl !== '') {
-    postPictureFromUrl(currentId, options.pictureUrl, options.message != undefined ? options.message : '', resolve, reject)
-  } else {
-    postMessage(currentId, options.message, resolve, reject)
+  const message = options.message || ''
+  if (options.pictureUrl) {
+    postPictureFromUrl(currentId, options.pictureUrl, message, resolve, reject)
+  } else if (message.length) {
+    postMessage(currentId, message, resolve, reject)
   }
 }
 
@@ -124,8 +125,6 @@ function run (options, request) {
 }
 
 module.exports = {
-  auth: auth,
-  run: run,
-  FacebookStrategy: FacebookStrategy,
-  facebookSession: facebookSession
+  auth,
+  run
 }
