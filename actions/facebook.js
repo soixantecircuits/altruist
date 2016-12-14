@@ -38,8 +38,6 @@ function setCurrent (ID, token) {
 }
 
 function getPagesList (callback) {
-  fb.setAccessToken(facebookSession.userAccessToken)
-
   fb.api('/me/accounts', (res) => {
     if (res && !res.error) {
       facebookSession.userAccounts = res.data
@@ -129,11 +127,15 @@ function auth (app) {
     failureRedirect: failureURL
   }), (req, res) => {
     storeUserProfile(req.user)
-    getPagesList(() => {
-      const id = config.actions.facebook.pageID || facebookSession.userProfile.ID
-      setID(id)
-      res.redirect(successURL)
-    })
+    if (config.actions.facebook.pageID) {
+      getPagesList(() => {
+        const id = config.actions.facebook.pageID || facebookSession.userProfile.ID
+        setID(id)
+        res.redirect(successURL)
+      })
+    } else {
+      setID(req.user.id)
+    }
   })
 }
 
