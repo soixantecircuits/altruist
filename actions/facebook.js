@@ -105,9 +105,9 @@ function handlePostRequest ({message, media}, resolve, reject) {
 
   fb.api(`/${currentID}/${isMedia ? mediaType : 'feed'}`, 'post', datas, (res) => {
     if (!res || res.error) {
-      return reject(res.error ? res.error : 'An error occured while posting.')
+      reject(res.error ? res.error : 'An error occured while posting.')
     }
-    return resolve(res)
+    resolve(res)
   })
 }
 
@@ -119,7 +119,7 @@ function auth (app) {
   }, function (accessToken, refreshToken, profile, done) {
     storeUserAccessToken(accessToken)
     storeUserProfile(profile)
-    return done(null, profile)
+    done(null, profile)
   }))
 
   app.get(loginURL, passport.authenticate('facebook', {
@@ -138,33 +138,29 @@ function auth (app) {
 }
 
 function run (options, request) {
-  if (!facebookSession || !facebookSession.userAccessToken) {
-    return new Promise((resolve, reject) => {
-      return reject({
+  return new Promise((resolve, reject) => {
+    if (!facebookSession || !facebookSession.userAccessToken) {
+      reject({
         error: 'invalid TOKEN',
         details: 'No facebook user access token found in local storage. Please log in at "/login/facebook".'
       })
-    })
-  } else if ((!options.message || options.message === '') && (!options.media || options.media === '') && !request.file) {
-    return new Promise((resolve, reject) => {
-      return reject({
+    } else if ((!options.message || options.message === '') && (!options.media || options.media === '') && !request.file) {
+      reject({
         error: 'invalid argument',
         details: 'No message or media in facebook POST request.'
       })
-    })
-  }
-
-  // If multer detects a file upload, get the first file and set options to upload to facebook
-  if (request.files && request.files.file) {
-    options.media = {
-      isBinary: true,
-      filename: request.files.file[0].originalname,
-      data: request.files.file[0].buffer,
-      contentType: request.files.file[0].mimetype
     }
-  }
 
-  return new Promise((resolve, reject) => {
+    // If multer detects a file upload, get the first file and set options to upload to facebook
+    if (request.files && request.files.file) {
+      options.media = {
+        isBinary: true,
+        filename: request.files.file[0].originalname,
+        data: request.files.file[0].buffer,
+        contentType: request.files.file[0].mimetype
+      }
+    }
+
     handlePostRequest(options, resolve, reject)
   })
 }
