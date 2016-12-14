@@ -16,7 +16,10 @@
     "facebook": {
       "appId": "",
       "appSecret": "",
-      "pageId": ""
+      "loginUrl": "/login/facebook",
+      "callbackUrl": "/login/facebook/return",
+      "failureUrl": "/",
+      "successUrl": "/"
     }
   }
 }
