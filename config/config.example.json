@@ -1,4 +1,6 @@
 {
+  "storageDir": "./storage",
+  "secret": "my-secret",
   "server": {
     "port": 6060
   },
@@ -14,12 +16,19 @@
       "template": "altruist-test"
     },
     "facebook": {
-      "appId": "",
-      "appSecret": "",
-      "loginUrl": "/login/facebook",
-      "callbackUrl": "/login/facebook/return",
-      "failureUrl": "/",
-      "successUrl": "/"
+      "appID": "abcd-xyz",
+      "appSecret": "shhh",
+      "loginURL": "/login/facebook", // optionnal, this is default
+      "callbackURL": "/login/facebook/return", // optionnal, this is default
+      "failureURL": "/?failure=facebook", // optionnal, this is default
+      "successURL": "/?success=facebook", // optionnal, this is default
+      "pageID": "" // optionnal
+    },
+    "twitter": {
+      "consumer_key": "<your_consumer_key>",
+      "consumer_secret": "<your_consumer_secret>",
+      "access_token": "<your_access_token>",
+      "access_token_secret": "<your_access_token_secret>"
     }
   }
 }

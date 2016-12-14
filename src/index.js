@@ -1,5 +1,7 @@
 'use strict'
 
+const config = require('./lib/config')
+
 const express = require('express')
 const morgan = require('morgan')
 const bodyparser = require('body-parser')
@@ -7,28 +9,28 @@ const fs = require('fs-extra')
 const cors = require('cors')
 const passport = require('passport')
 const LocalStorage = require('node-localstorage').LocalStorage
-var localStorage = new LocalStorage('./storage/')
+
+const localStorage = new LocalStorage(config.storageDir)
 exports.localStorage = localStorage
-const multer = require('multer')
-const upload = multer({ storage: multer.memoryStorage() })
-const config = require('./lib/config')
 
 const router = express.Router()
 const app = express()
 exports.app = app
 
+const authRedirect = []
+
 const version = 'v1'
 
-app.use(morgan('dev'))
+const multer = require('multer')
+const upload = multer({ storage: multer.memoryStorage() })
 
+app.use(morgan('dev'))
 app.use(cors())
 app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: true }))
 app.use(upload.fields([{ name: 'file' }]))
 app.use(require('cookie-parser')())
-
-app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }))
-
+app.use(require('express-session')({ secret: config.secret, resave: true, saveUninitialized: true }))
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -45,25 +47,22 @@ app.use(`/api/${version}`, router)
 app.options('*', cors())
 
 app.use(`/api/${version}`, router)
-app.get('/', (req, res) => {
-  res.send('See https://github.com/soixantecircuits/altruist for details. <br> <a href="/login/facebook">Log in Facebook</a>')
-})
-
-// Route facebook login
-require(`${process.cwd()}/actions/facebook`).auth()
 
 router.get('/status', (req, res) => {
   res.send('up')
 })
 
 for (let action in config.actions) {
-  const module = `${process.cwd()}/actions/${action}.js`
-  router.post(`/actions/${action}`, (req, res) => {
-    fs.access(module, (err) => {
+  const modulePath = `${process.cwd()}/actions/${action}.js`
+  fs.access(modulePath, (err) => {
+    const module = require(modulePath)
+    typeof (module.auth) === 'function' && module.auth()
+    typeof (module.redirectURL) === 'string' && authRedirect.push({ name: action, URL: module.redirectURL })
+    router.post(`/actions/${action}`, (req, res) => {
       if (err) {
         res.status(404).send('No such action.')
       } else {
-        require(module).run(req.body, req)
+        module.run(req.body, req)
           .then(response => res.send(response))
           .catch(reason => {
             console.log(reason)
@@ -73,6 +72,17 @@ for (let action in config.actions) {
     })
   })
 }
+
+app.get('/', (req, res) => {
+  res.send(`
+    <h1>Altruist</h1>
+    <h3>Available auth URLs:</h3>
+    <ul>
+      ${authRedirect.map(({name, URL}) => `<li><a href="${URL}">${name}</a></li>`).join('')}
+    </ul>
+    <p><small>Go to the <a href="https://github.com/soixantecircuits/altruist" target="_blank">Altruist GitHub</a> for more details.</small></p>
+  `)
+})
 
 app.listen(config.server.port, () => {
   console.log(`altruist running on: http://localhost:${config.server.port} with actions: [ ${Object.keys(config.actions)} ]`)

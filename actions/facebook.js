@@ -4,12 +4,13 @@ const passport = require('passport')
 const FacebookStrategy = require('passport-facebook').Strategy
 const fb = require('fb')
 const app = require('../src/index').app
-var localStorage = require('../src/index').localStorage
+const localStorage = require('../src/index').localStorage
 
 const config = require('../src/lib/config')
 
-var facebookSession = localStorage.getItem('facebookSession')
-facebookSession = facebookSession ? JSON.parse(facebookSession) : {}
+const session = localStorage.getItem('facebookSession')
+const facebookSession = session ? JSON.parse(session) : {}
+let currentID = null
 
 function saveSession () {
   localStorage.setItem('facebookSession', JSON.stringify(facebookSession))
@@ -39,41 +40,40 @@ function getPagesList (callback) {
   })
 }
 
-function setCurrentId (newId) {
-  facebookSession.currentId = newId
+function setCurrentID (newID) {
+  facebookSession.currentID = newID
   saveSession()
 }
 
-// Set the currentId and the current access token according to newId
-function switchToId (newId) {
-  if (newId === 'me') {
-    setCurrentId(facebookSession.userProfile.id)
+// Set the currentID and the current access token according to newId
+function switchToID (newID) {
+  if (newID === 'me') {
+    setCurrentID(facebookSession.userProfile.ID)
     fb.setAccessToken(facebookSession.userAccessToken)
   } else {
     for (var i = 0; i < facebookSession.userAccounts.length; ++i) {
-      if (facebookSession.userAccounts[i].id === newId) {
-        setCurrentId(newId)
+      if (facebookSession.userAccounts[i].ID === newID) {
+        setCurrentID(newID)
         return fb.setAccessToken(facebookSession.userAccounts[i].access_token)
       }
     }
   }
-  // If newId was not found in facebookSession.userAccounts, assume it is the user's id
-  setCurrentId(newId)
+  // If newID was not found in facebookSession.userAccounts, assume it is the user's ID
+  setCurrentID(newID)
   fb.setAccessToken(facebookSession.userAccessToken)
 }
 
 function handlePostRequest (options, resolve, reject) {
-  if (options.pictureUrl && options.pictureUrl !== '') {
-    postPictureFromUrl(facebookSession.currentId, options.pictureUrl, options.message ? options.message : '', resolve, reject)
-  } else if (options.message && options.message !== '') {
-    postMessage(facebookSession.currentId, options.message, resolve, reject)
-  } else {
-    postUploadedPicture(facebookSession.currentId, options, options.caption, resolve, reject)
+  const message = options.message || ''
+  if (options.pictureURL) {
+    postPictureFromURL(currentID, options.pictureURL, message, resolve, reject)
+  } else if (message.length) {
+    postMessage(currentID, message, resolve, reject)
   }
 }
 
-function postMessage (objectId, postMessage, resolve, reject) {
-  fb.api(`/${objectId}/feed`, 'post', { message: postMessage }, function (res) {
+function postMessage (objectID, postMessage, resolve, reject) {
+  fb.api(`/${objectID}/feed`, 'post', { message: postMessage }, function (res) {
     if (!res || res.error) {
       return reject(!res ? 'An error occured while posting a message.' : res.error)
     }
@@ -81,8 +81,8 @@ function postMessage (objectId, postMessage, resolve, reject) {
   })
 }
 
-function postPictureFromUrl (objectId, pictureUrl, postMessage, resolve, reject) {
-  fb.api(`/${objectId}/photos`, 'post', { url: pictureUrl, caption: postMessage }, function (res) {
+function postPictureFromURL (objectID, pictureURL, postMessage, resolve, reject) {
+  fb.api(`/${objectID}/photos`, 'post', { URL: pictureURL, caption: postMessage }, function (res) {
     if (!res || res.error) {
       return reject(!res ? 'An error occured while posting a picture.' : res.error)
     }
@@ -90,8 +90,8 @@ function postPictureFromUrl (objectId, pictureUrl, postMessage, resolve, reject)
   })
 }
 
-function postUploadedPicture (objectId, pictureData, postMessage, resolve, reject) {
-  fb.api(`/${objectId}/photos`, 'post', { source: { value: pictureData.data, options: { contentType: pictureData.contentType, filename: pictureData.filename } }, caption: postMessage }, function (res) {
+function postUploadedPicture (objectID, pictureData, postMessage, resolve, reject) {
+  fb.api(`/${objectID}/photos`, 'post', { source: { value: pictureData.data, options: { contentType: pictureData.contentType, filename: pictureData.filename } }, caption: postMessage }, function (res) {
     if (!res || res.error) {
       return reject(!res ? 'An error occured while uploading a picture.' : res.error)
     }
@@ -101,7 +101,7 @@ function postUploadedPicture (objectId, pictureData, postMessage, resolve, rejec
 
 function auth () {
   passport.use(new FacebookStrategy({
-    clientID: config.actions.facebook.appId,
+    clientID: config.actions.facebook.appID,
     clientSecret: config.actions.facebook.appSecret,
     callbackURL: config.actions.facebook.callbackURL
   },
@@ -112,12 +112,12 @@ function auth () {
     }
   ))
 
-  app.get(config.actions.facebook.loginUrl, passport.authenticate('facebook', { scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions'] }))
-  app.get(config.actions.facebook.callbackUrl, passport.authenticate('facebook', { failureRedirect: config.actions.facebook.failureUrl })
+  app.get(config.actions.facebook.loginURL, passport.authenticate('facebook', { scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions'] }))
+  app.get(config.actions.facebook.callbackURL, passport.authenticate('facebook', { failureRedirect: config.actions.facebook.failureURL })
     , function (req, res) {
       storeUserProfile(req.user)
       getPagesList(() => {
-        res.redirect(config.actions.facebook.successUrl)
+        res.redirect(config.actions.facebook.successURL)
       })
     })
 }
@@ -127,7 +127,7 @@ function run (options, request) {
     return new Promise((resolve, reject) => {
       return reject({ 'error': 'invalid TOKEN', 'details': 'No facebook user access token found in local storage. Please log in at "/login/facebook".' })
     })
-  } else if ((!options.message || options.message === '') && (!options.pictureUrl || options.pictureUrl === '') && !request.file) {
+  } else if ((!options.message || options.message === '') && (!options.pictureURL || options.pictureURL === '') && !request.file) {
     return new Promise((resolve, reject) => {
       return reject({ 'error': 'invalid argument', 'details': 'No message or picture in facebook POST request.' })
     })
@@ -144,17 +144,17 @@ function run (options, request) {
   }
 
   return new Promise((resolve, reject) => {
-    if (facebookSession.currentId) {
-      switchToId(facebookSession.currentId)
-    } else {
-      switchToId('me')
-    }
+    // if (facebookSession.currentID) {
+    //   switchToID(facebookSession.currentID)
+    // } else {
+    //   switchToID('me')
+    // }
     handlePostRequest(options, resolve, reject)
   })
 }
 
 module.exports = {
-  auth: auth,
-  run: run,
-  switchToId: switchToId
+  auth,
+  run,
+  redirectURL: config.actions.facebook.loginURL
 }

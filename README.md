@@ -60,7 +60,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
   "email": "me@example.com",
   "fname": "John",
   "lname": "Doe"
-}' "http://localhost:7070/api/v1/actions/mailchimp"
+}' "http://localhost:6060/api/v1/actions/mailchimp"
 ```
 
 #### Options
@@ -75,7 +75,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 ### Mandrill transactionnal emails
 
-### Setup
+#### Setup
 
 In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
 
@@ -108,7 +108,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
       }]
     }]
   }
-}' "http://localhost:7070/api/v1/actions/mandrill"
+}' "http://localhost:6060/api/v1/actions/mandrill"
 ```
 
 ```html
@@ -139,55 +139,86 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 ### Facebook user and page post
 
-#### Setup
-
 In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```js
 "actions": {
   "facebook": {
-    "appId": "abcd-xyz",
+    "appID": "abcd-xyz",
     "appSecret": "shhh",
-    "loginUrl": "/login/facebook",
-    "callbackUrl": "/login/facebook/return",
-    "failureUrl": "/",
-    "successUrl": "/"
+    "loginURL": "/login/facebook",
+    "callbackURL": "/login/facebook/return",
+    "failureURL": "/",
+    "successURL": "/",
+    "pageID": "" // optionnal
   }
 }
 ```
 
 #### Usage
 
-Before being able to post, you will need to log in facebook by going to the url matching `loginUrl` in your config file and authorizing the application.
+Before being able to post, you will need to log in facebook by going to the url matching `loginURL` in your config file and authorizing the application.
 When logged in, you can post on your feed using JSON or form-data :
 
 `POST /api/v1/actions/facebook`
 
 ```cURL
 curl -X POST -H "Content-Type: application/json" -d '{
-	"message": "Roses are red, I want my bed.",
-	"pictureUrl": "https://dncache-mauganscorp.netdna-ssl.com/thumbseg/1161/1161843-bigthumbnail.jpg"
+  "message": "Hello Facebook!",
+  "pictureURL": "http://example.com/my-image.jpg"
 }' "http://localhost:7070/api/v1/actions/facebook"
 ```
 
-```cURL
-curl -X POST -H "Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW"
- -F "message=Now you see me"
-  -F "file=@cool_cat.jpg"
-   "http://localhost:6060/api/v1/actions/facebook"
-```
-
-When you log in, an array of pages you manage is stored in `facebookSession.userAccounts`.
-You can switch the current used id to post on a page or on your feed by calling the funtion `switchToId(newId)` and it will set the access token accordingly.
-To switch back to your account, you can call `switchToId('me')` or just call it with you account's id.
+<!-- When you log in, an array of pages you manage is stored in `facebookSession.userAccounts`.
+You can switch the current used id to post on a page or on your feed by calling the funtion `switchToID(newId)` and it will set the access token accordingly.
+To switch back to your account, you can call `switchToID('me')` or just call it with you account's ID. -->
 
 #### Options
 
+_**Note**: MP4 files MUST be local files on your system (no url or base64)_
+
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**message**|`string`|required if no picture|message to post on your feed|
-|**pictureUrl**|`string`|required if no message and no image upload|url of the picture to post on your feed|
-|**file**|`file`|required if no pictureUrl and no message|picture to upload and post on your feed (Only in form-data)|
+|**message**|`string`|*if no picture*|message to post on your feed|
+|**pictureURL**|`string`|*if no message*|URL of the picture to post on your feed|
+
+### Twitter
+
+#### Setup
+
+In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+
+```json
+"actions": {
+  "twitter": {
+    "consumer_key": "<your_consumer_key>",
+    "consumer_secret": "<your_consumer_secret>",
+    "access_token": "<your_access_token>",
+    "access_token_secret": "<your_access_token_secret>"
+  }
+}
+```
+
+#### Usage
+
+```cURL
+curl -X POST -H "Content-Type: application/json" -d '{
+  "message": "Hello Twitter !",
+  "media": "/path/to/media"
+}' "http://localhost:6060/api/v1/actions/twitter"
+```
+
+#### Options
+
+|**message**|`string`|&times;|new tweet message|
+|**media**|`string`|&minus;|image or video|
+
+The 'media' option must be one of the following:
+ * path to a file on your system (example: `/path/to/image.png`)
+ * url (example: `http://some_site.com/image.png`)
+ * base64 encoded string
+
+Supported formats are **JPG**, **PNG**, **GIF**, **WEBP** (for images) and **MP4** (for videos)
 
 ## Contribute
 
