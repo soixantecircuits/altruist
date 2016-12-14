@@ -79,40 +79,42 @@ function handleLocalFile (message, media) {
   })
 }
 
-module.exports = (options) => {
-  return new Promise((resolve, reject) => {
-    // The 'message' field has to be defined in request
-    if (options.message === undefined || options.message === '') {
-      reject('Error: No text message in request')
-    }
-    // Supported formats: JPG, PNG, GIF, WEBP, MP4
-    if (options.media !== undefined && options.media !== '') {
-      // Regular expressions to match base64 or http url
-      var base64Match = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
-      var httpMatch = /^https?:\/\//i
-      if (base64Match.test(options.media)) {
-        // Base64 string
-        uploadImage(options.message, options.media)
-          .then(response => resolve(response))
-          .catch(error => reject(error))
-      } else if (httpMatch.test(options.media)) {
-        // HTTP URL
-        handleHttpUrl(options.message, options.media)
-          .then(response => resolve(response))
-          .catch(error => reject(error))
-      } else if (fs.existsSync(options.media)) {
-        // Filesystem path
-        handleLocalFile(options.message, options.media)
-          .then(response => resolve(response))
-          .catch(error => reject(error))
-      } else {
-        reject('Error: media request not well formated')
+module.exports = {
+  run: (options) => {
+    return new Promise((resolve, reject) => {
+      // The 'message' field has to be defined in request
+      if (options.message === undefined || options.message === '') {
+        reject('Error: No text message in request')
       }
-    } else {
-      // Text-only tweet
-      updateStatus(options.message)
-        .then(response => resolve(response))
-        .catch(error => reject(error))
-    }
-  })
+      // Supported formats: JPG, PNG, GIF, WEBP, MP4
+      if (options.media !== undefined && options.media !== '') {
+        // Regular expressions to match base64 or http url
+        var base64Match = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
+        var httpMatch = /^https?:\/\//i
+        if (base64Match.test(options.media)) {
+          // Base64 string
+          uploadImage(options.message, options.media)
+            .then(response => resolve(response))
+            .catch(error => reject(error))
+        } else if (httpMatch.test(options.media)) {
+          // HTTP URL
+          handleHttpUrl(options.message, options.media)
+            .then(response => resolve(response))
+            .catch(error => reject(error))
+        } else if (fs.existsSync(options.media)) {
+          // Filesystem path
+          handleLocalFile(options.message, options.media)
+            .then(response => resolve(response))
+            .catch(error => reject(error))
+        } else {
+          reject('Error: media request not well formated')
+        }
+      } else {
+        // Text-only tweet
+        updateStatus(options.message)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      }
+    })
+  }
 }

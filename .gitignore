@@ -115,3 +115,4 @@ config/*.json
 !config/config.example.json
 mock/fakedata.json
 mock/fakedata.json
+scratch/*

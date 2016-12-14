@@ -5,11 +5,16 @@ const morgan = require('morgan')
 const bodyparser = require('body-parser')
 const fs = require('fs-extra')
 const cors = require('cors')
+const passport = require('passport')
+const LocalStorage = require('node-localstorage').LocalStorage
+var localStorage = new LocalStorage('./scratch')
+exports.localStorage = localStorage
 
 const config = require('./lib/config')
 
 const router = express.Router()
 const app = express()
+exports.app = app
 
 const version = 'v1'
 
@@ -20,15 +25,34 @@ app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: true }))
 const formdataParser = require('multer')().fields([])
 app.use(formdataParser)
+app.use(require('cookie-parser')())
+app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }))
+app.use(passport.initialize())
+app.use(passport.session())
+
+passport.serializeUser(function (user, cb) {
+  cb(null, user)
+})
+passport.deserializeUser(function (obj, cb) {
+  cb(null, obj)
+})
 
 app.use(`/api/${version}`, router)
 
 // Support pre-flight https://github.com/expressjs/cors#enabling-cors-pre-flight
 app.options('*', cors())
 
-app.get('/', (req, res) => { res.send('See https://github.com/soixantecircuits/altruist for details.') })
+app.use(`/api/${version}`, router)
+app.get('/', (req, res) => {
+  res.send('See https://github.com/soixantecircuits/altruist for details. <br> <a href="/login/facebook">Log in Facebook</a>')
+})
 
-router.get('/status', (req, res) => { res.send('up') })
+// Route facebook login
+require(`${process.cwd()}/actions/facebook`).auth()
+
+router.get('/status', (req, res) => {
+  res.send('up')
+})
 
 for (let action in config.actions) {
   const module = `${process.cwd()}/actions/${action}.js`
@@ -37,7 +61,7 @@ for (let action in config.actions) {
       if (err) {
         res.status(404).send('No such action.')
       } else {
-        require(module)(req.body)
+        require(module).run(req.body, req)
           .then(response => res.send(response))
           .catch(reason => {
             console.log(reason)

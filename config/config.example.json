@@ -12,6 +12,17 @@
       "from": "Altruist 🚀 <altruist@example.com>",
       "subject": "Altruist",
       "template": "altruist-test"
+    },
+    "facebook": {
+      "appId": "",
+      "appSecret": "",
+      "pageId": ""
+    },
+    "twitter": {
+      "consumer_key": "<your_consumer_key>",
+      "consumer_secret": "<your_consumer_secret>",
+      "access_token": "<your_access_token>",
+      "access_token_secret": "<your_access_token_secret>"
     }
   }
 }
