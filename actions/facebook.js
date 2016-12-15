@@ -5,7 +5,7 @@ const FacebookStrategy = require('passport-facebook').Strategy
 const FB = require('fb')
 const fb = new FB.Facebook()
 const config = require('../src/lib/config')
-const localStorage = require('../src/lib/localStorage')
+const localStorage = require('../src/lib/localstorage')
 
 const session = localStorage.getItem('facebook-session')
 const facebookSession = session ? JSON.parse(session) : {}
@@ -51,7 +51,7 @@ function getPagesList (callback) {
 
 // Set the currentID and the current access token according to newID
 function setID (newID) {
-  if (newID === facebookSession.userProfile.ID) {
+  if (newID === facebookSession.userProfile.id || newID === 'me') {
     setCurrent('me', facebookSession.userAccessToken)
   } else {
     facebookSession.userAccounts.forEach((account) => {
@@ -85,7 +85,7 @@ function handlePostRequest ({message, media}, resolve, reject) {
 
   if (isMedia) {
     if (reHTTP.test(media)) {
-      datas.URL = media
+      datas.url = media
     } else if (reBase64.test(media)) {
       // ???
     } else if (media.isBinary) {
@@ -113,8 +113,7 @@ function auth (app) {
   passport.use(new FacebookStrategy({
     clientID: config.actions.facebook.appID,
     clientSecret: config.actions.facebook.appSecret,
-    callbackURL
-  }, function (accessToken, refreshToken, profile, done) {
+  callbackURL}, function (accessToken, refreshToken, profile, done) {
     storeUserAccessToken(accessToken)
     storeUserProfile(profile)
     done(null, profile)
@@ -129,13 +128,13 @@ function auth (app) {
     storeUserProfile(req.user)
     if (config.actions.facebook.pageID) {
       getPagesList(() => {
-        const id = config.actions.facebook.pageID || facebookSession.userProfile.ID
+        const id = config.actions.facebook.pageID || facebookSession.userProfile.id
         setID(id)
-        res.redirect(successURL)
       })
     } else {
       setID(req.user.id)
     }
+    res.redirect(successURL)
   })
 }
 
@@ -163,6 +162,7 @@ function run (options, request) {
       }
     }
 
+    setID(facebookSession.currentID)
     handlePostRequest(options, resolve, reject)
   })
 }
@@ -170,5 +170,4 @@ function run (options, request) {
 module.exports = {
   loginURL,
   auth,
-  run
-}
+run}
