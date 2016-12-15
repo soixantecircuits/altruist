@@ -38,8 +38,11 @@ function setCurrent (ID, token) {
 }
 
 function getPagesList (callback) {
+  var lastID = facebookSession.currentID
+  setID('me')
   fb.api('/me/accounts', (res) => {
     if (res && !res.error) {
+      setID(lastID)
       facebookSession.userAccounts = res.data
       saveSession()
     } else {
@@ -116,7 +119,9 @@ function auth (app) {
   callbackURL}, function (accessToken, refreshToken, profile, done) {
     storeUserAccessToken(accessToken)
     storeUserProfile(profile)
-    done(null, profile)
+    getPagesList(() => {
+      done(null, profile)
+    })
   }))
 
   app.get(loginURL, passport.authenticate('facebook', {
@@ -127,10 +132,8 @@ function auth (app) {
   }), (req, res) => {
     storeUserProfile(req.user)
     if (config.actions.facebook.pageID) {
-      getPagesList(() => {
-        const id = config.actions.facebook.pageID || facebookSession.userProfile.id
-        setID(id)
-      })
+      const id = config.actions.facebook.pageID || facebookSession.userProfile.id
+      setID(id)
     } else {
       setID(req.user.id)
     }
@@ -153,12 +156,12 @@ function run (options, request) {
     }
 
     // If multer detects a file upload, get the first file and set options to upload to facebook
-    if (request.files && request.files.file) {
+    if (request.files && request.files[0]) {
       options.media = {
         isBinary: true,
-        filename: request.files.file[0].originalname,
-        data: request.files.file[0].buffer,
-        contentType: request.files.file[0].mimetype
+        filename: request.files[0].originalname,
+        data: request.files[0].buffer,
+        contentType: request.files[0].mimetype
       }
     }
 
