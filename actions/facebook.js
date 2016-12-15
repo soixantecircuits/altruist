@@ -67,7 +67,7 @@ function setID (newID) {
 function getMediaType (media) {
   if (media) {
     if (media.isBinary) {
-      return media.contentType.indexOf(/video/gi) > 0 ? 'videos' : 'photos'
+      return media.contentType.search(/video/gi) > -1 ? 'videos' : 'photos'
     } else {
       // this will only match filepath, but since there's no such things as base64 videos it's no issue
       return /(\.mov|\.mpe?g?4?|\.wmv)/gi.test(media) ? 'videos' : 'photos'
@@ -81,14 +81,14 @@ function handlePostRequest ({message, media}, resolve, reject) {
   const isMedia = (media)
   const mediaType = getMediaType(media)
   const datas = {}
-  datas[isMedia ? 'caption' : 'message'] = message
+  datas[isMedia ? (mediaType === 'videos' ? 'description' : 'caption') : 'message'] = message
 
   const reHTTP = /^https?:\/\//i
   const reBase64 = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
 
   if (isMedia) {
     if (reHTTP.test(media)) {
-      datas.url = media
+      mediaType === 'videos' ? datas.file_url = media : datas.url = media
     } else if (reBase64.test(media)) {
       // ???
     } else if (media.isBinary) {

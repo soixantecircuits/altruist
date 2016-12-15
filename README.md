@@ -176,15 +176,13 @@ The 'media' option must be one of the following:
 
 Supported formats are **JPG**, **PNG**, **GIF**, **WEBP** (for images) and **MOV**, **WMV** or **MP4** (for videos)
 
-*Note: For videos, there are no caption for now.*
-
 <!-- When you log in, an array of pages you manage is stored in `facebookSession.userAccounts`.
-You can switch the current used id to post on a page or on your feed by calling the funtion `switchToID(newId)` and it will set the access token accordingly.
+You can switch the current used id to post on a page or on your feed by calling the function `switchToID(newId)` and it will set the access token accordingly.
 To switch back to your account, you can call `switchToID('me')` or just call it with you account's ID. -->
 
 #### Options
 
-_**Note**: MP4 files MUST be local files on your system (no url or base64)_
+_**Note**: MP4 files MUST be local files on your system or url (no base64)_
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
