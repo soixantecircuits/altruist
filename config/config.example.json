@@ -22,6 +22,8 @@
       "callbackURL": "/login/facebook/return", // optionnal, this is default
       "failureURL": "/?failure=facebook", // optionnal, this is default
       "successURL": "/?success=facebook", // optionnal, this is default
+      "profileURL": "/profile/facebook", // optional, this is default
+      "accountsURL": "/accounts/facebook", // optional, this is default
       "pageID": "" // optionnal
     },
     "twitter": {

@@ -146,6 +146,22 @@ function auth (app) {
   })
 }
 
+function addRoutes (app) {
+  app.get(profileURL, (req, res) => {
+    res.send(Object.keys(userProfile).length !== 0 ? userProfile : {
+      error: 'not logged in',
+      details: 'userProfile has not been set. Please log in.'
+    })
+  })
+
+  app.get(accountsURL, (req, res) => {
+    res.send(Object.keys({userAccounts}).length !== 0 ? userAccounts : {
+      error: 'not logged in',
+      details: 'userAccounts has not been set. Please log in.'
+    })
+  })
+}
+
 function run (options, request) {
   return new Promise((resolve, reject) => {
     if (!facebookSession || !facebookSession.userAccessToken) {
@@ -178,4 +194,5 @@ function run (options, request) {
 module.exports = {
   loginURL,
   auth,
+  addRoutes,
 run}

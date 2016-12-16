@@ -52,6 +52,7 @@ for (let action in config.actions) {
   fs.access(modulePath, (err) => {
     const module = require(modulePath)
     typeof (module.auth) === 'function' && module.auth(app)
+    typeof (module.addRoutes) === 'function' && module.addRoutes(app)
     typeof (module.loginURL) === 'string' && authRedirect.push({ name: action, URL: module.loginURL })
     router.post(`/actions/${action}`, (req, res) => {
       if (err) {

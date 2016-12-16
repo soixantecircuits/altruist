@@ -150,6 +150,8 @@ In your `config.json` file, you'll need to add the following configuration objec
     "callbackURL": "/login/facebook/return",
     "failureURL": "/",
     "successURL": "/",
+    "profileURL": "/profile/facebook",
+    "accountsURL": "/accounts/facebook",
     "pageID": "" // optionnal
   }
 }
@@ -176,8 +178,35 @@ The 'media' option must be one of the following:
 
 Supported formats are **JPG**, **PNG**, **GIF**, **WEBP** (for images) and **MOV**, **WMV** or **MP4** (for videos)
 
-<!-- When you log in, an array of pages you manage is stored in `facebookSession.userAccounts`.
-You can switch the current used id to post on a page or on your feed by calling the function `switchToID(newId)` and it will set the access token accordingly.
+You can get your profile's informations and a list of accounts (like pages) you manage by sending a GET request to urls matching respectively `profileURL` and `accountsURL`.
+You will be returned JSON object containing the datas requested.
+
+`GET /profileURL`
+```json
+{
+  "id": "xxx",
+  "displayName": "xxx",
+  "name": {}
+}
+```
+
+`GET /accountsURL`
+```json
+{
+  [
+    {
+      "access_token": "xxx",
+      "category": "xxx",
+      "name": "xxx",
+      "id": "xxx",
+      "perms": []
+    }
+  ]
+}
+```
+
+<!-- When you log in, an array of pages you manage is stored in `userAccounts`.
+You can switch the current used id to post on a page or on your feed by calling the function `setID(newId)` and it will set the access token accordingly.
 To switch back to your account, you can call `switchToID('me')` or just call it with you account's ID. -->
 
 #### Options
