@@ -2,19 +2,21 @@
 
 const passport = require('passport')
 const FacebookStrategy = require('passport-facebook').Strategy
-const FB = require('fb')
-const fb = new FB.Facebook()
+var fb = new require('fb')
 const config = require('../src/lib/config')
 const localStorage = require('../src/lib/localstorage')
 
-const session = localStorage.getItem('facebook-session')
-const facebookSession = session ? JSON.parse(session) : {}
+let facebookSession = JSON.parse(localStorage.getItem('facebook-session')) || {}
+let userProfile = JSON.parse(localStorage.getItem('user-profile')) || {}
+let userAccounts = JSON.parse(localStorage.getItem('user-accounts')) || {}
 let currentID = facebookSession.currentID
 
 const callbackURL = config.actions.facebook.callbackURL || '/login/facebook'
 const loginURL = config.actions.facebook.loginURL || '/login/facebook/return'
 const failureURL = config.actions.facebook.failureURL || '/?failure=facebook'
 const successURL = config.actions.facebook.successURL || '/?success=facebook'
+const profileURL = config.actions.facebook.profileURL || '/profile/facebook'
+const accountsURL = config.actions.facebook.accountsURL || '/accounts/facebook'
 
 function saveSession () {
   localStorage.setItem('facebook-session', JSON.stringify(facebookSession))
@@ -26,8 +28,13 @@ function storeUserAccessToken (token) {
 }
 
 function storeUserProfile (profile) {
-  facebookSession.userProfile = profile
-  saveSession()
+  userProfile = profile
+  localStorage.setItem('user-profile', JSON.stringify(userProfile))
+}
+
+function storeUserAccounts (accounts) {
+  userAccounts = accounts
+  localStorage.setItem('user-accounts', JSON.stringify(userAccounts))
 }
 
 function setCurrent (ID, token) {
@@ -43,8 +50,7 @@ function getPagesList (callback) {
   fb.api('/me/accounts', (res) => {
     if (res && !res.error) {
       setID(lastID)
-      facebookSession.userAccounts = res.data
-      saveSession()
+      storeUserAccounts(res.data)
     } else {
       console.log(!res ? 'An error occured while getting accounts' : res.error)
     }
@@ -54,10 +60,10 @@ function getPagesList (callback) {
 
 // Set the currentID and the current access token according to newID
 function setID (newID) {
-  if (newID === facebookSession.userProfile.id || newID === 'me') {
+  if (newID === userProfile.id || newID === 'me') {
     setCurrent('me', facebookSession.userAccessToken)
   } else {
-    facebookSession.userAccounts.forEach((account) => {
+    userAccounts.forEach((account) => {
       ;(account.id === newID) && setCurrent(newID, account.access_token)
     })
   }
@@ -132,8 +138,7 @@ function auth (app) {
   }), (req, res) => {
     storeUserProfile(req.user)
     if (config.actions.facebook.pageID) {
-      const id = config.actions.facebook.pageID || facebookSession.userProfile.id
-      setID(id)
+      setID(config.actions.facebook.pageID)
     } else {
       setID(req.user.id)
     }
@@ -144,12 +149,12 @@ function auth (app) {
 function run (options, request) {
   return new Promise((resolve, reject) => {
     if (!facebookSession || !facebookSession.userAccessToken) {
-      reject({
+      return reject({
         error: 'invalid TOKEN',
-        details: 'No facebook user access token found in local storage. Please log in at "/login/facebook".'
+        details: `No facebook user access token found in local storage. Please log in at ${loginURL}.`
       })
     } else if ((!options.message || options.message === '') && (!options.media || options.media === '') && !request.file) {
-      reject({
+      return reject({
         error: 'invalid argument',
         details: 'No message or media in facebook POST request.'
       })
