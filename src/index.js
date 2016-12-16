@@ -12,6 +12,7 @@ const passport = require('passport')
 const router = express.Router()
 const app = express()
 
+const authRedirectURL = config.authRedirectURL ? config.authRedirectURL : '/authRedirect'
 const authRedirect = []
 
 const version = 'v1'
@@ -52,8 +53,8 @@ for (let action in config.actions) {
   fs.access(modulePath, (err) => {
     const module = require(modulePath)
     typeof (module.auth) === 'function' && module.auth(app)
-    typeof (module.addRoutes) === 'function' && module.addRoutes(app)
     typeof (module.loginURL) === 'string' && authRedirect.push({ name: action, URL: module.loginURL })
+    typeof (module.addRoutes) === 'function' && module.addRoutes(app)
     router.post(`/actions/${action}`, (req, res) => {
       if (err) {
         res.status(404).send('No such action.')
@@ -69,15 +70,13 @@ for (let action in config.actions) {
   })
 }
 
+app.get(authRedirectURL, (req, res) => {
+  res.send({ 'map': authRedirect })
+})
+
 app.get('/', (req, res) => {
   res.send(`
     <h1>Altruist</h1>
-    <h3>Available auth URLs:</h3>
-    <small>${req.query.success ? `${req.query.success} auth success` : ''}</small>
-    <small>${req.query.failure ? `${req.query.failure} auth failure` : ''}</small>
-    <ul>
-      ${authRedirect.map(({name, URL}) => `<li><a href="${URL}">${name}</a></li>`).join('')}
-    </ul>
     <p><small>Go to the <a href="https://github.com/soixantecircuits/altruist" target="_blank">Altruist GitHub</a> for more details.</small></p>
   `)
 })

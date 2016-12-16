@@ -36,6 +36,9 @@ The API is in v1 so every routes is prefixed with v1`. You can find your actions
 
 ## Actions
 
+Some actions may require that you log in before using them.
+You can get a list of those actions with their login url by sending a GET request to the url matching `authRedirect` in the config file (`/authRedirect` by default).
+
 ### Mailchimp list subscription
 
 #### Setup
@@ -207,7 +210,7 @@ You will be returned JSON object containing the datas requested.
 
 <!-- When you log in, an array of pages you manage is stored in `userAccounts`.
 You can switch the current used id to post on a page or on your feed by calling the function `setID(newId)` and it will set the access token accordingly.
-To switch back to your account, you can call `switchToID('me')` or just call it with you account's ID. -->
+To switch back to your account, you can call `setID('me')` or just call it with you account's ID. -->
 
 #### Options
 

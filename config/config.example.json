@@ -1,5 +1,6 @@
 {
   "storageDir": "./storage",
+  "authRedirectURL": "/authRedirect", // optional, this is default
   "secret": "my-secret",
   "server": {
     "port": 6060
