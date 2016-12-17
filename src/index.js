@@ -5,8 +5,9 @@ const morgan = require('morgan')
 const bodyparser = require('body-parser')
 const fs = require('fs-extra')
 const cors = require('cors')
+const path = require('path')
 
-const config = require('./lib/config')
+const config = require(path.resolve(__dirname, './lib/config'))
 
 const router = express.Router()
 const app = express()
