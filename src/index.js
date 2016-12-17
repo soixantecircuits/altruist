@@ -32,7 +32,7 @@ app.get('/', (req, res) => { res.send('See https://github.com/soixantecircuits/a
 router.get('/status', (req, res) => { res.send('up') })
 
 for (let action in config.actions) {
-  const module = `${process.cwd()}/actions/${action}.js`
+  const module = path.resolve(`${__dirname}/../actions/${action}.js`)
   router.post(`/actions/${action}`, (req, res) => {
     fs.access(module, (err) => {
       if (err) {
