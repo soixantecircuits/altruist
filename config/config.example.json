@@ -32,6 +32,16 @@
       "consumer_secret": "<your_consumer_secret>",
       "access_token": "<your_access_token>",
       "access_token_secret": "<your_access_token_secret>"
+    },
+    "googledrive": {
+      "clientID": "xxxxxxxx",
+      "clientSecret": "xxxxxxxxxxxxxx",
+      "uploadDirectoryID": "", // optional
+      "loginURL": "/login/gdrive", // optional, this is default
+      "callbackURL": "/login/gdrive/return", // optional, this is default
+      "failureURL": "/?failure=drive", // optional, this is default
+      "successURL": "/?success=drive", // optional, this is default
+      "profileURL": "/profile/gdrive" // optional, this is default
     }
   }
 }
