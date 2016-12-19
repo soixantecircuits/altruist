@@ -246,6 +246,45 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 Only **JPG** files are supported for now
 
+### FTP / SFTP
+
+#### Setup
+
+In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+
+```json
+"actions": {
+  "ftp": {
+    "host": "127.0.0.1",
+    "port": 21,
+    "user": "user",
+    "password": "password"
+  },
+  "sftp": {
+    "host": "127.0.0.1",
+    "port": 22,
+    "user": "user",
+    "password": "password"
+  }
+}
+```
+
+#### Usage
+
+```cURL
+curl -X POST -H "Content-Type: application/json" -d '{
+  "source": "/path/to/local/file",
+  "destination": "/path/to/remote/file"
+}' "http://localhost:6060/api/v1/actions/(s)ftp"
+```
+
+#### Options
+
+|name|type|required|description|
+|:---|:---|:---:|:---|
+|**source**|`string`|&times;|local path to a file|
+|**destination**|`string`|&minus;|remote path to a file, default is your home directory (~)|
+
 ## Contribute
 
 Thanks for helping us! 👏
