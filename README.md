@@ -258,16 +258,12 @@ In your `config.json` file, you'll need to add the following configuration objec
     "host": "127.0.0.1",
     "port": 21,
     "user": "user",
-    "password": "password"
-  },
-  "sftp": {
-    "host": "127.0.0.1",
-    "port": 22,
-    "user": "user",
-    "password": "password"
+    "password": "password",
+    "ssh": false
   }
 }
 ```
+Set "ssh" to `true` if you want to use SFTP instead
 
 #### Usage
 
@@ -275,15 +271,15 @@ In your `config.json` file, you'll need to add the following configuration objec
 curl -X POST -H "Content-Type: application/json" -d '{
   "source": "/path/to/local/file",
   "destination": "/path/to/remote/file"
-}' "http://localhost:6060/api/v1/actions/(s)ftp"
+}' "http://localhost:6060/api/v1/actions/ftp"
 ```
 
 #### Options
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**source**|`string`|&times;|local path to a file|
-|**destination**|`string`|&minus;|remote path to a file, default is your home directory (~)|
+|**source**|`string`|&times;|absolute path to a local file|
+|**destination**|`string`|&times;|absolute path to a remote file|
 
 ## Contribute
 
