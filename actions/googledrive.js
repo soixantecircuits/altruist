@@ -5,6 +5,8 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy
 const config = require('../src/lib/config')
 const localStorage = require('../src/lib/localstorage')
 const google = require('googleapis')
+const mmmagic = require('mmmagic')
+const magic = new mmmagic.Magic(mmmagic.MAGIC_MIME_TYPE)
 
 var driveSession = JSON.parse(localStorage.getItem('googledrive-session')) || { accessToken: '', refreshToken: '' }
 var userProfile = JSON.parse(localStorage.getItem('googledrive-profile')) || {}
@@ -33,6 +35,26 @@ function storeTokens (atoken, rtoken) {
 function storeProfile (profile) {
   userProfile = profile
   localStorage.setItem('googledrive-profile', JSON.stringify(userProfile))
+}
+
+function uploadFile (options, resolve, reject) {
+  drive.files.create({
+    resource: {
+      name: (options.filename && options.filename !== '') ? options.filename : options.media.filename,
+      mimeType: options.media.contentType,
+      parents: [ uploadDirectoryID ]
+    },
+    media: {
+      mimeType: options.media.contentType,
+      body: options.media.data
+    }
+  }, (error, result) => {
+    if (error) {
+      reject(error)
+    } else {
+      resolve(result)
+    }
+  })
 }
 
 function auth (app) {
@@ -72,39 +94,32 @@ function run (options, request) {
         details: 'No access token has been found. Please log in.'
       })
     })
-  } else {
-    googleAuth.setCredentials({ access_token: driveSession.accessToken, refresh_token: driveSession.refreshToken })
+  }
+  if (!request.files || !request.files[0]) {
+    return new Promise((resolve, reject) => {
+      reject({
+        error: 'invalid request',
+        details: 'No file has been found. Please upload a file with your request.'
+      })
+    })
   }
 
   return new Promise((resolve, reject) => {
-    if (request.files && request.files[0]) {
-      options.media = {
-        filename: request.files[0].originalname,
-        data: request.files[0].buffer,
-        contentType: request.files[0].mimetype
-      }
-    } else {
-      return reject({ error: 'invalid request', details: 'There is no file to upload in your request.'})
+    options.media = {
+      filename: request.files[0].originalname,
+      data: request.files[0].buffer,
+      contentType: request.files[0].mimetype
     }
 
-    uploadDirectoryID = options.uploadDirectoryID ? options.uploadDirectoryID : uploadDirectoryID
+    magic.detect(options.media.data, (err, res) => {
+      if (err) {
+        return reject(err)
+      }
 
-    drive.files.create({
-      resource: {
-        name: (options.filename && options.filename !== '') ? options.filename : options.media.filename,
-        mimeType: options.media.contentType,
-        parents: [ uploadDirectoryID ]
-      },
-      media: {
-        mimeType: options.media.contentType,
-        body: options.media.data
-      }
-    }, (error, result) => {
-      if (error) {
-        reject(error)
-      } else {
-        resolve(result)
-      }
+      options.media.mimeType = res
+      googleAuth.setCredentials({ access_token: driveSession.accessToken, refresh_token: driveSession.refreshToken })
+      uploadDirectoryID = options.uploadDirectoryID ? options.uploadDirectoryID : uploadDirectoryID
+      uploadFile(options, resolve, reject)
     })
   })
 }
