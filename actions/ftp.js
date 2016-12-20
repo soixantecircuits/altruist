@@ -17,7 +17,7 @@ function putFTP (source, destination) {
         resolve('File uploaded to: ' + destination)
       })
     })
-    
+
     c.connect({
       host: config.host,
       port: config.port,
@@ -30,20 +30,20 @@ function putFTP (source, destination) {
 function putSFTP (source, destination) {
   return new Promise((resolve, reject) => {
     var c = new SSHClient()
-      c.on('ready', function () {
-        c.sftp((err, sftp) => {
+    c.on('ready', function () {
+      c.sftp((err, sftp) => {
+        if (err) { reject(err) }
+        sftp.fastPut(source, destination, (err) => {
           if (err) { reject(err) }
-          sftp.fastPut(source, destination, (err) => {
-            if (err) { reject(err) }
-            resolve('File uploaded to: ' + destination)
-          })
+          resolve('File uploaded to: ' + destination)
         })
-      }).connect({
-        host: config.host,
-        port: config.port,
-        user: config.user,
-        password: config.password
       })
+    }).connect({
+      host: config.host,
+      port: config.port,
+      user: config.user,
+      password: config.password
+    })
   })
 }
 
@@ -65,12 +65,12 @@ module.exports = {
 
       if (config.ssh === true) {
         putSFTP(options.source, options.destination)
-          .then( (response) => { resolve(response) })
-          .catch( (reason) => { reject(reason) })
+          .then((response) => { resolve(response) })
+          .catch((reason) => { reject(reason) })
       } else {
         putFTP(options.source, options.destination)
-          .then( (response) => { resolve(response) })
-          .catch( (reason) => { reject(reason) })
+          .then((response) => { resolve(response) })
+          .catch((reason) => { reject(reason) })
       }
     })
   }
