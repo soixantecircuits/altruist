@@ -8,7 +8,7 @@ const google = require('googleapis')
 
 var driveSession = JSON.parse(localStorage.getItem('googledrive-session')) || { accessToken: '', refreshToken: '' }
 var userProfile = JSON.parse(localStorage.getItem('googledrive-profile')) || {}
-var uploadDirectory = config.actions.googledrive.uploadDirectory ? config.actions.googledrive.uploadDirectory : ''
+var uploadDirectoryID = config.actions.googledrive.uploadDirectoryID ? config.actions.googledrive.uploadDirectoryID : ''
 
 const loginURL = config.actions.googledrive.loginURL || '/login/gdrive'
 const callbackURL = config.actions.googledrive.callbackURL || '/login/gdrive/return'
@@ -87,12 +87,13 @@ function run (options, request) {
       return reject({ error: 'invalid request', details: 'There is no file to upload in your request.'})
     }
 
-    // check upload directory id
+    uploadDirectoryID = options.uploadDirectoryID ? options.uploadDirectoryID : uploadDirectoryID
 
     drive.files.create({
       resource: {
-        name: options.media.filename,
-        mimeType: options.media.contentType
+        name: (options.filename && options.filename !== '') ? options.filename : options.media.filename,
+        mimeType: options.media.contentType,
+        parents: [ uploadDirectoryID ]
       },
       media: {
         mimeType: options.media.contentType,
