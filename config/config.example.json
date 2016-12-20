@@ -1,5 +1,6 @@
 {
-  "storageDir": "./scratch",
+  "storageDir": "./storage",
+  "authRedirectURL": "/authRedirect", // optional, this is default
   "secret": "my-secret",
   "server": {
     "port": 6060
@@ -20,9 +21,15 @@
       "template": "altruist-test"
     },
     "facebook": {
-      "appId": "",
-      "appSecret": "",
-      "pageId": ""
+      "appID": "abcd-xyz",
+      "appSecret": "shhh",
+      "loginURL": "/login/facebook", // optionnal, this is default
+      "callbackURL": "/login/facebook/return", // optionnal, this is default
+      "failureURL": "/?failure=facebook", // optionnal, this is default
+      "successURL": "/?success=facebook", // optionnal, this is default
+      "profileURL": "/profile/facebook", // optional, this is default
+      "accountsURL": "/accounts/facebook", // optional, this is default
+      "pageID": "" // optionnal
     },
     "twitter": {
       "consumer_key": "<your_consumer_key>",

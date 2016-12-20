@@ -1,20 +1,25 @@
 'use strict'
 
-const app = require('../src/index').app
-const localStorage = require('../src/index').localStorage
 const passport = require('passport')
 const FacebookStrategy = require('passport-facebook').Strategy
-
-const graph = require('fbgraph')
+var fb = new require('fb')
 const config = require('../src/lib/config')
+const localStorage = require('../src/lib/localstorage')
 
-const session = localStorage.getItem('facebookSession')
-const facebookSession = session ? JSON.parse(session) : {}
-let pageId = config.actions.facebook.pageId
-let currentId = null
+let facebookSession = JSON.parse(localStorage.getItem('facebook-session')) || {}
+let userProfile = JSON.parse(localStorage.getItem('user-profile')) || {}
+let userAccounts = JSON.parse(localStorage.getItem('user-accounts')) || {}
+let currentID = facebookSession.currentID
+
+const callbackURL = config.actions.facebook.callbackURL || '/login/facebook'
+const loginURL = config.actions.facebook.loginURL || '/login/facebook/return'
+const failureURL = config.actions.facebook.failureURL || '/?failure=facebook'
+const successURL = config.actions.facebook.successURL || '/?success=facebook'
+const profileURL = config.actions.facebook.profileURL || '/profile/facebook'
+const accountsURL = config.actions.facebook.accountsURL || '/accounts/facebook'
 
 function saveSession () {
-  localStorage.setItem('facebookSession', JSON.stringify(facebookSession))
+  localStorage.setItem('facebook-session', JSON.stringify(facebookSession))
 }
 
 function storeUserAccessToken (token) {
@@ -22,110 +27,172 @@ function storeUserAccessToken (token) {
   saveSession()
 }
 
-function storePageAccessToken (token) {
-  facebookSession.pageAccessToken = token
-  saveSession()
-}
-
 function storeUserProfile (profile) {
-  facebookSession.userProfile = profile
+  userProfile = profile
+  localStorage.setItem('user-profile', JSON.stringify(userProfile))
+}
+
+function storeUserAccounts (accounts) {
+  userAccounts = accounts
+  localStorage.setItem('user-accounts', JSON.stringify(userAccounts))
+}
+
+function setCurrent (ID, token) {
+  currentID = ID
+  facebookSession.currentID = ID
+  fb.setAccessToken(token)
   saveSession()
 }
 
-function handlePostRequest (options, resolve, reject) {
-  const message = options.message || ''
-  if (options.pictureUrl) {
-    postPictureFromUrl(currentId, options.pictureUrl, message, resolve, reject)
-  } else if (message.length) {
-    postMessage(currentId, message, resolve, reject)
+function getPagesList (callback) {
+  var lastID = facebookSession.currentID
+  setID('me')
+  fb.api('/me/accounts', (res) => {
+    if (res && !res.error) {
+      setID(lastID)
+      storeUserAccounts(res.data)
+    } else {
+      console.log(!res ? 'An error occured while getting accounts' : res.error)
+    }
+    callback(res)
+  })
+}
+
+// Set the currentID and the current access token according to newID
+function setID (newID) {
+  if (newID === userProfile.id || newID === 'me') {
+    setCurrent('me', facebookSession.userAccessToken)
+  } else {
+    userAccounts.forEach((account) => {
+      ;(account.id === newID) && setCurrent(newID, account.access_token)
+    })
+  }
+  saveSession()
+}
+
+function getMediaType (media) {
+  if (media) {
+    if (media.isBinary) {
+      return media.contentType.search(/video/gi) > -1 ? 'videos' : 'photos'
+    } else {
+      // this will only match filepath, but since there's no such things as base64 videos it's no issue
+      return /(\.mov|\.mpe?g?4?|\.wmv)/gi.test(media) ? 'videos' : 'photos'
+    }
+  } else {
+    return null
   }
 }
 
-function postMessage (objectId, postMessage, resolve, reject) {
-  graph.post(`/${objectId}/feed`, { message: postMessage }, function (err, res) {
-    if (err) {
-      return reject(err)
+function handlePostRequest ({message, media}, resolve, reject) {
+  const isMedia = (media)
+  const mediaType = getMediaType(media)
+  const datas = {}
+  datas[isMedia ? (mediaType === 'videos' ? 'description' : 'caption') : 'message'] = message
+
+  const reHTTP = /^https?:\/\//i
+  const reBase64 = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
+
+  if (isMedia) {
+    if (reHTTP.test(media)) {
+      mediaType === 'videos' ? datas.file_url = media : datas.url = media
+    } else if (reBase64.test(media)) {
+      // ???
+    } else if (media.isBinary) {
+      datas.source = {
+        value: media.data,
+        options: {
+          contentType: media.contentType,
+          filename: media.filename
+        }
+      }
+    } else {
+      datas.source = require('fs').createReadStream(media)
     }
-    return resolve(res)
+  }
+
+  fb.api(`/${currentID}/${isMedia ? mediaType : 'feed'}`, 'post', datas, (res) => {
+    if (!res || res.error) {
+      reject(res.error ? res.error : 'An error occured while posting.')
+    }
+    resolve(res)
   })
 }
 
-function postPictureFromUrl (objectId, pictureUrl, postMessage, resolve, reject) {
-  graph.post(`/${objectId}/photos`, { url: pictureUrl, caption: postMessage }, function (err, res) {
-    if (err) {
-      return reject(err)
-    }
-    return resolve(res)
-  })
-}
-
-function getPageToken (options, resolve, reject, callback) {
-  graph.get(`/${pageId}`, { fields: 'access_token' }, (err, res) => {
-    if (err) {
-      return reject(err)
-    }
-    storePageAccessToken(res.access_token)
-    callback(options, resolve, reject)
-  })
-}
-
-function auth () {
+function auth (app) {
   passport.use(new FacebookStrategy({
-    clientID: config.actions.facebook.appId,
+    clientID: config.actions.facebook.appID,
     clientSecret: config.actions.facebook.appSecret,
-    callbackURL: 'http://localhost:' + config.server.port + '/login/facebook/return'
-  },
-    function (accessToken, refreshToken, profile, done) {
-      storeUserAccessToken(accessToken)
-      storeUserProfile(profile)
-      return done(null, profile)
-    }
-  ))
-
-  app.get('/login/facebook', passport.authenticate('facebook', { scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions'] }))
-  app.get('/login/facebook/return', passport.authenticate('facebook', { failureRedirect: '/' })
-    , function (req, res) {
-      storeUserProfile(req.user)
-      res.redirect('/')
+  callbackURL}, function (accessToken, refreshToken, profile, done) {
+    storeUserAccessToken(accessToken)
+    storeUserProfile(profile)
+    getPagesList(() => {
+      done(null, profile)
     })
+  }))
+
+  app.get(loginURL, passport.authenticate('facebook', {
+    scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions']
+  }))
+  app.get(callbackURL, passport.authenticate('facebook', {
+    failureRedirect: failureURL
+  }), (req, res) => {
+    storeUserProfile(req.user)
+    if (config.actions.facebook.pageID) {
+      setID(config.actions.facebook.pageID)
+    } else {
+      setID(req.user.id)
+    }
+    res.redirect(successURL)
+  })
+}
+
+function addRoutes (app) {
+  app.get(profileURL, (req, res) => {
+    res.send(Object.keys(userProfile).length !== 0 ? userProfile : {
+      error: 'not logged in',
+      details: 'userProfile has not been set. Please log in.'
+    })
+  })
+
+  app.get(accountsURL, (req, res) => {
+    res.send(Object.keys({userAccounts}).length !== 0 ? userAccounts : {
+      error: 'not logged in',
+      details: 'userAccounts has not been set. Please log in.'
+    })
+  })
 }
 
 function run (options, request) {
-  if (facebookSession.userAccessToken === undefined) {
-    return new Promise((resolve, reject) => {
-      return reject({ 'error': 'invalid TOKEN', 'details': 'No facebook user access token found in local storage. Please log in at "/login/facebook".' })
-    })
-  } else if ((options.message === undefined || options.message === '') && (options.pictureUrl === undefined || options.pictureUrl === '')) {
-    return new Promise((resolve, reject) => {
-      return reject({ 'error': 'invalid argument', 'details': 'No message or picture in facebook POST request.' })
-    })
-  }
-
   return new Promise((resolve, reject) => {
-    pageId = pageId !== undefined ? `${pageId}` : ''
-    graph.setAccessToken(facebookSession.userAccessToken)
-    currentId = facebookSession.userProfile.id
-
-    if (pageId !== '') {
-      if (facebookSession.pageAccessToken === undefined) {
-        getPageToken(options, resolve, reject, (options, resolve, reject) => {
-          graph.setAccessToken(facebookSession.pageAccessToken)
-          currentId = pageId
-          handlePostRequest(options, resolve, reject)
-        })
-      } else {
-        graph.setAccessToken(facebookSession.pageAccessToken)
-        currentId = pageId
-        handlePostRequest(options, resolve, reject)
-      }
-    } else {
-      handlePostRequest(options, resolve, reject)
+    if (!facebookSession || !facebookSession.userAccessToken) {
+      return reject({
+        error: 'invalid TOKEN',
+        details: `No facebook user access token found in local storage. Please log in at ${loginURL}.`
+      })
+    } else if ((!options.message || options.message === '') && (!options.media || options.media === '') && !request.file) {
+      return reject({
+        error: 'invalid argument',
+        details: 'No message or media in facebook POST request.'
+      })
     }
+
+    // If multer detects a file upload, get the first file and set options to upload to facebook
+    if (request.files && request.files[0]) {
+      options.media = {
+        isBinary: true,
+        filename: request.files[0].originalname,
+        data: request.files[0].buffer,
+        contentType: request.files[0].mimetype
+      }
+    }
+
+    setID(facebookSession.currentID)
+    handlePostRequest(options, resolve, reject)
   })
 }
 
 module.exports = {
+  loginURL,
   auth,
-  run,
-  redirectURL: '/login/facebook'
-}
+  addRoutes,
+run}
