@@ -1,4 +1,7 @@
 {
+  "storageDir": "./storage",
+  "authRedirectURL": "/authRedirect", // optional, this is default
+  "secret": "my-secret",
   "server": {
     "port": 6060
   },
@@ -7,11 +10,32 @@
       "APIkey": "abcd-xyz",
       "listID": "1234"
     },
+    "slack": {
+      "token": "abdc-xyz",
+      "channel": "random"
+    },
     "mandrill": {
       "APIkey": "",
       "from": "Altruist 🚀 <altruist@example.com>",
       "subject": "Altruist",
       "template": "altruist-test"
+    },
+    "facebook": {
+      "appID": "abcd-xyz",
+      "appSecret": "shhh",
+      "loginURL": "/login/facebook", // optionnal, this is default
+      "callbackURL": "/login/facebook/return", // optionnal, this is default
+      "failureURL": "/?failure=facebook", // optionnal, this is default
+      "successURL": "/?success=facebook", // optionnal, this is default
+      "profileURL": "/profile/facebook", // optional, this is default
+      "accountsURL": "/accounts/facebook", // optional, this is default
+      "pageID": "" // optionnal
+    },
+    "twitter": {
+      "consumer_key": "<your_consumer_key>",
+      "consumer_secret": "<your_consumer_secret>",
+      "access_token": "<your_access_token>",
+      "access_token_secret": "<your_access_token_secret>"
     }
   }
 }
