@@ -60,7 +60,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
   "email": "me@example.com",
   "fname": "John",
   "lname": "Doe"
-}' "http://localhost:7070/api/v1/actions/mailchimp"
+}' "http://localhost:6060/api/v1/actions/mailchimp"
 ```
 
 #### Options
@@ -75,7 +75,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 ### Mandrill transactionnal emails
 
-### Setup
+#### Setup
 
 In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
 
@@ -108,7 +108,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
       }]
     }]
   }
-}' "http://localhost:7070/api/v1/actions/mandrill"
+}' "http://localhost:6060/api/v1/actions/mandrill"
 ```
 
 ```html
@@ -136,6 +136,82 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |**vars.targeted**|`array`|&minus;||
 |**vars.targeted.target**|`string`|&minus;|address targeted|
 |**vars.targeted.vars**|`array`|&minus;|create/override `merge_vars` for the concerned address. Works the same as `vars.global`|
+
+### Facebook user and page post
+
+In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+
+```js
+"actions": {
+  "facebook": {
+    "appId": "abcd-xyz",
+    "appSecret": "shhh",
+    "pageId": "" // optionnal
+  }
+}
+```
+
+#### Usage
+
+Before being able to post, you will need to log in facebook by going to: `/login/facebook` and authorizing the application. When logged in, you can post a message on your feed via:
+
+`POST /api/v1/actions/facebook`
+
+```cURL
+curl -X POST -H "Content-Type: application/json" -d '{
+  "message": "Hello Facebook!",
+  "pictureUrl": "http://example.com/my-image.jpg"
+}' "http://localhost:7070/api/v1/actions/facebook"
+```
+
+#### Options
+
+_**Note**: MP4 files MUST be local files on your system (no url or base64)_
+
+|name|type|required|description|
+|:---|:---|:---:|:---|
+|**message**|`string`|*if no picture*|message to post on your feed|
+|**pictureUrl**|`string`|*if no message*|url of the picture to post on your feed|
+
+### Twitter
+
+#### Setup
+
+In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+
+```json
+"actions": {
+  "twitter": {
+    "consumer_key": "<your_consumer_key>",
+    "consumer_secret": "<your_consumer_secret>",
+    "access_token": "<your_access_token>",
+    "access_token_secret": "<your_access_token_secret>"
+  }
+}
+```
+
+#### Usage
+
+```cURL
+curl -X POST -H "Content-Type: application/json" -d '{
+  "message": "Hello Twitter !",
+  "media": "/path/to/media"
+}' "http://localhost:6060/api/v1/actions/twitter"
+```
+
+#### Options
+
+|name|type|required|description|
+|:---|:---|:---:|:---|
+|**message**|`string`|&times;|new tweet message|
+|**media**|`string`|&minus;|image or video|
+
+The 'media' option must be one of the following:
+ * path to a file on your system (example: `/path/to/image.png`)
+ * url (example: `http://some_site.com/image.png`)
+ * base64 encoded string
+
+Supported formats are **JPG**, **PNG**, **GIF**, **WEBP** (for images) and **MP4** (for videos)
 
 ## Contribute
 

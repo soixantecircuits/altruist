@@ -43,7 +43,7 @@ function uploadB64 (dataURL) {
   })
 }
 
-module.exports = (options) => {
+function run (options) {
   webclient = new WebClient(config.actions.slack.token)
   slack = new Slack(config.actions.slack.token)
 
@@ -84,3 +84,5 @@ module.exports = (options) => {
     }
   })
 }
+
+module.exports = run
