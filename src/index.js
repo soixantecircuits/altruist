@@ -7,6 +7,9 @@ const morgan = require('morgan')
 const bodyparser = require('body-parser')
 const fs = require('fs-extra')
 const cors = require('cors')
+const path = require('path')
+
+const config = require(path.resolve(__dirname, './lib/config'))
 const passport = require('passport')
 const LocalStorage = require('node-localstorage').LocalStorage
 var localStorage = new LocalStorage(config.storageDir)

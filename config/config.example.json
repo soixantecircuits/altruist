@@ -9,6 +9,10 @@
       "APIkey": "abcd-xyz",
       "listID": "1234"
     },
+    "slack": {
+      "token": "abdc-xyz",
+      "channel": "random"
+    },
     "mandrill": {
       "APIkey": "",
       "from": "Altruist 🚀 <altruist@example.com>",
