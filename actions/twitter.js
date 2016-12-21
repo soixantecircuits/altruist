@@ -82,38 +82,43 @@ function handleLocalFile (message, media) {
 module.exports = {
   run: (options) => {
     return new Promise((resolve, reject) => {
-      // The 'message' field has to be defined in request
-      if (options.message === undefined || options.message === '') {
-        reject('Error: No text message in request')
-      }
+      const message = (options.message || options.caption)
+        ? options.message || options.caption
+        : config.actions.slack.message || ''
+      const media = options.media
+        ? options.media
+        : config.actions.slack.media || ''
+
       // Supported formats: JPG, PNG, GIF, WEBP, MP4
-      if (options.media !== undefined && options.media !== '') {
+      if (media) {
         // Regular expressions to match base64 or http url
         var base64Match = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
         var httpMatch = /^https?:\/\//i
-        if (base64Match.test(options.media)) {
+        if (base64Match.test(media)) {
           // Base64 string
-          uploadImage(options.message, options.media)
+          uploadImage(message, media)
             .then(response => resolve(response))
             .catch(error => reject(error))
-        } else if (httpMatch.test(options.media)) {
+        } else if (httpMatch.test(media)) {
           // HTTP URL
-          handleHttpUrl(options.message, options.media)
+          handleHttpUrl(message, media)
             .then(response => resolve(response))
             .catch(error => reject(error))
-        } else if (fs.existsSync(options.media)) {
+        } else if (fs.existsSync(media)) {
           // Filesystem path
-          handleLocalFile(options.message, options.media)
+          handleLocalFile(message, media)
             .then(response => resolve(response))
             .catch(error => reject(error))
         } else {
           reject('Error: media request not well formated')
         }
-      } else {
+      } else if (message) {
         // Text-only tweet
-        updateStatus(options.message)
+        updateStatus(message)
           .then(response => resolve(response))
           .catch(error => reject(error))
+      } else {
+        reject('Error: No message or media in request')
       }
     })
   }

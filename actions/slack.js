@@ -48,13 +48,22 @@ function run (options) {
   slack = new Slack(config.actions.slack.token)
 
   return new Promise((resolve, reject) => {
-    const message = options.message || options.caption
+    const message = (options.message || options.caption)
+      ? options.message || options.caption
+      : config.actions.slack.message || ''
+    const media = options.media
+      ? options.media
+      : config.actions.slack.media || ''
 
-    if (options.path) {
+    const isPath = fs.existsSync(media)
+    const isPictureData = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/.test(media)
+    const isURL = /^https?:\/\//i.test(media)
+
+    if (isPath) {
       try {
-        const file = fs.createReadStream(options.path)
-        const filetype = mime.lookup(options.path)
-        const filename = options.path.split(/\//g).pop()
+        const file = fs.createReadStream(media)
+        const filetype = mime.lookup(media)
+        const filename = media.split(/\//g).pop()
 
         upload({file, filetype, filename})
           .then((success) => { resolve(success) })
@@ -62,12 +71,12 @@ function run (options) {
       } catch (err) {
         reject(err)
       }
-    } else if (options.pictureData) {
-      uploadB64(options.pictureData)
+    } else if (isPictureData) {
+      uploadB64(media)
         .then((success) => { resolve(success) })
         .catch((err) => { reject(err) })
-    } else if (options.URL) {
-      fetchImage(options.URL)
+    } else if (isURL) {
+      fetchImage(media)
         .then((imageData) => {
           uploadB64(imageData)
             .then((success) => { resolve(success) })
@@ -85,4 +94,4 @@ function run (options) {
   })
 }
 
-module.exports = run
+module.exports = { run }
