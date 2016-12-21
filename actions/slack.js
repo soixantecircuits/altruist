@@ -48,8 +48,12 @@ function run (options) {
   slack = new Slack(config.actions.slack.token)
 
   return new Promise((resolve, reject) => {
-    const message = (options.message || options.caption) || config.actions.facebook.message
-    const media = options.media || config.actions.facebook.media
+    const message = (options.message || options.caption)
+      ? options.message || options.caption
+      : config.actions.slack.message || ''
+    const media = options.media
+      ? options.media
+      : config.actions.slack.media || ''
 
     const isPath = fs.existsSync(media)
     const isPictureData = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/.test(media)

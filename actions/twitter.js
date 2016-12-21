@@ -82,8 +82,12 @@ function handleLocalFile (message, media) {
 module.exports = {
   run: (options) => {
     return new Promise((resolve, reject) => {
-      const message = options.message || config.actions.twitter.message
-      const media = options.media || config.actions.twitter.media
+      const message = (options.message || options.caption)
+        ? options.message || options.caption
+        : config.actions.slack.message || ''
+      const media = options.media
+        ? options.media
+        : config.actions.slack.media || ''
 
       // Supported formats: JPG, PNG, GIF, WEBP, MP4
       if (media) {

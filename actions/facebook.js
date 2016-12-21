@@ -164,8 +164,12 @@ function addRoutes (app) {
 
 function run (options, request) {
   return new Promise((resolve, reject) => {
-    const message = options.message || config.actions.facebook.message
-    const media = options.media || config.actions.facebook.media
+    const message = (options.message || options.caption)
+      ? options.message || options.caption
+      : config.actions.slack.message || ''
+    const media = options.media
+      ? options.media
+      : config.actions.slack.media || ''
 
     if (!facebookSession || !facebookSession.userAccessToken) {
       return reject({
