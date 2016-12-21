@@ -1,6 +1,6 @@
 {
   "name": "altruist",
-  "version": "1.0.0-0",
+  "version": "1.0.0",
   "description": "Altruist lets you share your content with others",
   "scripts": {
     "start": "node src/index.js",
