@@ -9,6 +9,9 @@
     "test": "echo \"no test specified\""
   },
   "main": "src/index.js",
+  "bin": {
+    "altruist": "bin/altruist"
+  },
   "repository": "git@github.com:soixantecircuits/altruist.git",
   "dependencies": {
     "@slack/client": "^3.7.0",
