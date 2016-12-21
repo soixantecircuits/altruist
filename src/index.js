@@ -50,7 +50,7 @@ router.get('/status', (req, res) => {
 })
 
 for (let action in config.actions) {
-  const modulePath = `${process.cwd()}/actions/${action}.js`
+  const modulePath = path.resolve(`${__dirname}/../actions/${action}.js`)
   fs.access(modulePath, (err) => {
     const module = require(modulePath)
     typeof (module.auth) === 'function' && module.auth(app)
