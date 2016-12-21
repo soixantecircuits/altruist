@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
+    "bin": "./bin/altruist",
     "test": "echo \"no test specified\""
   },
   "main": "src/index.js",
