@@ -8,7 +8,7 @@ const localStorage = require('../src/lib/localstorage')
 
 let facebookSession = JSON.parse(localStorage.getItem('facebook-session')) || {}
 let userProfile = JSON.parse(localStorage.getItem('user-profile')) || {}
-let userAccounts = JSON.parse(localStorage.getItem('user-accounts')) || {}
+let userAccounts = JSON.parse(localStorage.getItem('user-accounts')) || []
 let currentID = facebookSession.currentID
 
 const callbackURL = config.actions.facebook.callbackURL || '/login/facebook'
@@ -164,12 +164,16 @@ function addRoutes (app) {
 
 function run (options, request) {
   return new Promise((resolve, reject) => {
+    const message = options.message || config.actions.facebook.message
+    const media = options.media || config.actions.facebook.media
+    console.log(message, media)
+
     if (!facebookSession || !facebookSession.userAccessToken) {
       return reject({
         error: 'invalid TOKEN',
         details: `No facebook user access token found in local storage. Please log in at ${loginURL}.`
       })
-    } else if ((!options.message || options.message === '') && (!options.media || options.media === '') && !request.file) {
+    } else if ((!message) && (!media) && !request.file) {
       return reject({
         error: 'invalid argument',
         details: 'No message or media in facebook POST request.'
@@ -187,7 +191,7 @@ function run (options, request) {
     }
 
     setID(facebookSession.currentID)
-    handlePostRequest(options, resolve, reject)
+    handlePostRequest({ message, media }, resolve, reject)
   })
 }
 
