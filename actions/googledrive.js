@@ -2,6 +2,7 @@
 
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
+
 const config = require('../src/lib/config')
 const localStorage = require('../src/lib/localstorage')
 const google = require('googleapis')
@@ -38,12 +39,16 @@ function storeProfile (profile) {
 }
 
 function uploadFile (options, resolve, reject) {
+  let fileResource = {
+    name: (options.filename && options.filename !== '') ? options.filename : options.media.filename,
+    mimeType: options.media.contentType
+  }
+  if (uploadDirectoryID !== '') {
+    fileResource.parents = [ uploadDirectoryID ]
+  }
+
   drive.files.create({
-    resource: {
-      name: (options.filename && options.filename !== '') ? options.filename : options.media.filename,
-      mimeType: options.media.contentType,
-      parents: [ uploadDirectoryID ]
-    },
+    resource: fileResource,
     media: {
       mimeType: options.media.contentType,
       body: options.media.data
@@ -68,13 +73,14 @@ function auth (app) {
         access_token: token,
         refresh_token: refreshToken
       })
+
       storeTokens(token, refreshToken)
       storeProfile(profile)
       done(null, profile)
     }
   ))
 
-  app.get(loginURL, passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.file' }))
+  app.get(loginURL, passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.file', accessType: 'offline' }))
   app.get(callbackURL, passport.authenticate('google', {failureRedirect: failureURL}), (req, res) => {
     res.redirect(successURL)
   })
@@ -87,24 +93,19 @@ function addRoutes (app) {
 }
 
 function run (options, request) {
-  if (!driveSession || !driveSession.accessToken || driveSession.accessToken === '') {
-    return new Promise((resolve, reject) => {
-      reject({
+  return new Promise((resolve, reject) => {
+    if (!driveSession || !driveSession.accessToken || driveSession.accessToken === '') {
+      return reject({
         error: 'invalid token',
         details: 'No access token has been found. Please log in.'
       })
-    })
-  }
-  if (!request.files || !request.files[0]) {
-    return new Promise((resolve, reject) => {
-      reject({
+    } else if (!request.files || !request.files[0]) {
+      return reject({
         error: 'invalid request',
         details: 'No file has been found. Please upload a file with your request.'
       })
-    })
-  }
+    }
 
-  return new Promise((resolve, reject) => {
     options.media = {
       filename: request.files[0].originalname,
       data: request.files[0].buffer,
