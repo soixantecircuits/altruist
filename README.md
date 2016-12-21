@@ -311,3 +311,52 @@ Please follow:
 
 * [JavaScript standard style](http://standardjs.com/)
 * [This git branching model](nvie.com/posts/a-successful-git-branching-model/)
+
+### Slack
+
+#### Setup
+
+In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+
+```json
+"actions": {
+  "slack": {
+    "token": "abdc-xyz",
+    "channel": "random"
+  },
+}
+```
+
+#### Usage
+
+```cURL
+curl -X POST -H "Content-Type: application/json" -d '{
+  "caption": "hello!",
+  "path": "/path/to/my/img.jpg"
+}' "http://localhost:6060/api/v1/actions/slack"
+```
+
+#### Options
+
+|name|type|required|description|
+|:---|:---|:---:|:---|
+|**caption/messahe**|`string`|&minus;|text message. Required if no media sent|
+|**path**|`string`|&minus;|path to image or video|
+|**URL**|`string`|&minus;|URL to image or video|
+|**pictureData**|`string`|&minus;|base64 datas for your image|
+
+The 'media' option must be one of the following:
+ * path to a file on your system (example: `/path/to/image.png`)
+ * url (example: `http://some_site.com/image.png`)
+ * base64 encoded string
+
+Supported formats are **JPG**, **PNG**, **GIF**, **WEBP** (for images) and **MP4** (for videos)
+
+## Contribute
+
+Thanks for helping us! 👏
+
+Please follow:
+
+* [JavaScript standard style](http://standardjs.com/)
+* [This git branching model](nvie.com/posts/a-successful-git-branching-model/)
