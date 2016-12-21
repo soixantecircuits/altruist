@@ -42,6 +42,7 @@ The API is in v1 so every routes is prefixed with v1`. You can find your actions
 * [facebook](/docs/facebook.md)
 * [twitter](/docs/twitter.md)
 * [slack](/docs/slack.md)
+* [dropbox](/docs/dropbox.md)
 
 ⚠️  *Some actions may require that you log in before using them. You can get a list of those actions with their login url by sending a GET request to the url matching `authRedirect` in the config file (`/authRedirect` by default).*
 
