@@ -116,11 +116,18 @@ function run (options, request) {
       if (err) {
         return reject(err)
       }
-
       options.media.mimeType = res
+
       googleAuth.setCredentials({ access_token: driveSession.accessToken, refresh_token: driveSession.refreshToken })
-      uploadDirectoryID = options.uploadDirectoryID ? options.uploadDirectoryID : uploadDirectoryID
-      uploadFile(options, resolve, reject)
+      googleAuth.refreshAccessToken((err, tokens) => {
+        if (err) {
+          return reject(err)
+        }
+
+        storeTokens(tokens.access_token, driveSession.refreshToken)
+        uploadDirectoryID = options.uploadDirectoryID ? options.uploadDirectoryID : uploadDirectoryID
+        uploadFile(options, resolve, reject)
+      })
     })
   })
 }
