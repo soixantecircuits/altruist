@@ -166,7 +166,6 @@ function run (options, request) {
   return new Promise((resolve, reject) => {
     const message = options.message || config.actions.facebook.message
     const media = options.media || config.actions.facebook.media
-    console.log(message, media)
 
     if (!facebookSession || !facebookSession.userAccessToken) {
       return reject({
