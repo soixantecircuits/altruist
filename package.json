@@ -50,7 +50,9 @@
   },
   "contributors": [
     "hugohil <hugo@soixantecircuits.fr>",
-    "gabrielstuff <gabriel@soixantecircuits.fr>"
+    "gabrielstuff <gabriel@soixantecircuits.fr>",
+    "yael <yael@soixantecircuits.fr>",
+    "louis <louis@soixantecircuits.fr>"
   ],
   "bugs": {
     "url": "https://github.com/soixantecircuits/altruist/issues"
