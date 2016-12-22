@@ -47,41 +47,9 @@ POST http://localhost:6060/api/v1/actions/{action}
 * [twitter](/docs/twitter.md)
 * [slack](/docs/slack.md)
 * [google drive](/docs/googledrive.md)
+* [instagram](/docs/instagram.md)
 
 ⚠️  *Some actions may require that you log in before using them. You can get a list of those actions with their login url by sending a GET request to the url matching `authRedirect` in the config file (`/authRedirect` by default).*
-
-### Instagram
-
-#### Setup
-
-In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
-
-```json
-"actions": {
-  "instagram": {
-    "account": "johndoe",
-    "password": "pony123"
-  }
-}
-```
-
-#### Usage
-
-```cURL
-curl -X POST -H "Content-Type: application/json" -d '{
-  "media": "/path/to/image.jpg"
-  "caption": "I love ponies !"
-}' "http://localhost:6060/api/v1/actions/instagram"
-```
-
-#### Options
-
-|name|type|required|description|
-|:---|:---|:---:|:---|
-|**media**|`string`|&times;|path to the image you want to share|
-|**caption**|`string`|&minus;|optionnal caption|
-
-Only **JPG** files are supported for now
 
 ## Contribute
 
