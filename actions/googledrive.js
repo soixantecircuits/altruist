@@ -80,8 +80,17 @@ function auth (app) {
     }
   ))
 
-  app.get(loginURL, passport.authenticate('google', { scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.file', accessType: 'offline' }))
-  app.get(callbackURL, passport.authenticate('google', {failureRedirect: failureURL}), (req, res) => {
+  app.get(loginURL, passport.authenticate('google', {
+    scope: [
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'https://www.googleapis.com/auth/drive.file'
+    ],
+    accessType: 'offline',
+    prompt: 'consent'
+  }))
+  app.get(callbackURL, passport.authenticate('google', {
+    failureRedirect: failureURL
+  }), (req, res) => {
     res.redirect(successURL)
   })
 }
