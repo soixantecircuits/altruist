@@ -13,7 +13,7 @@ const loginURL = config.actions.dropbox.loginURL || '/login/dropbox'
 const callbackURL = config.actions.dropbox.callbackURL || '/login/dropbox/return'
 const failureURL = config.actions.dropbox.failureURL || '/?failure=dropbox'
 const successURL = config.actions.dropbox.successURL || '/?success=dropbox'
-var uploadDirectoryPath = config.actions.dropbox.uploadDirectoryPath ? config.actions.dropbox.uploadDirectoryPath : '/'
+const uploadDirectoryPath = config.actions.dropbox.uploadDirectoryPath ? config.actions.dropbox.uploadDirectoryPath : '/'
 
 function storeTokens (aToken, rToken) {
   dropboxSession.accessToken = aToken
@@ -52,7 +52,7 @@ function run (options, request) {
       })
     }
 
-    uploadDirectoryPath = options.uploadDirectoryPath && options.uploadDirectoryPath !== '' ? options.uploadDirectoryPath : uploadDirectoryPath
+    let targetDir = options.uploadDirectoryPath && options.uploadDirectoryPath !== '' ? options.uploadDirectoryPath : uploadDirectoryPath
     let filename = options.filename && options.filename !== '' ? options.filename : request.files[0].originalname
 
     let dropbox = new Dropbox({accessToken: dropboxSession.accessToken})
