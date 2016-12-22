@@ -46,6 +46,10 @@
       "failureURL": "/?failure=gdrive", // optional, this is default
       "successURL": "/?success=gdrive", // optional, this is default
       "profileURL": "/profile/gdrive" // optional, this is default
+    },
+    "instagram": {
+      "account": "johndoe",
+      "password": "pony123"
     }
   }
 }
