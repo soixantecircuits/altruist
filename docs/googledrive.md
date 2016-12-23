@@ -2,6 +2,9 @@
 
 #### Setup
 
+You will need a Google API Console project to authenticate an account via OAuth2. If you do not have one set up, you can follow the instructions [here](/docs/googleoauth2.md).
+You need to activate Google+ API and Google Drive API for your application.
+
 In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```json

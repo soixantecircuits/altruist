@@ -66,6 +66,12 @@ function auth (app) {
   })
 }
 
+function addRoutes (app) {
+  app.get(profileURL, (req, res) => {
+    res.send(userProfile)
+  })
+}
+
 function run (options, request) {
   return new Promise((resolve, reject) => {
     if (!youtubeSession || !youtubeSession.accessToken || youtubeSession.accessToken === '') {
@@ -127,4 +133,5 @@ function run (options, request) {
 module.exports = {
   loginURL,
   auth,
+  addRoutes,
 run}
