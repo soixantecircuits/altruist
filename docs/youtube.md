@@ -29,7 +29,7 @@ When logged in, you can upload videos using form-data :
 
 ```cURL
 curl -X POST -H "Content-Type: multipart/form-data; boundary=----xxxxxxxxxxxxxxxxxxx"
--F "file=@your_video.mp4"
+-F "media=@your_video.mp4"
 -F "title=your_title"
 -F "description=your_description"
 -F "pricacyStatus=private"
@@ -40,7 +40,7 @@ curl -X POST -H "Content-Type: multipart/form-data; boundary=----xxxxxxxxxxxxxxx
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**file**|`file`|&times;|file to upload (the key doesn't matter)|
+|**media**|`file`|&times;|file to upload (the name doesn't matter)|
 |**title**|`string`|&minus;|title for the uploaded video|
 |**description**|`string`|&minus;|description for the uploaded video|
 |**privacyStatus**|`string`|&minus;|`private`, `public` or `unlisted`|
