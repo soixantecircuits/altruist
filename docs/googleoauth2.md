@@ -11,4 +11,4 @@ You will be prompted your client ID and client secret. Put them in config.json.
 **The redirect URI might take a few minutes before you can use it.**
 
 Depending on what google API is used in the altruist action, you will have to activate them in Google API console.
-Click on library, click the API you want to activate, activate it, and it's done ! 
+Click on library, select the API you want to use, activate it, and it's done ! 

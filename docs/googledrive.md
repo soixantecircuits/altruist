@@ -39,6 +39,6 @@ curl -X POST -H "Content-Type: multipart/form-data; boundary=----xxxxxxxxxxxxxxx
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**file**|`file`|&times;|file to upload (the key doesn't matter)|
+|**media**|`file`|&times;|file to upload (the name doesn't matter)|
 |**filename**|`string`|&minus;|name to assign to the uploaded file|
 |**uploadDirectoryID**|`string`|&minus;|ID of the directory to upload to|
