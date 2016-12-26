@@ -1,10 +1,8 @@
 'use strict'
 
-const fs = require('fs')
 const Twit = require('twit')
-const mime = require('mime')
-const request = require('request').defaults({encoding: null})
 const config = require('../src/lib/config')
+const med = require('../src/lib/media')
 
 const T = new Twit({
   consumer_key: config.actions.twitter.consumer_key,
@@ -42,40 +40,17 @@ function uploadImage (message, mediaData) {
   })
 }
 
-function handleHttpUrl (message, media) {
+// Only MP4 format is supported for videos
+function uploadVideo (message, media) {
   return new Promise((resolve, reject) => {
-    request.get(media, function (err, response, body) {
-      if (response.statusCode !== 200) {
-        reject('Error: http response status code ' + response.statusCode)
-      }
+    T.postMediaChunked({ file_path: media },
+    (err, data, response) => {
       if (!err) {
-        uploadImage(message, body.toString('base64'))
+        updateStatus(message, data.media_id_string)
           .then(response => resolve(response))
           .catch(error => reject(error))
-      } else {
-        reject(err)
-      }
+      } else { reject(err) }
     })
-  })
-}
-
-function handleLocalFile (message, media) {
-  return new Promise((resolve, reject) => {
-    // Only MP4 format is supported for videos
-    if (mime.lookup(media) === 'video/mp4') {
-      T.postMediaChunked({ file_path: media },
-      function (err, data, response) {
-        if (!err) {
-          updateStatus(message, data.media_id_string)
-            .then(response => resolve(response))
-            .catch(error => reject(error))
-        } else { reject(err) }
-      })
-    } else {
-      uploadImage(message, fs.readFileSync(media, { encoding: 'base64' }))
-        .then(response => resolve(response))
-        .catch(error => reject(error))
-    }
   })
 }
 
@@ -91,26 +66,36 @@ module.exports = {
 
       // Supported formats: JPG, PNG, GIF, WEBP, MP4
       if (media) {
-        // Regular expressions to match base64 or http url
-        var base64Match = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
-        var httpMatch = /^https?:\/\//i
-        if (base64Match.test(media)) {
-          // Base64 string
+        if (med.isBase64(media)) {
           uploadImage(message, media)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+        } else if (med.isFile(media)) {
+          med.getMimeType(media)
+          .then(type => {
+            if (type === 'video/mp4') {
+              uploadVideo(message, media)
+              .then(response => resolve(response))
+              .catch(error => reject(error))
+            } else {
+              med.fileToBase64(media)
+              .then(data => {
+                uploadImage(message, data)
+                .then(response => resolve(response))
+                .catch(error => reject(error))
+              })
+              .catch(error => reject(error))
+            }
+          })
+          .catch(error => reject(error))
+        } else if (med.isURL(media)) {
+          med.urlToBase64(media)
+          .then(data => {
+            uploadImage(message, data)
             .then(response => resolve(response))
             .catch(error => reject(error))
-        } else if (httpMatch.test(media)) {
-          // HTTP URL
-          handleHttpUrl(message, media)
-            .then(response => resolve(response))
-            .catch(error => reject(error))
-        } else if (fs.existsSync(media)) {
-          // Filesystem path
-          handleLocalFile(message, media)
-            .then(response => resolve(response))
-            .catch(error => reject(error))
-        } else {
-          reject('Error: media request not well formated')
+          })
+          .catch(error => reject(error))
         }
       } else if (message) {
         // Text-only tweet
