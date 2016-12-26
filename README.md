@@ -48,6 +48,7 @@ POST http://localhost:6060/api/v1/actions/{action}
 * [slack](/docs/slack.md)
 * [google drive](/docs/googledrive.md)
 * [instagram](/docs/instagram.md)
+* [mailjet](/docs/mailjet.md)
 
 ⚠️  *Some actions may require that you log in before using them. You can get a list of those actions with their login url by sending a GET request to the url matching `authRedirect` in the config file (`/authRedirect` by default).*
 

@@ -1,6 +1,7 @@
 'use strict'
 
 const config = require('../src/lib/config')
+const mediaUtils = require('../src/lib/media')
 const mailjet = require('node-mailjet').connect(config.actions.mailjet.apiKey, config.actions.mailjet.secretKey)
 
 function run (options, request) {
@@ -38,7 +39,7 @@ function run (options, request) {
         medias[i] = {
           'Content-type': request.files[i].mimetype,
           'Filename': request.files[i].originalname,
-          'content': request.files[i].buffer.toString('base64')
+          'content': mediaUtils.isBase64(request.files[i].buffer) ? request.files[i].buffer : request.files[i].buffer.toString('base64')
         }
       }
     }
