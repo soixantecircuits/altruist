@@ -1,5 +1,10 @@
 # Dropbox
 
+You will need a Dropbox app to authenticate an account via OAuth2.
+If you do not have one set up, go to [this link](https://www.dropbox.com/developers/apps/create) and create an app using the Dropbox API with the full Dropbox access.
+Then, in your app's settings, you will have to add the URI matching `callbackURL` to the `Redirect URIs` section.
+Finally, copy your app key and your app secret to your `config.json` file, and you're all set!
+
 In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```js
@@ -25,7 +30,7 @@ When the application is authorized, you can upload files to your dropbox using f
 
 ```cURL
 curl -X POST -H "Content-Type: multipart/form-data; boundary=----xxxxxxxxxxxxxxxxxxxxx"
- -F "file=@your.file"
+ -F "media=@your.file"
  -F "filename=uploadedFile.name"
  -F "uploadDirectoryPath=/targetDirectory/"
  "http://localhost:6060/api/v1/actions/dropbox"
@@ -35,6 +40,6 @@ curl -X POST -H "Content-Type: multipart/form-data; boundary=----xxxxxxxxxxxxxxx
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**file**|`file`|&times;|the file to upload|
+|**media**|`file`|&times;|the file to upload|
 |**filename**|`string`|&minus;|a new name to assign to the uploaded file|
 |**uploadDirectoryPath**|`string`|&minus;|the path to the directory to upload to|
