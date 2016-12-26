@@ -50,6 +50,11 @@
     "instagram": {
       "account": "johndoe",
       "password": "pony123"
+    },
+    "mailjet": {
+      "apiKey": "xxxxxxx",
+      "secretKey": "xxxxxxxx",
+      "fromEmail": "your@e.mail" // optional if sent in request
     }
   }
 }
