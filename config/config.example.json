@@ -7,7 +7,7 @@
   },
   "actions": {
     "mailchimp": {
-      "APIkey": "abcd-xyz",
+      "apiKey": "abcd-xyz",
       "listID": "1234"
     },
     "slack": {
