@@ -50,6 +50,12 @@
     "instagram": {
       "account": "johndoe",
       "password": "pony123"
+    },
+    "smtp": {
+      "user": "your@mail.com",
+      "password": "yourpassword",
+      "smtpServer": "your.smtp.server",
+      "from": "Altruist 🚀 <altruist@example.com>"
     }
   }
 }
