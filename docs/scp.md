@@ -21,7 +21,7 @@ In your `config.json` file, you'll need to add the following configuration objec
 
 ```cURL
 curl -X POST -H "Content-Type: application/json" -d '{
-	"filePath": "/home/mina/Downloads/profile.jpg"
+	"source": "/source/file/or/directory"
 	"user": "foo",
 	"password": "bar",
 	"hostname": "example:port",
@@ -33,7 +33,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**filePath**|`string`|&times;|path to the source file|
+|**source**|`string`|&times;|path to the source file or directory to copy|
 |**user**|`string`|_if not in config.json_|user name to connect to the host|
 |**password**|`string`|_if not in config.json_|password to connect to the host|
 |**hostname**|`string`|_if not in config.json_|host to connect to. _you can append the port_|

@@ -5,10 +5,10 @@ const scpClient = require('scp2')
 
 function run (options, request) {
   return new Promise((resolve, reject) => {
-    if (!options.filePath || options.filePath === '') {
+    if (!options.source || options.source === '') {
       return reject({
         error: 'invalid request',
-        details: '"filePath" does not exist or is empty.'
+        details: '"source" does not exist or is empty.'
       })
     } else if ((!options.user || options.user === '') && (!config.actions.scp.user || config.actions.scp.user === '')) {
       return reject({
@@ -34,7 +34,7 @@ function run (options, request) {
 
     const dest = `${user}:${password}@${hostname}:${target}`
 
-    scpClient.scp(options.filePath, dest, function (err) {
+    scpClient.scp(options.source, dest, function (err) {
       if (err) {
         return reject(err)
       }
