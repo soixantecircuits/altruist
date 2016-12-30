@@ -50,6 +50,10 @@
     "instagram": {
       "account": "johndoe",
       "password": "pony123"
+    },
+    "socialite": {
+      "bucket": "xxxxx",
+      "token": "xxxxxx"
     }
   }
 }
