@@ -3,7 +3,7 @@
 const Mailchimp = require('mailchimp-api-v3')
 const config = require('../src/lib/config')
 
-const API_KEY = config.actions.mailchimp.APIkey
+const API_KEY = config.actions.mailchimp.apiKey
 const mailchimp = (API_KEY) ? new Mailchimp(API_KEY) : null
 
 function mapListMember (member) {
@@ -32,7 +32,10 @@ function run (options) {
     })
       .catch((err) => {
         console.log(err)
-        reject(err.errors)
+        reject({
+          error: err.title,
+          details: err.detail
+        })
       })
   })
 }
