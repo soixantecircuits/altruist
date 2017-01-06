@@ -2,7 +2,7 @@
 
 const Twit = require('twit')
 const config = require('../src/lib/config')
-const med = require('../src/lib/media')
+const med = require('media-helper')
 
 const T = new Twit({
   consumer_key: config.actions.twitter.consumer_key,
