@@ -20,7 +20,7 @@ function upload ({ file, filetype, filename }) {
       filename,
       channels: config.actions.slack.channel
     }, (err, data) => {
-      err && reject(err)
+      err && reject({ error: err })
       resolve(data)
     })
   })
@@ -38,8 +38,10 @@ function uploadB64 (dataURL) {
     const filename = filetype.replace(/\//, '.')
 
     upload({file, filetype, filename})
-      .then((success) => { resolve(success) })
-      .catch((err) => { reject(err) })
+      .then((success) => {
+        resolve(success)})
+      .catch((err) => {
+        reject(err)})
   })
 }
 
@@ -66,32 +68,42 @@ function run (options) {
         const filename = media.split(/\//g).pop()
 
         upload({file, filetype, filename})
-          .then((success) => { resolve(success) })
-          .catch((err) => { reject(err) })
+          .then((success) => {
+            resolve(success)})
+          .catch((err) => {
+            reject(err)})
       } catch (err) {
         reject(err)
       }
     } else if (isPictureData) {
       uploadB64(media)
-        .then((success) => { resolve(success) })
-        .catch((err) => { reject(err) })
+        .then((success) => {
+          resolve(success)})
+        .catch((err) => {
+          reject(err)})
     } else if (isURL) {
       fetchImage(media)
         .then((imageData) => {
           uploadB64(imageData)
-            .then((success) => { resolve(success) })
-            .catch((err) => { reject(err) })
+            .then((success) => {
+              resolve(success)})
+            .catch((err) => {
+              reject(err)})
         })
-        .catch((err) => { reject(err) })
+        .catch((err) => {
+          reject(err)})
     } else if (message) {
       webclient.chat.postMessage(config.actions.slack.channel, message, (err, res) => {
-        err && reject(err)
+        err && reject({ error: err })
         resolve(res)
       })
     } else {
-      reject('No media or message in request.')
+      reject({
+        error: 'invalid request',
+        details: 'No media or message in request.'
+      })
     }
   })
 }
 
-module.exports = { run }
+module.exports = { run}

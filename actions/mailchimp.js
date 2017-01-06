@@ -32,7 +32,10 @@ function run (options) {
     })
       .catch((err) => {
         console.log(err)
-        reject(err.errors)
+        reject({
+          error: err.title,
+          details: err.detail
+        })
       })
   })
 }

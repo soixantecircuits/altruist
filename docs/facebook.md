@@ -1,5 +1,10 @@
 # Facebook user and page post
 
+You will need a Facebook app to authenticate an account via OAuth2.
+If you do not have one set up, you can follow the instructions on the [facebook app development documentation](https://developers.facebook.com/docs/apps/register).
+Choose `website` as a platform for your app. When your app is created, go to the settings and add the domain the app will be running on in `App Domains`.
+Get your app ID and your app secret, and copy them to your `config.json` file.
+
 In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```js
@@ -76,7 +81,7 @@ _**Note**: MP4 files MUST be local files on your system or url (no base64)_
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**message**|`string`|*if no picture*|message to post on your feed|
+|**message**|`string`|*if no media*|message to post on your feed|
 |**media**|`string`|*if no message*|image or video|
 
 You can also set `message` and/or `media` into your config directly, if they don't need to be set by the user.
