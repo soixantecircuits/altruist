@@ -24,6 +24,7 @@
     "fb": "^1.1.1",
     "form-data": "^2.1.2",
     "fs-extra": "^1.0.0",
+    "ftp": "^0.3.10",
     "googleapis": "^15.0.0",
     "instagram-private-api": "^0.5.2",
     "mailchimp-api-v3": "1.6.0",
@@ -39,6 +40,7 @@
     "passport": "^0.3.2",
     "passport-dropbox-oauth2": "^1.1.0",
     "passport-facebook": "^2.1.1",
+    "ssh2": "^0.5.4",
     "passport-google-oauth20": "^1.0.0",
     "request": "^2.79.0",
     "twit": "^2.2.5"
