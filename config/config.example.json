@@ -7,7 +7,7 @@
   },
   "actions": {
     "mailchimp": {
-      "APIkey": "abcd-xyz",
+      "apiKey": "abcd-xyz",
       "listID": "1234"
     },
     "slack": {
@@ -37,6 +37,15 @@
       "access_token": "<your_access_token>",
       "access_token_secret": "<your_access_token_secret>"
     },
+    "dropbox": {
+      "clientID": "xxxxxxx",
+      "clientSecret": "xxxxxxxxxx",
+      "loginURL": "/login/dropbox",
+      "callbackURL": "/login/dropbox/return",
+      "failureURL": "/?failure=dropbox",
+      "successURL": "/?success=dropbox",
+      "uploadDirectoryPath": ""
+    },
     "googledrive": {
       "clientID": "xxxxxxxx",
       "clientSecret": "xxxxxxxxxxxxxx",
@@ -47,6 +56,16 @@
       "successURL": "/?success=gdrive", // optional, this is default
       "profileURL": "/profile/gdrive" // optional, this is default
     },
+    "youtube": {
+      "clientID": "xxxxxxxx",
+      "clientSecret": "xxxxxxxxxxxxxx",
+      "loginURL": "/login/youtube", // optional, this is default
+      "callbackURL": "/login/youtube/return", // optional, this is default
+      "failureURL": "/?failure=youtube", // optional, this is default
+      "successURL": "/?success=youtube", // optional, this is default
+      "profileURL": "/profile/youtube", // optional, this is default
+      "privacyStatus": "public" // optional, this is default
+    },
     "instagram": {
       "account": "johndoe",
       "password": "pony123"
@@ -55,6 +74,18 @@
       "apiKey": "xxxxxxx",
       "secretKey": "xxxxxxxx",
       "fromEmail": "your@e.mail" // optional if sent in request
+    },
+    "smtp": {
+      "user": "your@mail.com",
+      "password": "yourpassword",
+      "smtpServer": "your.smtp.server",
+      "from": "Altruist 🚀 <altruist@example.com>"
+    },
+    "scp": {
+      "user": "foo",
+      "password": "bar",
+      "hostname": "example:5050",
+      "target": "/directory/or/file"
     }
   }
 }

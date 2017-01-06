@@ -81,7 +81,7 @@ _**Note**: MP4 files MUST be local files on your system or url (no base64)_
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**message**|`string`|*if no picture*|message to post on your feed|
+|**message**|`string`|*if no media*|message to post on your feed|
 |**media**|`string`|*if no message*|image or video|
 
 You can also set `message` and/or `media` into your config directly, if they don't need to be set by the user.

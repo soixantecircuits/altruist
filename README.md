@@ -41,14 +41,20 @@ POST http://localhost:6060/api/v1/actions/{action}
 ## Actions
 
 ##### List of available actions:
+
 * [mailchimp](/docs/mailchimp.md)
 * [mandrill](/docs/mandrill.md)
 * [facebook](/docs/facebook.md)
 * [twitter](/docs/twitter.md)
 * [slack](/docs/slack.md)
+* [dropbox](/docs/dropbox.md)
 * [google drive](/docs/googledrive.md)
+* [youtube](/docs/youtube.md)
 * [instagram](/docs/instagram.md)
 * [mailjet](/docs/mailjet.md)
+* [smtp](/docs/smtp.md)
+* [scp](/docs/scp.md)
+* [ftp](/docs/ftp.md)
 
 ⚠️  *Some actions may require that you log in before using them. You can get a list of those actions with their login url by sending a GET request to the url matching `authRedirect` in the config file (`/authRedirect` by default).*
 

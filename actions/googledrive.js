@@ -6,6 +6,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy
 const config = require('../src/lib/config')
 const localStorage = require('../src/lib/localstorage')
 const google = require('googleapis')
+
 const mmmagic = require('mmmagic')
 const magic = new mmmagic.Magic(mmmagic.MAGIC_MIME_TYPE)
 
@@ -55,7 +56,10 @@ function uploadFile (options, resolve, reject) {
     }
   }, (error, result) => {
     if (error) {
-      reject(error)
+      reject({
+        error: error.errors[0].reason,
+        details: error.errors[0].message
+      })
     } else {
       resolve(result)
     }
@@ -86,7 +90,7 @@ function auth (app) {
       'https://www.googleapis.com/auth/drive.file'
     ],
     accessType: 'offline',
-    prompt: 'consent'
+    prompt: 'select_account'
   }))
   app.get(callbackURL, passport.authenticate('google', {
     failureRedirect: failureURL
@@ -123,14 +127,20 @@ function run (options, request) {
 
     magic.detect(options.media.data, (err, res) => {
       if (err) {
-        return reject(err)
+        return reject({
+          error: 'mmmagic error',
+          details: err
+        })
       }
       options.media.mimeType = res
 
       googleAuth.setCredentials({ access_token: driveSession.accessToken, refresh_token: driveSession.refreshToken })
       googleAuth.refreshAccessToken((err, tokens) => {
         if (err) {
-          return reject(err)
+          return reject({
+            error: 'OAuth error',
+            details: err
+          })
         }
 
         storeTokens(tokens.access_token, driveSession.refreshToken)

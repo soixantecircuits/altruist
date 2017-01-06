@@ -52,22 +52,26 @@ router.get('/status', (req, res) => {
 for (let action in config.actions) {
   const modulePath = path.resolve(`${__dirname}/../actions/${action}.js`)
   fs.access(modulePath, (err) => {
-    const module = require(modulePath)
-    typeof (module.auth) === 'function' && module.auth(app)
-    typeof (module.loginURL) === 'string' && authRedirect.push({ name: action, URL: module.loginURL })
-    typeof (module.addRoutes) === 'function' && module.addRoutes(app)
-    router.post(`/actions/${action}`, (req, res) => {
-      if (err) {
-        res.status(404).send('No such action.')
-      } else {
-        module.run(req.body, req)
-          .then(response => res.send(response))
-          .catch(reason => {
-            console.log(reason)
-            res.status(500).send(reason)
-          })
-      }
-    })
+    if (!err) {
+      const module = require(modulePath)
+      typeof (module.auth) === 'function' && module.auth(app)
+      typeof (module.loginURL) === 'string' && authRedirect.push({ name: action, URL: module.loginURL })
+      typeof (module.addRoutes) === 'function' && module.addRoutes(app)
+      router.post(`/actions/${action}`, (req, res) => {
+        if (err) {
+          res.status(404).send('No such action.')
+        } else {
+          module.run(req.body, req)
+            .then(response => res.send(response))
+            .catch(reason => {
+              console.log(reason)
+              res.status(500).send(reason)
+            })
+        }
+      })
+    } else {
+      console.log(`Error loading module "${modulePath}": ${err}`)
+    }
   })
 }
 
