@@ -90,7 +90,7 @@ function auth (app) {
       'https://www.googleapis.com/auth/drive.file'
     ],
     accessType: 'offline',
-    prompt: 'consent'
+    prompt: 'select_account'
   }))
   app.get(callbackURL, passport.authenticate('google', {
     failureRedirect: failureURL

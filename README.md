@@ -49,6 +49,7 @@ POST http://localhost:6060/api/v1/actions/{action}
 * [slack](/docs/slack.md)
 * [dropbox](/docs/dropbox.md)
 * [google drive](/docs/googledrive.md)
+* [youtube](/docs/youtube.md)
 * [instagram](/docs/instagram.md)
 * [smtp](/docs/smtp.md)
 * [scp](/docs/scp.md)
