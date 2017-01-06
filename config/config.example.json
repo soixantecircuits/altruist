@@ -7,7 +7,7 @@
   },
   "actions": {
     "mailchimp": {
-      "APIkey": "abcd-xyz",
+      "apiKey": "abcd-xyz",
       "listID": "1234"
     },
     "slack": {
@@ -45,6 +45,20 @@
       "failureURL": "/?failure=dropbox",
       "successURL": "/?success=dropbox",
       "uploadDirectoryPath": ""
+    },
+    "googledrive": {
+      "clientID": "xxxxxxxx",
+      "clientSecret": "xxxxxxxxxxxxxx",
+      "uploadDirectoryID": "", // optional
+      "loginURL": "/login/gdrive", // optional, this is default
+      "callbackURL": "/login/gdrive/return", // optional, this is default
+      "failureURL": "/?failure=gdrive", // optional, this is default
+      "successURL": "/?success=gdrive", // optional, this is default
+      "profileURL": "/profile/gdrive" // optional, this is default
+    },
+    "instagram": {
+      "account": "johndoe",
+      "password": "pony123"
     }
   }
 }

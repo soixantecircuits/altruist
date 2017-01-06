@@ -52,7 +52,10 @@ function getPagesList (callback) {
       setID(lastID)
       storeUserAccounts(res.data)
     } else {
-      console.log(!res ? 'An error occured while getting accounts' : res.error)
+      res = {
+        error: res.error.type,
+        details: res.error.message
+      }
     }
     callback(res)
   })
@@ -112,7 +115,7 @@ function handlePostRequest ({message, media}, resolve, reject) {
 
   fb.api(`/${currentID}/${isMedia ? mediaType : 'feed'}`, 'post', datas, (res) => {
     if (!res || res.error) {
-      reject(res.error ? res.error : 'An error occured while posting.')
+      reject({ error: res.error.code, details: res.error.message })
     }
     resolve(res)
   })
@@ -166,10 +169,10 @@ function run (options, request) {
   return new Promise((resolve, reject) => {
     const message = (options.message || options.caption)
       ? options.message || options.caption
-      : config.actions.slack.message || ''
+      : config.actions.facebook.message || ''
     const media = options.media
       ? options.media
-      : config.actions.slack.media || ''
+      : config.actions.facebook.media || ''
 
     if (!facebookSession || !facebookSession.userAccessToken) {
       return reject({
@@ -194,7 +197,7 @@ function run (options, request) {
     }
 
     setID(facebookSession.currentID)
-    handlePostRequest({ message, media }, resolve, reject)
+    handlePostRequest({ message, media}, resolve, reject)
   })
 }
 

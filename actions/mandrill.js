@@ -58,7 +58,7 @@ function run (options) {
   return new Promise((resolve, reject) => {
     transport
       .sendMail(params, (err, info) => {
-        if (err) return reject(err)
+        if (err) return reject({ error: err.name, details: err.message })
         resolve(info)
       })
   })

@@ -1,6 +1,6 @@
 # Altruist
 
-> Altruist lets you share your content with others
+> 💌 Altruist lets you share your content with people ✌️
 
 Altruist supports the following data formats:
 
@@ -10,29 +10,33 @@ Altruist supports the following data formats:
 
 ## Installation
 
-Install dependencies:
+Install the tool:
 
-`$ npm install` or `$ yarn`
+```sh
+$ yarn global add altruist
+# or
+$ npm install -g altruist
+```
 
 then, provide a configuration file based on the template we provide:
 
 ```sh
-$ cp config/config.example.json config/config.json
+# get the template
+$ wget https://raw.githubusercontent.com/soixantecircuits/altruist/master/config/config.example.json
+# rename it
+$ mv config.example.json my-config.json
+# profit
+$ altruist my-config.json
 ```
 
-for details about what to write in this file, See the `Actions` section below.
+For details about what to write in the config file, See the `Actions` section below.
 
-## Run
+Then:
 
-```sh
-$ npm start [./path/to/custom-config.json]
-$ # or
-$ yarn start
 ```
-
-The API is in v1 so every routes is prefixed with v1`. You can find your actions under :
-
-`http://localhost:6060/api/v1/actions/{action}`
+POST http://localhost:6060/api/v1/actions/{action}
+```
+*More details in the actions docs*
 
 ## Actions
 
@@ -43,6 +47,8 @@ The API is in v1 so every routes is prefixed with v1`. You can find your actions
 * [twitter](/docs/twitter.md)
 * [slack](/docs/slack.md)
 * [dropbox](/docs/dropbox.md)
+* [google drive](/docs/googledrive.md)
+* [instagram](/docs/instagram.md)
 
 ⚠️  *Some actions may require that you log in before using them. You can get a list of those actions with their login url by sending a GET request to the url matching `authRedirect` in the config file (`/authRedirect` by default).*
 
