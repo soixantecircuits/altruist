@@ -59,6 +59,12 @@
     "instagram": {
       "account": "johndoe",
       "password": "pony123"
+    },
+    "scp": {
+      "user": "foo",
+      "password": "bar",
+      "hostname": "example:5050",
+      "target": "/directory/or/file"
     }
   }
 }
