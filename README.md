@@ -46,6 +46,7 @@ POST http://localhost:6060/api/v1/actions/{action}
 * [facebook](/docs/facebook.md)
 * [twitter](/docs/twitter.md)
 * [slack](/docs/slack.md)
+* [dropbox](/docs/dropbox.md)
 * [google drive](/docs/googledrive.md)
 * [instagram](/docs/instagram.md)
 
