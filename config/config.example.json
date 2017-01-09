@@ -89,6 +89,12 @@
       "password": "bar",
       "hostname": "example:5050",
       "target": "/directory/or/file"
+    },
+    "1000mercis": {
+      "url": "https://1000mercis.com",
+      "login": "login",
+      "password": "pass",
+      "templateName": "my-template"
     }
   }
 }
