@@ -8,7 +8,10 @@ In your `config.json` file, you'll need to add the following configuration objec
   "actions": {
     "mandrill": {
       "APIkey": "",
-      "from": "Altruist 🚀 <altruist@example.com>",
+      "from": {
+        "name": "Altruist 🚀",
+        "email": "altruist@shh.ac"
+      },
       "subject": "Altruist",
       "template": "altruist-test"
     }
@@ -31,9 +34,9 @@ curl -X POST -H "Content-Type: application/json" -d '{
       "vars": [{
         "hello": "Hello mail,"
       }],
-      "images": [{
-        "name": 'image',
-        "content": this.$store.state.session.selectedMedia
+      "medias": [{
+        "name": 'media',
+        "content": "/path/to/my/media.ext"
       }]
     }]
   }
@@ -50,7 +53,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
   <body>
     {{#if hello}}<h2>{{hello}}</h2>{{/if}}
     <p>{{#if name}}{{name}} says{{/if}} hello !</p>
-    <img src="{{cid:image}}" />
+    <img src="{{cid:media}}" />
   </body>
 </html>
 ```
@@ -59,6 +62,8 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 #### Options
 
+*note: you can only attach one media*
+
 |name|type|required|description|
 |:---|:---|:---:|:---|
 |**email**|`string|array`|&times;|address(es) that will receive the email|
@@ -66,6 +71,6 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |**vars.targeted**|`array`|&minus;||
 |**vars.targeted.target**|`string`|&minus;|address targeted|
 |**vars.targeted.vars**|`array`|&minus;|create/override `merge_vars` for the concerned address. Works the same as `vars.global`|
-|**images**|`array`|&minus;||
-|**images.name**|`string`|&minus;|name of the image that you will retrieve via `cid:name`|
-|**images.content**|`string`|&minus;|Can be either a path the image (in the filesystem or via http) or straight base64 datas|
+|**media**|`Object`|&minus;||
+|**media.name**|`string`|&minus;|name of the media that you will retrieve via `cid:name`|
+|**media.content**|`string`|&minus;|Can be either a path the media (in the filesystem or via http) or straight base64 datas|

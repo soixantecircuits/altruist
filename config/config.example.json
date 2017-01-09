@@ -16,7 +16,10 @@
     },
     "mandrill": {
       "APIkey": "",
-      "from": "Altruist 🚀 <altruist@example.com>",
+      "from": {
+        "name": "Altruist 🚀",
+        "email": "altruist@shh.ac"
+      },
       "subject": "Altruist",
       "template": "altruist-test"
     },

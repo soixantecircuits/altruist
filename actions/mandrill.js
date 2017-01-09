@@ -1,8 +1,7 @@
 'use strict'
 
 const fs = require('fs')
-const nodemailer = require('nodemailer')
-const mandrill = require('nodemailer-mandrill-transport')
+const med = require('media-helper')
 
 const config = require('../src/lib/config')
 const API_KEY = config.actions.mandrill.APIkey
@@ -10,9 +9,8 @@ const from = config.actions.mandrill.from
 const subject = config.actions.mandrill.subject
 const template = config.actions.mandrill.template
 
-const transport = nodemailer.createTransport(mandrill({
-  auth: { apiKey: API_KEY }
-}))
+const Mandrill = require('mandrill-api/mandrill')
+const mandrill = new Mandrill.Mandrill(API_KEY)
 
 function mapMandrillGlobals (obj) {
   const name = Object.getOwnPropertyNames(obj)[0]
@@ -30,29 +28,33 @@ function mapMandrillTargeted (obj) {
 }
 
 function getMedia (content) {
-  const base64Match = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
-  const httpMatch = /^https?:\/\//i
-
-  if (base64Match.test(content)) {
-    return content
-  } else if (httpMatch.test(content)) {
-    request.get(content, (err, response, body) => {
-      if (!err && response.statusCode === 200) {
-        return body.toString('base64')
-      } else {
-        console.log(err)
-      }
-    })
-  } else if (fs.existsSync(content)) {
-    try {
-      const data = fs.readFileSync(content, { encoding: 'base64' })
-      return data
-    } catch (ex) {
-      console.log(ex)
+  return new Promise((resolve, reject) => {
+    if (med.isBase64(content)) {
+      resolve(content)
+    } else if (med.isURL(content)) {
+      request.get(content, (err, response, body) => {
+        if (!err && response.statusCode === 200) {
+          resolve(body.toString('base64'))
+        } else {
+          reject(err)
+        }
+      })
+    } else if (med.isFile(content)) {
+      resolve(med.toBase64(content))
+    } else {
+      reject('Altruist - Error with request')
     }
-  } else {
-    console.log('Altruist - Error with request')
-  }
+  })
+}
+
+function sendMail (params) {
+  return new Promise((resolve, reject) => {
+    mandrill.messages.sendTemplate(params, (result) => {
+      resolve(result)
+    }, (err) => {
+      if (err) return reject({ error: err.name, details: err.message })
+    })
+  })
 }
 
 function run (options) {
@@ -67,37 +69,40 @@ function run (options) {
   }
 
   const params = {
-    to: options.email,
-    from,
-    subject,
-    mandrillOptions: {
-      template_name: template,
+    template_name: template,
+    template_content: {},
+    message: {
+      to: [{
+        email: options.email
+      }],
+      from_email: from.email,
+      from_name: from.name,
+      subject,
+      merge: true,
       images: [],
-      template_content: {},
-      message: {
-        merge: true,
-        merge_language: 'handlebars',
-        global_merge_vars: options.vars.globals ? options.vars.globals.map(v => mapMandrillGlobals(v)) : [],
-        merge_vars: options.vars.targeted ? options.vars.targeted.map(v => mapMandrillTargeted(v)) : []
-      }
+      merge_language: 'handlebars',
+      global_merge_vars: options.vars.globals ? options.vars.globals.map(v => mapMandrillGlobals(v)) : [],
+      merge_vars: options.vars.targeted ? options.vars.targeted.map(v => mapMandrillTargeted(v)) : []
     }
   }
 
-  options.images.forEach((image) => {
-    params.mandrillOptions.images.push({
-      type: 'image/png',
-      name: image.name,
-      content: getMedia(image.content)
-    })
-  })
-
-  return new Promise((resolve, reject) => {
-    transport
-      .sendMail(params, (err, info) => {
-        if (err) return reject({ error: err.name, details: err.message })
-        resolve(info)
+  if (options.media) {
+    return getMedia(options.media.content)
+      .then((content) => {
+        params.message.images.push({
+          type: 'image/png',
+          name: options.media.name || 'IMAGECID.png',
+          content: content
+        })
+        return sendMail(params)
       })
-  })
+      .catch((err) => {
+        console.log(err)
+        return sendMail(params)
+      })
+  } else {
+    return sendMail(params)
+  }
 }
 
 module.exports.run = run
