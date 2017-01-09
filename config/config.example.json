@@ -95,6 +95,10 @@
       "login": "login",
       "password": "pass",
       "templateName": "my-template"
+    },
+    "socialite": {
+      "bucket": "xxxxx",
+      "token": "xxxxxx"
     }
   }
 }
