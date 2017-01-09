@@ -19,6 +19,7 @@
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.1",
     "dropbox": "^2.5.0",
+    "execa": "^0.6.0",
     "express": "^4.14.0",
     "express-session": "^1.14.2",
     "fb": "^1.1.1",
@@ -41,10 +42,10 @@
     "passport": "^0.3.2",
     "passport-dropbox-oauth2": "^1.1.0",
     "passport-facebook": "^2.1.1",
-    "ssh2": "^0.5.4",
     "passport-google-oauth20": "^1.0.0",
     "request": "^2.79.0",
     "scp2": "^0.5.0",
+    "ssh2": "^0.5.4",
     "twit": "^2.2.5"
   },
   "devDependencies": {
