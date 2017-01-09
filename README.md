@@ -58,6 +58,11 @@ POST http://localhost:6060/api/v1/actions/{action}
 
 ⚠️  *Some actions may require that you log in before using them. You can get a list of those actions with their login url by sending a GET request to the url matching `authRedirect` in the config file (`/authRedirect` by default).*
 
+## Tests
+
+You can check your action URLs and authentication URLs availability by running `npm test`.
+_You will have to start your altruist server before running the test._
+
 ## Contribute
 
 Thanks for helping us! 👏
