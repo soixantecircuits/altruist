@@ -1,6 +1,6 @@
 # Altruist
 
-> Altruist lets you share your content with others
+> 💌 Altruist lets you share your content with people ✌️
 
 Altruist supports the following data formats:
 
@@ -10,140 +10,53 @@ Altruist supports the following data formats:
 
 ## Installation
 
-Install dependencies:
+Install the tool:
 
-`$ npm install` or `$ yarn`
+```sh
+$ yarn global add altruist
+# or
+$ npm install -g altruist
+```
 
 then, provide a configuration file based on the template we provide:
 
 ```sh
-$ cp config/config.example.json config/config.json
+# get the template
+$ wget https://raw.githubusercontent.com/soixantecircuits/altruist/master/config/config.example.json
+# rename it
+$ mv config.example.json my-config.json
+# profit
+$ altruist my-config.json
 ```
 
-for details about what to write in this file, See the `Actions` section below.
+For details about what to write in the config file, See the `Actions` section below.
 
-## Run
+Then:
 
-```sh
-$ npm start [./path/to/custom-config.json]
-$ # or
-$ yarn start
 ```
-
-The API is in v1 so every routes is prefixed with v1`. You can find your actions under :
-
-`http://localhost:6060/api/v1/actions/{action}`
+POST http://localhost:6060/api/v1/actions/{action}
+```
+*More details in the actions docs*
 
 ## Actions
 
-### Mailchimp list subscription
+##### List of available actions:
 
-#### Setup
+* [mailchimp](/docs/mailchimp.md)
+* [mandrill](/docs/mandrill.md)
+* [facebook](/docs/facebook.md)
+* [twitter](/docs/twitter.md)
+* [slack](/docs/slack.md)
+* [dropbox](/docs/dropbox.md)
+* [google drive](/docs/googledrive.md)
+* [youtube](/docs/youtube.md)
+* [instagram](/docs/instagram.md)
+* [mailjet](/docs/mailjet.md)
+* [smtp](/docs/smtp.md)
+* [scp](/docs/scp.md)
+* [ftp](/docs/ftp.md)
 
-In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
-
-```js
-"actions": {
-  "mailchimp": {
-    "apiKey": "abcd-xyz",
-    "listID": "1234"
-  }
-}
-```
-
-#### Usage
-
-`POST /api/v1/actions/mailchimp`
-
-```cURL
-curl -X POST -H "Content-Type: application/json" -d '{
-  "email": "me@example.com",
-  "fname": "John",
-  "lname": "Doe"
-}' "http://localhost:7070/api/v1/actions/mailchimp"
-```
-
-#### Options
-
-|name|type|required|description|
-|:---|:---|:---:|:---|
-|**email**|`string`|&times;|email to be suscribed|
-|**fname**|`string`|&minus;|firstname of the account|
-|**lname**|`string`|&minus;|lastname of the account|
-
-&rarr; to subscribe multiple accounts, simply pass an array of objects following the above scheme.
-
-### Mandrill transactionnal emails
-
-### Setup
-
-In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
-
-```json
-  "actions": {
-    "mandrill": {
-      "APIkey": "",
-      "from": "Altruist 🚀 <altruist@example.com>",
-      "subject": "Altruist",
-      "template": "altruist-test"
-    }
-  }
-```
-
-#### Usage
-
-`POST /api/v1/actions/mandrill`
-
-```cURL
-curl -X POST -H "Content-Type: application/json" -d '{
-  "email": ["mail@example.com", "johndoe@example.com"],
-  "vars": {
-    "globals": [{
-      "name": "Altruist"
-    }],
-    "targeted": [{
-      "target": "mail@example.com",
-      "vars": [{
-        "hello": "Hello mail,"
-      }],
-      "images": [{
-        "name": 'image',
-        "content": this.$store.state.session.selectedMedia
-      }]
-    }]
-  }
-}' "http://localhost:7070/api/v1/actions/mandrill"
-```
-
-```html
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head>
-  <body>
-    {{#if hello}}<h2>{{hello}}</h2>{{/if}}
-    <p>{{#if name}}{{name}} says{{/if}} hello !</p>
-    <img src="{{cid:image}}" />
-  </body>
-</html>
-```
-
-&rarr; [more](https://mandrill.zendesk.com/hc/en-us/articles/205582537-Using-Handlebars-for-Dynamic-Content) about Mandrill variables
-
-#### Options
-
-|name|type|required|description|
-|:---|:---|:---:|:---|
-|**email**|`string|array`|&times;|address(es) that will receive the email|
-|**vars.globals**|`array`|&minus;|array of object defining your Mandrill `merge_vars` (with key = name and value = content)|
-|**vars.targeted**|`array`|&minus;||
-|**vars.targeted.target**|`string`|&minus;|address targeted|
-|**vars.targeted.vars**|`array`|&minus;|create/override `merge_vars` for the concerned address. Works the same as `vars.global`|
-|**images**|`array`|&minus;||
-|**images.name**|`string`|&minus;|name of the image that you will retrieve via `cid:name`|
-|**images.content**|`string`|&minus;|Can be either a path the image (in the filesystem or via http) or straight base64 datas|
+⚠️  *Some actions may require that you log in before using them. You can get a list of those actions with their login url by sending a GET request to the url matching `authRedirect` in the config file (`/authRedirect` by default).*
 
 ## Contribute
 

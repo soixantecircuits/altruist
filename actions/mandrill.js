@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 const fs = require('fs')
 const nodemailer = require('nodemailer')
@@ -55,7 +55,7 @@ function getMedia (content) {
   }
 }
 
-module.exports = (options) => {
+function run (options) {
   try {
     options.vars = options.vars ?
       typeof options.vars === 'object'
@@ -78,7 +78,7 @@ module.exports = (options) => {
         merge: true,
         merge_language: 'handlebars',
         global_merge_vars: options.vars.globals ? options.vars.globals.map(v => mapMandrillGlobals(v)) : [],
-        merge_vars: options.vars.targeted ? options.vars.targeted.map(v => mapMandrillTargeted(v)) : [],
+        merge_vars: options.vars.targeted ? options.vars.targeted.map(v => mapMandrillTargeted(v)) : []
       }
     }
   }
@@ -94,8 +94,10 @@ module.exports = (options) => {
   return new Promise((resolve, reject) => {
     transport
       .sendMail(params, (err, info) => {
-        if (err) return reject(err)
+        if (err) return reject({ error: err.name, details: err.message })
         resolve(info)
       })
   })
 }
+
+module.exports.run = run
