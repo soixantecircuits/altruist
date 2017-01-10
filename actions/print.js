@@ -23,6 +23,7 @@ module.exports = {
       var format = options.format || config.format || 'A4'
       var copies = options.copies || config.copies || 1
       var file = options.file || config.file
+      var customOptions = options.options || config.options || ''
 
       if (file === undefined) {
         reject('Error: No file in config/request')
@@ -35,7 +36,7 @@ module.exports = {
       execa('lp', [ '-d', printer,
         '-o', 'media=' + format,
         '-n', copies.toString(),
-        file])
+        customOptions, file])
       .then(res => {
         console.log('Printing', copies, 'copie(s) with', printer)
         listAvailableFormats(printer)
