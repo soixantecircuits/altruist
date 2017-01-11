@@ -1,47 +1,56 @@
 'use strict'
 
 const config = require('../src/lib/config')
-const socialiteAPI = require('../src/lib/socialite-api')
+const med = require('media-helper')
+const request = require('request')
+const fs = require('fs')
 
-function run (options, request) {
+const baseURL = 'http://app.shh.ac'
+const route = '/wp-json/form/v1/postForm'
+
+function run (options, req) {
   return new Promise((resolve, reject) => {
-    let bucket = options.bucket || config.actions.socialite.bucket
-    let token = options.token || config.actions.socialite.token
-    let name = options.name
-
     // Prepare data to post to the socialite server
-    var params = {
-      bucket: bucket,
-      token: token,
-      name: name,
-      files: []
+    let formData = {
+      bucket: options.bucket || config.actions.socialite.bucket,
+      token: options.token || config.actions.socialite.token,
+      name: options.filename || 'image.jpg',
+      file: null
     }
 
-    if (!request.files && request.files.length === 0) {
-      return reject({
-        error: 'invalid request',
-        details: 'No file given in request.'
-      })
-    }
-
-    for (let i = 0; i < request.files.length; ++i) {
-      params.files.push({
-        value: request.files[i].buffer,
-        options: {
-          filename: request.files[i].originalname,
-          contentType: request.files[i].mimetype
+    let media = req.files ? req.files[0] : options.media
+    if (media) {
+      if (med.isFile(media)) {
+        formData.file = {
+          value: fs.readFileSync(media),
+          options: {
+            filename: options.filename,
+            contentType: 'image/jpg'
+          }
         }
-      })
+      } else {
+        formData.file = {
+          value: media.buffer,
+          options: {
+            filename: media.originalname,
+            contentType: media.mimetype
+          }
+        }
+      }
+    } else {
+      reject({ error: 'Invalid request', details: 'No media provided.' })
     }
 
-    socialiteAPI.uploadFiles(params, (err, res) => {
-      if (err) {
-        return reject(err)
-      }
-      resolve(res)
+    console.log(formData)
+
+    request.post({
+      url: `${baseURL}${route}`,
+      formData: formData
+    }, (err, res, body) => {
+      err && reject(err)
+      resolve(body)
     })
   })
 }
 
-module.exports = {
-run}
+module.exports = { run }

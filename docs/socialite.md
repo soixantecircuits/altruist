@@ -8,10 +8,10 @@ In your `config.json` file, you'll need to add the following configuration objec
 
 ```json
 "actions": {
-    "socialite": {
-      "bucket": "xxxxx",
-      "token": "xxxxxx"
-    }
+  "socialite": {
+    "bucket": "xxxxx",
+    "token": "xxxxxx"
+  }
 }
 ```
 
@@ -23,10 +23,9 @@ You can upload pictures to your bucket by sending them over by form-data :
 curl -X POST -H "Content-Type: multipart/form-data; boundary=----xxxxxxxxxxxxxxxxxxxxxxxxxx"
 -F "bucket=your_bucket"
 -F "token=xxxxxxxxx"
--F "name=post_name"
--F "file1=@firstPicture.jpg"
--F "file2=@secondPicture.png"
-"http://app.shh.ac/wp-json/form/v1/postForm"
+-F "filename=picture"
+-F "media=@picture.jpg"
+"http://localhost:6060/api/v1/actions/socialite"
 ```
 
 #### Options
@@ -35,5 +34,5 @@ curl -X POST -H "Content-Type: multipart/form-data; boundary=----xxxxxxxxxxxxxxx
 |:---|:---|:---:|:---|
 |**bucket**|`string`|_if not in config.json_|your bucket's name|
 |**token**|`string`|_if not in config.json_|your bucket's token|
-|**name**|`string`|&times;|the name to give to the post|
-|**file**|`file`|&times;|the picture to upload (you can upload as many files as you want)|
+|**filename**|`string`|&times;|the filename to give to the post (extension is required)|
+|**media**|`file` or `path`|&times;|the picture to upload (you can upload as many files as you want)|
