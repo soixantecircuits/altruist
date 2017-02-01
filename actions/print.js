@@ -36,13 +36,16 @@ module.exports = {
       execa('lp', [ '-d', printer,
         '-o', 'media=' + format,
         '-n', copies.toString(),
-        customOptions, file])
+        '-o', customOptions,
+        file])
       .then(res => {
         console.log('Printing', copies, 'copie(s) with', printer)
-        listAvailableFormats(printer)
         console.log(res.stdout)
-        resolve('Success')
-      }).catch(error => reject(error.stderr))
+        resolve(res.stdout)
+      }).catch(error => {
+        listAvailableFormats(printer)
+        reject(error.stderr)
+      })
     })
   }
 }
