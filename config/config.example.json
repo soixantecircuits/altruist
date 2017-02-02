@@ -86,6 +86,11 @@
       "password": "bar",
       "hostname": "example:5050",
       "target": "/directory/or/file"
+    },
+    "print": {
+      "printer": "myPrinter",
+      "format": "A4",
+      "copies": 1
     }
   }
 }
