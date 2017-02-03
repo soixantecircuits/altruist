@@ -22,11 +22,11 @@ module.exports = {
       var printer = options.printer || config.printer
       var format = options.format || config.format || 'A4'
       var copies = options.copies || config.copies || 1
-      var file = options.file || config.file
+      var media = options.media || config.media
       var customOptions = options.options || config.options || ''
 
-      if (file === undefined) {
-        reject('Error: No file in config/request')
+      if (media === undefined) {
+        reject('Error: No media in config/request')
       }
       if (printer === undefined) {
         listAvailablePrinters()
@@ -37,7 +37,7 @@ module.exports = {
         '-o', 'media=' + format,
         '-n', copies.toString(),
         '-o', customOptions,
-        file])
+        media])
       .then(res => {
         console.log('Printing', copies, 'copie(s) with', printer)
         console.log(res.stdout)
