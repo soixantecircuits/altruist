@@ -18,7 +18,7 @@ In your `config.json` file, you'll need to add the following configuration objec
 
 ```cURL
 curl -X POST -H "Content-Type: application/json" -d '{
-  "file": "/path/to/image.jpg"
+  "media": "/path/to/image.jpg"
 }' "http://localhost:6060/api/v1/actions/print"
 ```
 
@@ -26,7 +26,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**file**|`string`|&times;|path to a file|
+|**media**|`string`|&times;|path to a media file|
 |**printer**|`string`|&times;|your printer name|
 |**format**|`string`|&minus;|optionnal format description, default is 'A4'|
 |**copies**|`string`|&minus;|optionnal number of copies to print, default is 1|
