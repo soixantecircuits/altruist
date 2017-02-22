@@ -2,6 +2,7 @@
 
 const fs = require('fs')
 const med = require('media-helper')
+const request = require('request')
 
 const config = require('../src/lib/config')
 const API_KEY = config.actions.mandrill.APIkey
