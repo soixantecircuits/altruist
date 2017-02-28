@@ -97,6 +97,10 @@
       "templateName": "my-template"
     },
     "socialite": {
+      "baseURL": "http://url.com",
+      "uploadRoute": "/upload.php"
+    },
+    "socialite-v0": {
       "bucket": "xxxxx",
       "token": "xxxxxx"
     }
