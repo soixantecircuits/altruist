@@ -21,7 +21,7 @@ You can upload pictures via a POST request:
 
 ```cURL
 curl -X POST -H "Content-Type: application/json" -d '{
-  "id": "my_file_id",
+  "filename": "optional_file_name",
   "media": "/path/to/your/file.jpg"
 }' "http://localhost:6060/api/v1/actions/socialite"
 ```
@@ -30,7 +30,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**id**|`string`|&times;|id associated to your file|
+|**filename**|`string`|&minus;|optional filename to rename your file|
 |**media**|`path`|&times;|path to your file|
 
 
