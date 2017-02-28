@@ -9,6 +9,41 @@ In your `config.json` file, you'll need to add the following configuration objec
 ```json
 "actions": {
   "socialite": {
+    "baseURL": "http://url.com",
+    "uploadRoute": "/upload.php"
+  }
+}
+```
+
+#### Usage
+
+You can upload pictures via a POST request:
+
+```cURL
+curl -X POST -H "Content-Type: application/json" -d '{
+  "id": "my_file_id",
+  "media": "/path/to/your/file.jpg"
+}' "http://localhost:6060/api/v1/actions/socialite"
+```
+
+#### Options
+
+|name|type|required|description|
+|:---|:---|:---:|:---|
+|**id**|`string`|&times;|id associated to your file|
+|**media**|`path`|&times;|path to your file|
+
+
+
+### Socialite-v0 (depreciated)
+
+#### Setup
+
+In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+
+```json
+"actions": {
+  "socialite": {
     "bucket": "xxxxx",
     "token": "xxxxxx"
   }
