@@ -103,6 +103,11 @@
     "socialite-v0": {
       "bucket": "xxxxx",
       "token": "xxxxxx"
+    },
+    "print": {
+      "printer": "myPrinter",
+      "format": "A4",
+      "copies": 1
     }
   }
 }
