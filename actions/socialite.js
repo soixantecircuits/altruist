@@ -15,29 +15,24 @@ function run (options, req) {
     if (options.media === undefined) {
       return reject({ error: 'Invalid request', details: 'No media provided' })
     }
-    if (med.isFile(options.media) === false) {
-      return reject({ error: 'No such file', details: options.media })
-    }
-    if (options.filename === undefined) {
-      options.filename = path.basename(options.media)
-    }
-    // Prepare data to post to the socialite server
-    let formData = {
-      id: options.filename,
-      file: {
-        value: fs.readFileSync(options.media),
-        options:{
-          filename: options.filename,
-          contentType: 'image/jpg'
-        }
+    med.toBase64(options.media)
+    .catch(error => reject(error))
+    .then(result => {
+      if (options.filename === undefined) {
+        options.filename = path.basename(options.media)
       }
-    }
-    request.post({
-      url: `${baseURL}${route}`,
-      formData: formData
-    }, (err, res, body) => {
-      err && reject(err)
-      resolve(body)
+      // Prepare data to post to the socialite server
+      let formData = {
+        id: options.filename,
+        img: result
+      }
+      request.post({
+        url: `${baseURL}${route}`,
+        formData: formData
+      }, (err, res, body) => {
+        err && reject(err)
+        resolve(body)
+      })
     })
   })
 }
