@@ -4,51 +4,35 @@ const config = require('../src/lib/config')
 const med = require('media-helper')
 const request = require('request')
 const fs = require('fs')
+const path = require('path')
 
-const baseURL = 'http://app.shh.ac'
-const route = '/wp-json/form/v1/postForm'
+const baseURL = config.actions.socialite.baseURL
+const route = config.actions.socialite.uploadRoute
 
 function run (options, req) {
   return new Promise((resolve, reject) => {
-    // Prepare data to post to the socialite server
-    let formData = {
-      bucket: options.bucket || config.actions.socialite.bucket,
-      token: options.token || config.actions.socialite.token,
-      name: options.filename || 'image.jpg',
-      file: null
+    console.log(options)
+    if (options.media === undefined) {
+      return reject({ error: 'Invalid request', details: 'No media provided' })
     }
-
-    let media = req.files ? req.files[0] : options.media
-    if (media) {
-      if (med.isFile(media)) {
-        formData.file = {
-          value: fs.readFileSync(media),
-          options: {
-            filename: options.filename,
-            contentType: 'image/jpg'
-          }
-        }
-      } else {
-        formData.file = {
-          value: media.buffer,
-          options: {
-            filename: media.originalname,
-            contentType: media.mimetype
-          }
-        }
+    med.toBase64(options.media)
+    .catch(error => reject(error))
+    .then(result => {
+      if (options.filename === undefined) {
+        options.filename = path.basename(options.media)
       }
-    } else {
-      reject({ error: 'Invalid request', details: 'No media provided.' })
-    }
-
-    console.log(formData)
-
-    request.post({
-      url: `${baseURL}${route}`,
-      formData: formData
-    }, (err, res, body) => {
-      err && reject(err)
-      resolve(body)
+      // Prepare data to post to the socialite server
+      let formData = {
+        id: options.filename,
+        img: result
+      }
+      request.post({
+        url: `${baseURL}${route}`,
+        formData: formData
+      }, (err, res, body) => {
+        err && reject(err)
+        resolve(body)
+      })
     })
   })
 }
