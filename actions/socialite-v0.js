@@ -6,8 +6,8 @@ const request = require('request')
 const fs = require('fs')
 const path = require('path')
 
-const baseURL = config.actions.socialite.baseURL
-const route = config.actions.socialite.uploadRoute
+const baseURL = config.actions['socialite-v0'].baseURL
+const route = config.actions['socialite-v0'].uploadRoute
 
 function run (options, req) {
   return new Promise((resolve, reject) => {
