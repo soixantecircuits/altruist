@@ -121,3 +121,4 @@ mock/fakedata.json
 storage/*
 uploads/*
 scratch/*
+config/config.json.bk
