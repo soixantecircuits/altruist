@@ -108,6 +108,18 @@
       "printer": "myPrinter",
       "format": "A4",
       "copies": 1
+    },
+    "win32printer": {
+      "printer": "myPrinter",
+      "format": "A4",
+      "copies": 1,
+      "host": "192.168.56.1(where is your samba folder)",
+      "guest": "192.168.56.101(where is your windows)",
+      "user": "mywindowsuser",
+      "password": "mywindowspassword",
+      "sambaFolderName": "mysambafolder",
+      "sambaUser": "mysambauser",
+      "sambaPassword": "mysambapassword"
     }
   }
 }

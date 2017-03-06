@@ -114,6 +114,10 @@ jspm_packages
 # VS Code
 .vscode/*
 
+# Vim
+*.swp
+*.swo
+
 config/*.json
 !config/config.example.json
 mock/fakedata.json
