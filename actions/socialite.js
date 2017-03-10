@@ -8,41 +8,18 @@ const fs = require('fs')
 const baseURL = 'http://app.shh.ac'
 const route = '/wp-json/form/v1/postForm'
 
-function run (options, req) {
+function formDataFile(value, name, type) {
+  return {
+    value: value,
+    options: {
+      filename: name,
+      contentType: type
+    }
+  }
+}
+
+function sendRequest(formData) {
   return new Promise((resolve, reject) => {
-    // Prepare data to post to the socialite server
-    let formData = {
-      bucket: options.bucket || config.actions.socialite.bucket,
-      token: options.token || config.actions.socialite.token,
-      name: options.filename || 'image.jpg',
-      file: null
-    }
-
-    let media = req.files ? req.files[0] : options.media
-    if (media) {
-      if (med.isFile(media)) {
-        formData.file = {
-          value: fs.readFileSync(media),
-          options: {
-            filename: options.filename,
-            contentType: 'image/jpg'
-          }
-        }
-      } else {
-        formData.file = {
-          value: media.buffer,
-          options: {
-            filename: media.originalname,
-            contentType: media.mimetype
-          }
-        }
-      }
-    } else {
-      reject({ error: 'Invalid request', details: 'No media provided.' })
-    }
-
-    console.log(formData)
-
     request.post({
       url: `${baseURL}${route}`,
       formData: formData
@@ -50,6 +27,43 @@ function run (options, req) {
       err && reject(err)
       resolve(body)
     })
+  })
+}
+
+function run (options, req) {
+  return new Promise((resolve, reject) => {
+    // Prepare data to post to the socialite server
+    if (options.filename === undefined) {
+      reject({ error: 'Invalid request', details: 'No filename provided' })
+    }
+    let formData = {
+      bucket: options.bucket || config.actions.socialite.bucket,
+      token: options.token || config.actions.socialite.token,
+      name: options.filename,
+      file: null
+    }
+
+    let media = undefined
+    if (req.files) {
+      media = req.files[0]
+      formData.file = formDataFile(media.buffer, media.originalname, media.mimetype)
+      sendRequest(formData)
+      .then(body => resolve(body))
+      .catch(error => reject(error))
+
+    } else if (med.isFile(options.media)) {
+      media = options.media
+      med.getMimeType(media)
+      .then(type => {
+        formData.file = formDataFile(fs.readFileSync(media), options.filename, type)
+        sendRequest(formData)
+        .then(body => resolve(body))
+        .catch(error => reject(error))
+
+      }).catch(error => reject(error))
+    } else {
+      reject({ error: 'Invalid request', details: 'No media provided' })
+    }
   })
 }
 
