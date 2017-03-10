@@ -4,6 +4,7 @@ const config = require('../src/lib/config')
 const med = require('media-helper')
 const request = require('request')
 const fs = require('fs')
+const path = require('path')
 
 const baseURL = 'http://app.shh.ac'
 const route = '/wp-json/form/v1/postForm'
@@ -55,7 +56,8 @@ function run (options, req) {
       media = options.media
       med.getMimeType(media)
       .then(type => {
-        formData.file = formDataFile(fs.readFileSync(media), options.filename, type)
+        let ext = '.' + path.basename(type)
+        formData.file = formDataFile(fs.readFileSync(media), options.filename + ext, type)
         sendRequest(formData)
         .then(body => resolve(body))
         .catch(error => reject(error))
