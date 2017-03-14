@@ -1,14 +1,14 @@
 'use strict'
 
 const Twit = require('twit')
-const config = require('../src/lib/config')
+const config = require('../src/lib/config').actions.twitter
 const med = require('media-helper')
 
 const T = new Twit({
-  consumer_key: config.actions.twitter.consumer_key,
-  consumer_secret: config.actions.twitter.consumer_secret,
-  access_token: config.actions.twitter.access_token,
-  access_token_secret: config.actions.twitter.access_token_secret,
+  consumer_key: config.consumer_key,
+  consumer_secret: config.consumer_secret,
+  access_token: config.access_token,
+  access_token_secret: config.access_token_secret,
   timeout_ms: 60 * 1000
 })
 
@@ -57,12 +57,9 @@ function uploadVideo (message, media) {
 module.exports = {
   run: (options) => {
     return new Promise((resolve, reject) => {
-      const message = (options.message || options.caption)
-        ? options.message || options.caption
-        : config.actions.twitter.message || ''
-      const media = options.media
-        ? options.media
-        : config.actions.twitter.media || ''
+      const tweet = Object.assign({}, config, options)
+      const media = tweet.media
+      const message = tweet.message
 
       // Supported formats: JPG, PNG, GIF, WEBP, MP4
       if (media) {

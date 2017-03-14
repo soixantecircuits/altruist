@@ -46,7 +46,7 @@ function run (options, request) {
 
     let mailProperties = {
       'FromEmail': fromEmail,
-      'Recipients': JSON.parse(options.recipients),
+      'Recipients': options.recipients,
       'Subject': options.subject,
       'Text-part': options.textPart,
       'Html-part': options.htmlPart,

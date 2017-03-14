@@ -18,7 +18,7 @@ In your `config.json` file, you'll need to add the following configuration objec
 ```cURL
 curl -X POST -H "Content-Type: application/json" -d '{
   "caption": "hello!",
-  "path": "/path/to/my/img.jpg"
+  "media": "/path/to/my/img.jpg"
 }' "http://localhost:6060/api/v1/actions/slack"
 ```
 

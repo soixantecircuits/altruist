@@ -1,6 +1,6 @@
 {
   "storageDir": "./storage",
-  "authRedirectURL": "/authRedirect", // optional, this is default
+  "authRedirectURL": "/authRedirect",
   "secret": "my-secret",
   "server": {
     "port": 6060
@@ -16,20 +16,23 @@
     },
     "mandrill": {
       "APIkey": "",
-      "from": "Altruist 🚀 <altruist@example.com>",
+      "from": {
+        "name": "Altruist 🚀",
+        "email": "altruist@shh.ac"
+      },
       "subject": "Altruist",
       "template": "altruist-test"
     },
     "facebook": {
       "appID": "abcd-xyz",
       "appSecret": "shhh",
-      "loginURL": "/login/facebook", // optionnal, this is default
-      "callbackURL": "/login/facebook/return", // optionnal, this is default
-      "failureURL": "/?failure=facebook", // optionnal, this is default
-      "successURL": "/?success=facebook", // optionnal, this is default
-      "profileURL": "/profile/facebook", // optional, this is default
-      "accountsURL": "/accounts/facebook", // optional, this is default
-      "pageID": "" // optionnal
+      "loginURL": "/login/facebook",
+      "callbackURL": "/login/facebook/return",
+      "failureURL": "/?failure=facebook",
+      "successURL": "/?success=facebook",
+      "profileURL": "/profile/facebook",
+      "accountsURL": "/accounts/facebook",
+      "pageID": ""
     },
     "twitter": {
       "consumer_key": "<your_consumer_key>",
@@ -49,22 +52,22 @@
     "googledrive": {
       "clientID": "xxxxxxxx",
       "clientSecret": "xxxxxxxxxxxxxx",
-      "uploadDirectoryID": "", // optional
-      "loginURL": "/login/gdrive", // optional, this is default
-      "callbackURL": "/login/gdrive/return", // optional, this is default
-      "failureURL": "/?failure=gdrive", // optional, this is default
-      "successURL": "/?success=gdrive", // optional, this is default
-      "profileURL": "/profile/gdrive" // optional, this is default
+      "uploadDirectoryID": "",
+      "loginURL": "/login/gdrive",
+      "callbackURL": "/login/gdrive/return",
+      "failureURL": "/?failure=gdrive",
+      "successURL": "/?success=gdrive",
+      "profileURL": "/profile/gdrive"
     },
     "youtube": {
       "clientID": "xxxxxxxx",
       "clientSecret": "xxxxxxxxxxxxxx",
-      "loginURL": "/login/youtube", // optional, this is default
-      "callbackURL": "/login/youtube/return", // optional, this is default
-      "failureURL": "/?failure=youtube", // optional, this is default
-      "successURL": "/?success=youtube", // optional, this is default
-      "profileURL": "/profile/youtube", // optional, this is default
-      "privacyStatus": "public" // optional, this is default
+      "loginURL": "/login/youtube",
+      "callbackURL": "/login/youtube/return",
+      "failureURL": "/?failure=youtube",
+      "successURL": "/?success=youtube",
+      "profileURL": "/profile/youtube",
+      "privacyStatus": "public"
     },
     "instagram": {
       "account": "johndoe",
@@ -73,7 +76,7 @@
     "mailjet": {
       "apiKey": "xxxxxxx",
       "secretKey": "xxxxxxxx",
-      "fromEmail": "your@e.mail" // optional if sent in request
+      "fromEmail": "your@e.mail"
     },
     "smtp": {
       "user": "your@mail.com",
@@ -86,6 +89,37 @@
       "password": "bar",
       "hostname": "example:5050",
       "target": "/directory/or/file"
+    },
+    "1000mercis": {
+      "url": "https://1000mercis.com",
+      "login": "login",
+      "password": "pass",
+      "templateName": "my-template"
+    },
+    "socialite-v0": {
+      "baseURL": "http://url.com",
+      "uploadRoute": "/upload.php"
+    },
+    "socialite": {
+      "bucket": "xxxxx",
+      "token": "xxxxxx"
+    },
+    "print": {
+      "printer": "myPrinter",
+      "format": "A4",
+      "copies": 1
+    },
+    "win32printer": {
+      "printer": "myPrinter",
+      "format": "A4",
+      "copies": 1,
+      "host": "192.168.56.1(where is your samba folder)",
+      "guest": "192.168.56.101(where is your windows)",
+      "user": "mywindowsuser",
+      "password": "mywindowspassword",
+      "sambaFolderName": "mysambafolder",
+      "sambaUser": "mysambauser",
+      "sambaPassword": "mysambapassword"
     }
   }
 }
