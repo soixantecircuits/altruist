@@ -1,6 +1,7 @@
 'use strict'
 
 const fs = require('fs')
+const path = require('path')
 const med = require('media-helper')
 const request = require('request')
 
@@ -80,6 +81,7 @@ function run (options) {
       from_name: from.name,
       subject,
       merge: true,
+      attachments: [],
       images: [],
       merge_language: 'handlebars',
       global_merge_vars: options.vars.globals ? options.vars.globals.map(v => mapMandrillGlobals(v)) : [],
@@ -90,11 +92,20 @@ function run (options) {
   if (options.media) {
     return getMedia(options.media.content)
       .then((content) => {
-        params.message.images.push({
-          type: 'image/png',
-          name: options.media.name || 'IMAGECID.png',
-          content: content
-        })
+        let filename = path.basename(options.media.content)
+        if ((/\.(mp4|mpeg|mkv|webm|avi)$/i).test(filename)) {
+          params.message.attachments.push({
+            type: "video/" + path.extname(filename),
+            name: options.media.name,
+            content: content
+          })
+        } else {
+          params.message.images.push({
+            type: 'image/png',
+            name: options.media.name || 'IMAGECID.png',
+            content: content
+          })
+        }
         return sendMail(params)
       })
       .catch((err) => {
