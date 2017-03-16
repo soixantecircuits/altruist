@@ -72,6 +72,7 @@ function run (options) {
   if (options.media) {
 
     return new Promise((resolve, reject) => {
+      let uploadedContent = 0
 
       options.media.forEach((media, index) => {
         med.toBase64(media.content)
@@ -90,7 +91,8 @@ function run (options) {
               content: content
             })
           }
-          if (index === options.media.length - 1) {
+          uploadedContent += 1
+          if (uploadedContent === options.media.length) {
             sendMail(params)
             .then(response => resolve(response))
             .catch(error => reject(error))
@@ -98,7 +100,8 @@ function run (options) {
         })
         .catch((err) => {
           console.log(err)
-          if (index === options.media.length - 1) {
+          uploadedContent += 1
+          if (uploadedContent === options.media.length) {
             sendMail(params)
             .then(response => resolve(response))
             .catch(error => reject(error))
