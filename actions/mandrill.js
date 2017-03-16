@@ -70,28 +70,42 @@ function run (options) {
   }
 
   if (options.media) {
-    return med.toBase64(options.media.content)
-      .then((content) => {
-        let filename = path.basename(options.media.content)
-        if ((/\.(mp4|mpeg|mkv|webm|avi)$/i).test(filename)) {
-          params.message.attachments.push({
-            type: "video/" + path.extname(filename),
-            name: options.media.name,
-            content: content
-          })
-        } else {
-          params.message.images.push({
-            type: 'image/png',
-            name: options.media.name || 'IMAGECID.png',
-            content: content
-          })
-        }
-        return sendMail(params)
+
+    return new Promise((resolve, reject) => {
+
+      options.media.forEach((media, index) => {
+        med.toBase64(media.content)
+        .then((content) => {
+          let ext = path.extname(media.content)
+          if ((/\.(mp4|mpeg|mkv|webm|avi)$/i).test(ext)) {
+            params.message.attachments.push({
+              type: "video/" + ext.substring(1),
+              name: media.name || 'video' + ext.substring(1) ,
+              content: content
+            })
+          } else {
+            params.message.images.push({
+              type: 'image/' + ext.substring(1),
+              name: media.name || 'IMAGEID',
+              content: content
+            })
+          }
+          if (index === options.media.length - 1) {
+            sendMail(params)
+            .then(response => resolve(response))
+            .catch(error => reject(error))
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          if (index === options.media.length - 1) {
+            sendMail(params)
+            .then(response => resolve(response))
+            .catch(error => reject(error))
+          }
+        })
       })
-      .catch((err) => {
-        console.log(err)
-        return sendMail(params)
-      })
+    })
   } else {
     return sendMail(params)
   }

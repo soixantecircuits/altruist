@@ -24,7 +24,7 @@ In your `config.json` file, you'll need to add the following configuration objec
 
 ```cURL
 curl -X POST -H "Content-Type: application/json" -d '{
-  "email": ["mail@example.com", "johndoe@example.com"],
+  "email": "mail@example.com",
   "vars": {
     "globals": [{
       "name": "Altruist"
@@ -34,8 +34,8 @@ curl -X POST -H "Content-Type: application/json" -d '{
       "vars": [{
         "hello": "Hello mail,"
       }],
-      "medias": [{
-        "name": 'media',
+      "media": [{
+        "name": 'media.ext',
         "content": "/path/to/my/media.ext"
       }]
     }]
