@@ -1,6 +1,7 @@
 'use strict'
 
 const fs = require('fs')
+const path = require('path')
 const med = require('media-helper')
 const request = require('request')
 
@@ -26,26 +27,6 @@ function mapMandrillTargeted (obj) {
     rcpt: obj.target,
     vars: obj.vars ? obj.vars.map(v => mapMandrillGlobals(v)) : []
   }
-}
-
-function getMedia (content) {
-  return new Promise((resolve, reject) => {
-    if (med.isBase64(content)) {
-      resolve(content)
-    } else if (med.isURL(content)) {
-      request.get(content, (err, response, body) => {
-        if (!err && response.statusCode === 200) {
-          resolve(body.toString('base64'))
-        } else {
-          reject(err)
-        }
-      })
-    } else if (med.isFile(content)) {
-      resolve(med.toBase64(content))
-    } else {
-      reject('Altruist - Error with request')
-    }
-  })
 }
 
 function sendMail (params) {
@@ -80,6 +61,7 @@ function run (options) {
       from_name: from.name,
       subject,
       merge: true,
+      attachments: [],
       images: [],
       merge_language: 'handlebars',
       global_merge_vars: options.vars.globals ? options.vars.globals.map(v => mapMandrillGlobals(v)) : [],
@@ -88,19 +70,42 @@ function run (options) {
   }
 
   if (options.media) {
-    return getMedia(options.media.content)
-      .then((content) => {
-        params.message.images.push({
-          type: 'image/png',
-          name: options.media.name || 'IMAGECID.png',
-          content: content
+
+    return new Promise((resolve, reject) => {
+
+      options.media.forEach((media, index) => {
+        med.toBase64(media.content)
+        .then((content) => {
+          let ext = path.extname(media.content)
+          if ((/\.(mp4|mpeg|mkv|webm|avi)$/i).test(ext)) {
+            params.message.attachments.push({
+              type: "video/" + ext.substring(1),
+              name: media.name || 'video' + ext.substring(1) ,
+              content: content
+            })
+          } else {
+            params.message.images.push({
+              type: 'image/' + ext.substring(1),
+              name: media.name || 'IMAGEID',
+              content: content
+            })
+          }
+          if (index === options.media.length - 1) {
+            sendMail(params)
+            .then(response => resolve(response))
+            .catch(error => reject(error))
+          }
         })
-        return sendMail(params)
+        .catch((err) => {
+          console.log(err)
+          if (index === options.media.length - 1) {
+            sendMail(params)
+            .then(response => resolve(response))
+            .catch(error => reject(error))
+          }
+        })
       })
-      .catch((err) => {
-        console.log(err)
-        return sendMail(params)
-      })
+    })
   } else {
     return sendMail(params)
   }
