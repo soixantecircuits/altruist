@@ -29,26 +29,6 @@ function mapMandrillTargeted (obj) {
   }
 }
 
-function getMedia (content) {
-  return new Promise((resolve, reject) => {
-    if (med.isBase64(content)) {
-      resolve(content)
-    } else if (med.isURL(content)) {
-      request.get(content, (err, response, body) => {
-        if (!err && response.statusCode === 200) {
-          resolve(body.toString('base64'))
-        } else {
-          reject(err)
-        }
-      })
-    } else if (med.isFile(content)) {
-      resolve(med.toBase64(content))
-    } else {
-      reject('Altruist - Error with request')
-    }
-  })
-}
-
 function sendMail (params) {
   return new Promise((resolve, reject) => {
     mandrill.messages.sendTemplate(params, (result) => {
@@ -90,7 +70,7 @@ function run (options) {
   }
 
   if (options.media) {
-    return getMedia(options.media.content)
+    return med.toBase64(options.media.content)
       .then((content) => {
         let filename = path.basename(options.media.content)
         if ((/\.(mp4|mpeg|mkv|webm|avi)$/i).test(filename)) {
