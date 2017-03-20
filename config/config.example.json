@@ -76,7 +76,8 @@
     "mailjet": {
       "apiKey": "xxxxxxx",
       "secretKey": "xxxxxxxx",
-      "fromEmail": "your@e.mail"
+      "fromEmail": "your@e.mail",
+      "templateID": "xxxxxx"
     },
     "smtp": {
       "user": "your@mail.com",
