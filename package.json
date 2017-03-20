@@ -6,11 +6,16 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "bin": "./bin/altruist",
-    "test": "mocha ./config/config.json ./tests/urlTest.js"
+    "test": "mocha ./config/config.json ./tests/urlTest.js && ava --verbose"
   },
   "main": "src/index.js",
   "bin": {
     "altruist": "bin/altruist"
+  },
+  "ava": {
+    "files": [
+      "tests/ava/*.js"
+    ]
   },
   "repository": "git@github.com:soixantecircuits/altruist.git",
   "dependencies": {
@@ -51,6 +56,7 @@
     "twit": "^2.2.5"
   },
   "devDependencies": {
+    "ava": "^0.18.2",
     "nodemon": "^1.11.0"
   },
   "keywords": [
