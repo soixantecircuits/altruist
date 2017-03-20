@@ -11,7 +11,8 @@ In your `config.json` file, you'll need to add the following configuration objec
   "mailjet": {
     "apiKey": "xxxxxxx",
     "secretKey": "xxxxxxxx",
-    "fromEmail": "your@e.mail"
+    "fromEmail": "your@e.mail",
+		"templateID": "xxxx"
   }
 }
 ```

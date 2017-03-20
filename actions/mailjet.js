@@ -7,31 +7,32 @@ const mailjet = require('node-mailjet').connect(config.actions.mailjet.apiKey, c
 function run (options, request) {
   return new Promise((resolve, reject) => {
     if (!options.fromEmail && !config.actions.mailjet.fromEmail) {
-      reject({
+      return reject({
         error: 'missing parameter',
         details: 'The "fromEmail" parameter is missing in the request.'
       })
     }
     if (!options.recipients) {
-      reject({
+      return reject({
         error: 'missing parameter',
         details: 'The "recipients" parameter is missing in the request.'
       })
     }
     if (!options.subject) {
-      reject({
+      return reject({
         error: 'missing parameter',
         details: 'The "subject" parameter is missing in the request.'
       })
     }
-    if (!options.textPart && !options.htmlPart && !options.templateID) {
-      reject({
+    if (!options.textPart && !options.htmlPart && !options.templateID && !config.actions.mailjet.templateID) {
+      return reject({
         error: 'missing parameter',
         details: 'No "textPart" or "htmlPart" or "templateID" parameter was found in the request. Provide at least one of those parameters.'
       })
     }
 
     let fromEmail = options.fromEmail || config.actions.mailjet.fromEmail
+    let templateID = options.templateID || config.actions.mailjet.templateID
     let medias
     if (request.files && request.files.length > 0) {
       medias = []
@@ -50,12 +51,12 @@ function run (options, request) {
       'Subject': options.subject,
       'Text-part': options.textPart,
       'Html-part': options.htmlPart,
-      'MJ-TemplateID': options.templateID,
-      'MJ-TemplateLanguage': options.templateID ? true : false,
+      'MJ-TemplateID': templateID,
+      'MJ-TemplateLanguage': templateID ? true : false,
       'Vars': options.vars ? JSON.parse(options.vars) : options.vars,
       'Attachments': medias
     }
-
+console.log(mailProperties)
     mailjet.post('send')
       .request(mailProperties)
       .then((result) => {
