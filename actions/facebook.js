@@ -3,6 +3,7 @@
 const passport = require('passport')
 const FacebookStrategy = require('passport-facebook').Strategy
 var fb = new require('fb')
+fb.options({ version: 'v2.8' })
 const config = require('../src/lib/config')
 const localStorage = require('../src/lib/localstorage')
 
@@ -86,7 +87,7 @@ function getMediaType (media) {
   }
 }
 
-function handlePostRequest ({message, media}, resolve, reject) {
+function handlePostRequest ({message, link, media}, resolve, reject) {
   const isMedia = (media)
   const mediaType = getMediaType(media)
   const datas = {}
@@ -113,6 +114,10 @@ function handlePostRequest ({message, media}, resolve, reject) {
     }
   }
 
+  if (link) {
+    datas.link = link
+  }
+
   fb.api(`/${currentID}/${isMedia ? mediaType : 'feed'}`, 'post', datas, (res) => {
     if (!res || res.error) {
       reject({ error: res.error.code, details: res.error.message })
@@ -134,6 +139,7 @@ function auth (app) {
   }))
 
   app.get(loginURL, passport.authenticate('facebook', {
+    authType: 'reauthenticate',
     scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions']
   }))
   app.get(callbackURL, passport.authenticate('facebook', {
@@ -173,13 +179,14 @@ function run (options, request) {
     const media = options.media
       ? options.media
       : config.actions.facebook.media || ''
+    const link = options.link ? options.link : config.actions.facebook.link
 
     if (!facebookSession || !facebookSession.userAccessToken) {
       return reject({
         error: 'invalid TOKEN',
         details: `No facebook user access token found in local storage. Please log in at ${loginURL}.`
       })
-    } else if ((!message) && (!media) && !request.file) {
+    } else if ((!message) && (!media) && !request.file && link) {
       return reject({
         error: 'invalid argument',
         details: 'No message or media in facebook POST request.'
@@ -197,7 +204,7 @@ function run (options, request) {
     }
 
     setID(facebookSession.currentID)
-    handlePostRequest({ message, media}, resolve, reject)
+    handlePostRequest({ message, link, media}, resolve, reject)
   })
 }
 
