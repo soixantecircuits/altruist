@@ -24,5 +24,5 @@ curl -X POST -H "Content-Type: application/json" -d '
 
 #### Options
 
-You can include any available altruist's action in your request to `share`. (Here `twitter` and `mandrill`)
+You can include any available altruist's action in your request to `share` (here `twitter` and `mandrill`).  
 The documentation lists what options are needed by each action.  

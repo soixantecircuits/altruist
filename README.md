@@ -42,6 +42,7 @@ POST http://localhost:6060/api/v1/actions/{action}
 
 ##### List of available actions:
 
+* [share](/docs/share.md)
 * [mailchimp](/docs/mailchimp.md)
 * [mandrill](/docs/mandrill.md)
 * [facebook](/docs/facebook.md)
