@@ -1,7 +1,7 @@
 const FTPClient = require('ftp')
 const SSHClient = require('ssh2').Client
 const path = require('path')
-const config = require('../src/lib/config').actions.ftp
+const settings = require('nconf').get().actions.ftp
 
 function isDefined (variable) {
   return !(variable === undefined || variable === '' || variable === null)
@@ -19,10 +19,10 @@ function putFTP (source, destination) {
     })
 
     c.connect({
-      host: config.host,
-      port: config.port,
-      user: config.user,
-      password: config.password
+      host: settings.host,
+      port: settings.port,
+      user: settings.user,
+      password: settings.password
     })
   })
 }
@@ -39,10 +39,10 @@ function putSFTP (source, destination) {
         })
       })
     }).connect({
-      host: config.host,
-      port: config.port,
-      user: config.user,
-      password: config.password
+      host: settings.host,
+      port: settings.port,
+      user: settings.user,
+      password: settings.password
     })
   })
 }
@@ -63,7 +63,7 @@ module.exports = {
         reject('Error: source and destination paths must be absolute')
       }
 
-      if (config.ssh === true) {
+      if (settings.ssh === true) {
         putSFTP(options.source, options.destination)
           .then((response) => { resolve(response) })
           .catch((reason) => { reject(reason) })

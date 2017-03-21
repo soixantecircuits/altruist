@@ -1,9 +1,9 @@
 'use strict'
 
 const Mailchimp = require('mailchimp-api-v3')
-const config = require('../src/lib/config')
+const settings = require('nconf').get()
 
-const API_KEY = config.actions.mailchimp.apiKey
+const API_KEY = settings.actions.mailchimp.apiKey
 const mailchimp = (API_KEY) ? new Mailchimp(API_KEY) : null
 
 function mapListMember (member) {
@@ -21,7 +21,7 @@ function run (options) {
   const members = Array.isArray(options) ? options.map(m => mapListMember(m)) : [ mapListMember(options) ]
   return new Promise((resolve, reject) => {
     mailchimp
-      .post(`/lists/${config.actions.mailchimp.listID}`, {
+      .post(`/lists/${settings.actions.mailchimp.listID}`, {
         members: members
       }).then((results) => {
       if (results.errors.length) {

@@ -1,10 +1,10 @@
 const path = require('path')
 const Client = require('instagram-private-api').V1
 
-const config = require('../src/lib/config').actions.instagram
-const cookiePath = path.join('/tmp', config.account + '.json')
+const settings = require('nconf').get().actions.instagram
+const cookiePath = path.join('/tmp', settings.account + '.json')
 
-var device = new Client.Device(config.account)
+var device = new Client.Device(settings.account)
 var storage = new Client.CookieFileStorage(cookiePath)
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
         })
       }
 
-      Client.Session.create(device, storage, config.account, config.password)
+      Client.Session.create(device, storage, settings.account, settings.password)
         .then((session) => {
           Client.Upload.photo(session, options.media)
             .then((upload) => {

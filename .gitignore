@@ -21,7 +21,7 @@
 Thumbs.db
 ehthumbs.db
 
-# Folder config file
+# Folder settings file
 Desktop.ini
 
 # Recycle Bin used on file shares
@@ -118,11 +118,11 @@ jspm_packages
 *.swp
 *.swo
 
-config/*.json
-!config/config.example.json
+settings/*.json
+!settings/settings.example.json
 mock/fakedata.json
 mock/fakedata.json
 storage/*
 uploads/*
 scratch/*
-config/config.json.bk
+settings/settings.json.bk

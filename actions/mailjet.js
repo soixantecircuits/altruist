@@ -1,12 +1,12 @@
 'use strict'
 
-const config = require('../src/lib/config')
+const settings = require('nconf').get()
 const mediaUtils = require('../src/lib/media')
-const mailjet = require('node-mailjet').connect(config.actions.mailjet.apiKey, config.actions.mailjet.secretKey)
+const mailjet = require('node-mailjet').connect(settings.actions.mailjet.apiKey, settings.actions.mailjet.secretKey)
 
 function run (options, request) {
   return new Promise((resolve, reject) => {
-    if (!options.fromEmail && !config.actions.mailjet.fromEmail) {
+    if (!options.fromEmail && !settings.actions.mailjet.fromEmail) {
       return reject({
         error: 'missing parameter',
         details: 'The "fromEmail" parameter is missing in the request.'
@@ -24,15 +24,15 @@ function run (options, request) {
         details: 'The "subject" parameter is missing in the request.'
       })
     }
-    if (!options.textPart && !options.htmlPart && !options.templateID && !config.actions.mailjet.templateID) {
+    if (!options.textPart && !options.htmlPart && !options.templateID && !settings.actions.mailjet.templateID) {
       return reject({
         error: 'missing parameter',
         details: 'No "textPart" or "htmlPart" or "templateID" parameter was found in the request. Provide at least one of those parameters.'
       })
     }
 
-    let fromEmail = options.fromEmail || config.actions.mailjet.fromEmail
-    let templateID = options.templateID || config.actions.mailjet.templateID
+    let fromEmail = options.fromEmail || settings.actions.mailjet.fromEmail
+    let templateID = options.templateID || settings.actions.mailjet.templateID
     let medias
     if (request.files && request.files.length > 0) {
       medias = []

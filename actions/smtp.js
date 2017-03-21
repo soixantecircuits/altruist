@@ -1,13 +1,13 @@
 'use strict'
 
 const nodemailer = require('nodemailer')
-const config = require('../src/lib/config')
+const settings = require('nconf').get()
 
 function run (options, request) {
   return new Promise((resolve, reject) => {
-    const user = options.user || config.actions.smtp.user
-    const password = options.password || config.actions.smtp.password
-    const smtpServer = options.smtpServer || config.actions.smtp.smtpServer
+    const user = options.user || settings.actions.smtp.user
+    const password = options.password || settings.actions.smtp.password
+    const smtpServer = options.smtpServer || settings.actions.smtp.smtpServer
 
     try {
       var transporter = nodemailer.createTransport(`smtps://${user}:${password}@${smtpServer}`)
@@ -15,7 +15,7 @@ function run (options, request) {
       return reject(e)
     }
 
-    if ((!options.from || options.from === '') && (!config.actions.smtp.from || config.actions.smtp.from === '')) {
+    if ((!options.from || options.from === '') && (!settings.actions.smtp.from || settings.actions.smtp.from === '')) {
       return reject({
         error: 'invalid request',
         details: 'Parameter "from" is missing.'
@@ -29,7 +29,7 @@ function run (options, request) {
     }
 
     const mailData = options
-    mailData.from = options.from || config.actions.smtp.from
+    mailData.from = options.from || settings.actions.smtp.from
     if (typeof mailData.attachments === 'string') {
       try {
         mailData.attachments = JSON.parse(mailData.attachments)

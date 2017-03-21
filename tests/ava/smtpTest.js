@@ -1,13 +1,13 @@
 'use strict'
 
 const test = require('ava')
+const settings = require('../../src/lib/settings')
 const smtp = require('../../actions/smtp')
-const config = require('../../src/lib/config')
 
 test('SMTP - Send valid mail', t => {
   const validSimpleOptions = {
-    "from": config.actions.smtp.user,
-    "to": config.actions.smtp.user,
+    "from": settings.actions.smtp.user,
+    "to": settings.actions.smtp.user,
     "subject": "Simple mail test",
     "text": "Simple mail working"
   }

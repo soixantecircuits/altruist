@@ -4,7 +4,7 @@
 
 You will need your API key and your secret key from your mailjet account.
 
-In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+In your `settings.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```json
 "actions": {

@@ -1,25 +1,25 @@
 const execa = require('execa')
 const path = require('path')
-const config = require('../src/lib/config').actions.win32printer
+const settings = require('nconf').get().actions.win32printer
 
 module.exports = {
   run: (options) => {
     return new Promise((resolve, reject) => {
-      var printer = options.printer || config.printer
-      // var format = options.format || config.format || 'A4'
-      var copies = options.copies || config.copies || 1
-      var file = options.file || config.file
-      // var customOptions = options.options || config.options || ''
-      var host = options.host || config.host
-      var guest = options.guest || config.guest
-      var user = options.user || config.user
-      var password = options.password || config.password
-      var sambaFolderName = options.sambaFolderName || config.sambaFolderName
-      var sambaUser = options.sambaUser || config.sambaUser
-      var sambaPassword = options.sambaPassword || config.sambaPassword
+      var printer = options.printer || settings.printer
+      // var format = options.format || settings.format || 'A4'
+      var copies = options.copies || settings.copies || 1
+      var file = options.file || settings.file
+      // var customOptions = options.options || settings.options || ''
+      var host = options.host || settings.host
+      var guest = options.guest || settings.guest
+      var user = options.user || settings.user
+      var password = options.password || settings.password
+      var sambaFolderName = options.sambaFolderName || settings.sambaFolderName
+      var sambaUser = options.sambaUser || settings.sambaUser
+      var sambaPassword = options.sambaPassword || settings.sambaPassword
 
       if (file === undefined) {
-        reject('Error: No file in config/request')
+        reject('Error: No file in settings/request')
       }
       /*
       if (printer === undefined) {

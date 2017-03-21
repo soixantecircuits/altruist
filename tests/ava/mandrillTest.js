@@ -1,12 +1,12 @@
 'use strict'
 
 const test = require('ava')
+const settings = require('../../src/lib/settings')
 const mandrill = require('../../actions/mandrill')
-const config = require('../../src/lib/config')
 
-test(`Mandrill - Send template '${config.actions.mandrill.template}' to ${config.actions.mandrill.from.email} (need email and template in config.json)`, t => {
+test(`Mandrill - Send template '${settings.actions.mandrill.template}' to ${settings.actions.mandrill.from.email} (need email and template in settings.json)`, t => {
   const validOptions = {
-    email: config.actions.mandrill.from.email
+    email: settings.actions.mandrill.from.email
   }
   return mandrill.run(validOptions, {})
   .then(res => {

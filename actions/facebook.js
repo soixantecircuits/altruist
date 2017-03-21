@@ -4,7 +4,7 @@ const passport = require('passport')
 const FacebookStrategy = require('passport-facebook').Strategy
 var fb = new require('fb')
 fb.options({ version: 'v2.8' })
-const config = require('../src/lib/config')
+const settings = require('nconf').get()
 const localStorage = require('../src/lib/localstorage')
 
 let facebookSession = JSON.parse(localStorage.getItem('facebook-session')) || {}
@@ -12,12 +12,12 @@ let userProfile = JSON.parse(localStorage.getItem('user-profile')) || {}
 let userAccounts = JSON.parse(localStorage.getItem('user-accounts')) || []
 let currentID = facebookSession.currentID
 
-const callbackURL = config.actions.facebook.callbackURL || '/login/facebook'
-const loginURL = config.actions.facebook.loginURL || '/login/facebook/return'
-const failureURL = config.actions.facebook.failureURL || '/?failure=facebook'
-const successURL = config.actions.facebook.successURL || '/?success=facebook'
-const profileURL = config.actions.facebook.profileURL || '/profile/facebook'
-const accountsURL = config.actions.facebook.accountsURL || '/accounts/facebook'
+const callbackURL = settings.actions.facebook.callbackURL || '/login/facebook'
+const loginURL = settings.actions.facebook.loginURL || '/login/facebook/return'
+const failureURL = settings.actions.facebook.failureURL || '/?failure=facebook'
+const successURL = settings.actions.facebook.successURL || '/?success=facebook'
+const profileURL = settings.actions.facebook.profileURL || '/profile/facebook'
+const accountsURL = settings.actions.facebook.accountsURL || '/accounts/facebook'
 
 function saveSession () {
   localStorage.setItem('facebook-session', JSON.stringify(facebookSession))
@@ -128,8 +128,8 @@ function handlePostRequest ({message, link, media}, resolve, reject) {
 
 function auth (app) {
   passport.use(new FacebookStrategy({
-    clientID: config.actions.facebook.appID,
-    clientSecret: config.actions.facebook.appSecret,
+    clientID: settings.actions.facebook.appID,
+    clientSecret: settings.actions.facebook.appSecret,
   callbackURL}, function (accessToken, refreshToken, profile, done) {
     storeUserAccessToken(accessToken)
     storeUserProfile(profile)
@@ -146,8 +146,8 @@ function auth (app) {
     failureRedirect: failureURL
   }), (req, res) => {
     storeUserProfile(req.user)
-    if (config.actions.facebook.pageID) {
-      setID(config.actions.facebook.pageID)
+    if (settings.actions.facebook.pageID) {
+      setID(settings.actions.facebook.pageID)
     } else {
       setID(req.user.id)
     }
@@ -175,11 +175,11 @@ function run (options, request) {
   return new Promise((resolve, reject) => {
     const message = (options.message || options.caption)
       ? options.message || options.caption
-      : config.actions.facebook.message || ''
+      : settings.actions.facebook.message || ''
     const media = options.media
       ? options.media
-      : config.actions.facebook.media || ''
-    const link = options.link ? options.link : config.actions.facebook.link
+      : settings.actions.facebook.media || ''
+    const link = options.link ? options.link : settings.actions.facebook.link
 
     if (!facebookSession || !facebookSession.userAccessToken) {
       return reject({

@@ -7,7 +7,7 @@ When your project is created, click on `Credentials` and select OAuth consent sc
 
 After that, create new credentials for this project and select `OAuth client ID` and `Web application`.
 In `Authorized redirect URI`, you have to a URI that matches the altruist action's `callbackURL`, then create the credentials.
-You will be prompted your client ID and client secret. Put them in config.json.
+You will be prompted your client ID and client secret. Put them in settings.json.
 **The redirect URI might take a few minutes before you can use it.**
 
 Depending on what google API is used in the altruist action, you will have to activate them in Google API console.

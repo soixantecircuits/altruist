@@ -5,11 +5,11 @@ const request = require('request')
 const stream = require("stream")
 var fb = new require('fb')
 fb.options({ version: 'v2.8' })
-const config = require('../src/lib/config')
+const settings = require('nconf').get()
 
-const communityID = config.actions.workplace.communityID
-const token = config.actions.workplace.token
-const groupID = config.actions.workplace.groupID
+const communityID = settings.actions.workplace.communityID
+const token = settings.actions.workplace.token
+const groupID = settings.actions.workplace.groupID
 
 function getMediaType (media) {
   if (media) {
@@ -80,11 +80,11 @@ function run (options, request) {
   return new Promise((resolve, reject) => {
     const message = (options.message || options.caption)
       ? options.message || options.caption
-      : config.actions.facebook.message || ''
+      : settings.actions.facebook.message || ''
     const media = options.media
       ? options.media
-      : config.actions.facebook.media || ''
-    const link = options.link ? options.link : config.actions.facebook.link
+      : settings.actions.facebook.media || ''
+    const link = options.link ? options.link : settings.actions.facebook.link
 
      if ((!message) && (!media) && !request.file && !link) {
       return reject({

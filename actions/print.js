@@ -1,5 +1,5 @@
 const execa = require('execa')
-const config = require('../src/lib/config').actions.print
+const settings = require('nconf').get().actions.print
 
 function listAvailablePrinters () {
   var printers = execa.shellSync("lpstat -a | awk '{print $1}'").stdout
@@ -19,18 +19,18 @@ function listAvailableFormats (printer) {
 module.exports = {
   run: (options) => {
     return new Promise((resolve, reject) => {
-      var printer = options.printer || config.printer
-      var format = options.format || config.format || 'A4'
-      var copies = options.copies || config.copies || 1
-      var media = options.media || config.media
-      var customOptions = options.options || config.options || ''
+      var printer = options.printer || settings.printer
+      var format = options.format || settings.format || 'A4'
+      var copies = options.copies || settings.copies || 1
+      var media = options.media || settings.media
+      var customOptions = options.options || settings.options || ''
 
       if (media === undefined) {
-        reject('Error: No media in config/request')
+        reject('Error: No media in settings/request')
       }
       if (printer === undefined) {
         listAvailablePrinters()
-        reject('Error: No printer in config/request')
+        reject('Error: No printer in settings/request')
       }
 
       execa('lp', [ '-d', printer,

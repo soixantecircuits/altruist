@@ -7,13 +7,13 @@ const fs = require('fs-extra')
 const cors = require('cors')
 const path = require('path')
 
-const config = require(path.resolve(__dirname, './lib/config'))
+const settings = require(path.resolve(__dirname, './lib/settings'))
 const passport = require('passport')
 
 const router = express.Router()
 const app = express()
 
-const authRedirectURL = config.authRedirectURL ? config.authRedirectURL : '/authRedirect'
+const authRedirectURL = settings.authRedirectURL ? settings.authRedirectURL : '/authRedirect'
 const authRedirect = []
 
 const version = 'v1'
@@ -27,7 +27,7 @@ app.use(bodyparser.json())
 app.use(bodyparser.urlencoded({ extended: true }))
 app.use(upload.any())
 app.use(require('cookie-parser')())
-app.use(require('express-session')({ secret: config.secret, resave: true, saveUninitialized: true }))
+app.use(require('express-session')({ secret: settings.secret, resave: true, saveUninitialized: true }))
 app.use(passport.initialize())
 app.use(passport.session())
 
@@ -49,7 +49,7 @@ router.get('/status', (req, res) => {
   res.send('up')
 })
 
-for (let action in config.actions) {
+for (let action in settings.actions) {
   const modulePath = path.resolve(`${__dirname}/../actions/${action}.js`)
   fs.access(modulePath, (err) => {
     if (!err) {
@@ -86,6 +86,6 @@ app.get('/', (req, res) => {
   `)
 })
 
-app.listen(config.server.port, () => {
-  console.log(`altruist running on: http://localhost:${config.server.port} with actions: [ ${Object.keys(config.actions)} ]`)
+app.listen(settings.server.port, () => {
+  console.log(`altruist running on: http://localhost:${settings.server.port} with actions: [ ${Object.keys(settings.actions)} ]`)
 })

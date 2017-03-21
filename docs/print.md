@@ -2,7 +2,7 @@
 
 ## Setup
 
-In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+In your `settings.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```json
 "actions": {
@@ -32,7 +32,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |**copies**|`string`|&minus;|optionnal number of copies to print, default is 1|
 |**options**|`string`|&minus;|optionnal custom lp options|
 
-All options can be described in the POST request and/or the config.json file
+All options can be described in the POST request and/or the settings.json file
 
 You can list available printers by running `lpstat -p` in your terminal
 

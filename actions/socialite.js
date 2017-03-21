@@ -1,6 +1,6 @@
 'use strict'
 
-const config = require('../src/lib/config')
+const settings = require('nconf').get()
 const med = require('media-helper')
 const request = require('request')
 const fs = require('fs')
@@ -38,8 +38,8 @@ function run (options, req) {
       reject({ error: 'Invalid request', details: 'No filename provided' })
     }
     let formData = {
-      bucket: options.bucket || config.actions.socialite.bucket,
-      token: options.token || config.actions.socialite.token,
+      bucket: options.bucket || settings.actions.socialite.bucket,
+      token: options.token || settings.actions.socialite.token,
       name: options.filename,
       file: null
     }

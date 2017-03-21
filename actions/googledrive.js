@@ -3,7 +3,7 @@
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 
-const config = require('../src/lib/config')
+const settings = require('nconf').get()
 const localStorage = require('../src/lib/localstorage')
 const google = require('googleapis')
 
@@ -12,19 +12,19 @@ const magic = new mmmagic.Magic(mmmagic.MAGIC_MIME_TYPE)
 
 var driveSession = JSON.parse(localStorage.getItem('googledrive-session')) || { accessToken: '', refreshToken: '' }
 var userProfile = JSON.parse(localStorage.getItem('googledrive-profile')) || {}
-var uploadDirectoryID = config.actions.googledrive.uploadDirectoryID ? config.actions.googledrive.uploadDirectoryID : ''
+var uploadDirectoryID = settings.actions.googledrive.uploadDirectoryID ? settings.actions.googledrive.uploadDirectoryID : ''
 
-const loginURL = config.actions.googledrive.loginURL || '/login/gdrive'
-const callbackURL = config.actions.googledrive.callbackURL || '/login/gdrive/return'
-const failureURL = config.actions.googledrive.failureURL || '/?failure=drive'
-const successURL = config.actions.googledrive.successURL || '/?success=drive'
-const profileURL = config.actions.googledrive.profileURL || '/profile/gdrive'
+const loginURL = settings.actions.googledrive.loginURL || '/login/gdrive'
+const callbackURL = settings.actions.googledrive.callbackURL || '/login/gdrive/return'
+const failureURL = settings.actions.googledrive.failureURL || '/?failure=drive'
+const successURL = settings.actions.googledrive.successURL || '/?success=drive'
+const profileURL = settings.actions.googledrive.profileURL || '/profile/gdrive'
 
 var OAuth2 = google.auth.OAuth2
 var googleAuth = new OAuth2(
-  config.actions.googledrive.clientID,
-  config.actions.googledrive.clientSecret,
-  config.actions.googledrive.callbackURL
+  settings.actions.googledrive.clientID,
+  settings.actions.googledrive.clientSecret,
+  settings.actions.googledrive.callbackURL
 )
 var drive = google.drive({ version: 'v3', auth: googleAuth})
 
@@ -68,8 +68,8 @@ function uploadFile (options, resolve, reject) {
 
 function auth (app) {
   passport.use(new GoogleStrategy({
-    clientID: config.actions.googledrive.clientID,
-    clientSecret: config.actions.googledrive.clientSecret,
+    clientID: settings.actions.googledrive.clientID,
+    clientSecret: settings.actions.googledrive.clientSecret,
     callbackURL: callbackURL
   },
     function (token, refreshToken, profile, done) {

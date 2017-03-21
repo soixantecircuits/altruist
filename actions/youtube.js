@@ -3,7 +3,7 @@
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 
-const config = require('../src/lib/config')
+const settings = require('nconf').get()
 const localStorage = require('../src/lib/localstorage')
 const google = require('googleapis')
 const youtube = google.youtube('v3')
@@ -13,16 +13,16 @@ const magic = new mmmagic.Magic(mmmagic.MAGIC_MIME_TYPE)
 var youtubeSession = JSON.parse(localStorage.getItem('youtube-session')) || { accessToken: '', refreshToken: '' }
 var userProfile = JSON.parse(localStorage.getItem('youtube-profile')) || {}
 
-const loginURL = config.actions.youtube.loginURL || '/login/youtube'
-const callbackURL = config.actions.youtube.callbackURL || '/login/youtube/return'
-const failureURL = config.actions.youtube.failureURL || '/?failure=youtube'
-const successURL = config.actions.youtube.successURL || '/?success=youtube'
-let privacyStatus = config.actions.youtube.privacyStatus || 'public'
+const loginURL = settings.actions.youtube.loginURL || '/login/youtube'
+const callbackURL = settings.actions.youtube.callbackURL || '/login/youtube/return'
+const failureURL = settings.actions.youtube.failureURL || '/?failure=youtube'
+const successURL = settings.actions.youtube.successURL || '/?success=youtube'
+let privacyStatus = settings.actions.youtube.privacyStatus || 'public'
 
 var googleAuth = new google.auth.OAuth2(
-  config.actions.youtube.clientID,
-  config.actions.youtube.clientSecret,
-  config.actions.youtube.callbackURL
+  settings.actions.youtube.clientID,
+  settings.actions.youtube.clientSecret,
+  settings.actions.youtube.callbackURL
 )
 
 function storeTokens (atoken, rtoken) {
@@ -38,9 +38,9 @@ function storeProfile (profile) {
 
 function auth (app) {
   passport.use(new GoogleStrategy({
-    clientID: config.actions.youtube.clientID,
-    clientSecret: config.actions.youtube.clientSecret,
-    callbackURL: config.actions.youtube.callbackURL
+    clientID: settings.actions.youtube.clientID,
+    clientSecret: settings.actions.youtube.clientSecret,
+    callbackURL: settings.actions.youtube.callbackURL
   },
     function (token, refreshToken, profile, done) {
       storeTokens(token, refreshToken)

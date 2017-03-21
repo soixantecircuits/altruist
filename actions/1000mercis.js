@@ -1,14 +1,14 @@
 'use strict'
 
-const config = require('../src/lib/config')
+const settings = require('nconf').get()
 const request = require('request')
 
 function run (options) {
   return new Promise((resolve, reject) => {
-    const url = config.actions['1000mercis'].url
-    const login = config.actions['1000mercis'].login
-    const password = config.actions['1000mercis'].password
-    const templateName = config.actions['1000mercis'].templateName
+    const url = settings.actions['1000mercis'].url
+    const login = settings.actions['1000mercis'].login
+    const password = settings.actions['1000mercis'].password
+    const templateName = settings.actions['1000mercis'].templateName
 
     const params = options
 

@@ -5,11 +5,11 @@ const path = require('path')
 const med = require('media-helper')
 const request = require('request')
 
-const config = require('../src/lib/config')
-const API_KEY = config.actions.mandrill.APIkey
-const from = config.actions.mandrill.from
-const subject = config.actions.mandrill.subject
-const template = config.actions.mandrill.template
+const settings = require('nconf').get()
+const API_KEY = settings.actions.mandrill.APIkey
+const from = settings.actions.mandrill.from
+const subject = settings.actions.mandrill.subject
+const template = settings.actions.mandrill.template
 
 const Mandrill = require('mandrill-api/mandrill')
 const mandrill = new Mandrill.Mandrill(API_KEY)

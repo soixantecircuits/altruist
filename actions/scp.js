@@ -1,6 +1,6 @@
 'use strict'
 
-const config = require('../src/lib/config')
+const settings = require('nconf').get()
 const scpClient = require('scp2')
 
 function run (options, request) {
@@ -10,27 +10,27 @@ function run (options, request) {
         error: 'invalid request',
         details: '"source" does not exist or is empty.'
       })
-    } else if ((!options.user || options.user === '') && (!config.actions.scp.user || config.actions.scp.user === '')) {
+    } else if ((!options.user || options.user === '') && (!settings.actions.scp.user || settings.actions.scp.user === '')) {
       return reject({
         error: 'invalid request',
         details: '"user" does not exist or is empty.'
       })
-    } else if ((!options.hostname || options.hostname === '') && (!config.actions.scp.hostname || config.actions.scp.hostname === '')) {
+    } else if ((!options.hostname || options.hostname === '') && (!settings.actions.scp.hostname || settings.actions.scp.hostname === '')) {
       return reject({
         error: 'invalid request',
         details: '"hostname" does not exist or is empty.'
       })
-    } else if ((!options.target || options.target === '') && (!config.actions.scp.target || config.actions.scp.target === '')) {
+    } else if ((!options.target || options.target === '') && (!settings.actions.scp.target || settings.actions.scp.target === '')) {
       return reject({
         error: 'invalid request',
         details: '"target" does not exist or is empty.'
       })
     }
 
-    const user = options.user || config.actions.scp.user
-    const password = options.password || config.actions.scp.password || ''
-    const hostname = options.hostname || config.actions.scp.hostname
-    const target = options.target || config.actions.scp.target
+    const user = options.user || settings.actions.scp.user
+    const password = options.password || settings.actions.scp.password || ''
+    const hostname = options.hostname || settings.actions.scp.hostname
+    const target = options.target || settings.actions.scp.target
 
     const dest = `${user}:${password}@${hostname}:${target}`
 

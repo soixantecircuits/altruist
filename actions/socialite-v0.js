@@ -1,13 +1,13 @@
 'use strict'
 
-const config = require('../src/lib/config')
+const settings = require('nconf').get()
 const med = require('media-helper')
 const request = require('request')
 const fs = require('fs')
 const path = require('path')
 
-const baseURL = config.actions['socialite-v0'].baseURL
-const route = config.actions['socialite-v0'].uploadRoute
+const baseURL = settings.actions['socialite-v0'].baseURL
+const route = settings.actions['socialite-v0'].uploadRoute
 
 function run (options, req) {
   return new Promise((resolve, reject) => {

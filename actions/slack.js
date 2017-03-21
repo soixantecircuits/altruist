@@ -3,7 +3,7 @@
 const fs = require('fs')
 const mime = require('mime')
 
-const config = require('../src/lib/config')
+const settings = require('nconf').get()
 const fetchImage = require('../src/lib/fetch-image')
 
 const WebClient = require('@slack/client').WebClient
@@ -18,7 +18,7 @@ function upload ({ file, filetype, filename }) {
       file,
       filetype,
       filename,
-      channels: config.actions.slack.channel
+      channels: settings.actions.slack.channel
     }, (err, data) => {
       err && reject({ error: err })
       resolve(data)
@@ -46,16 +46,16 @@ function uploadB64 (dataURL) {
 }
 
 function run (options) {
-  webclient = new WebClient(config.actions.slack.token)
-  slack = new Slack(config.actions.slack.token)
+  webclient = new WebClient(settings.actions.slack.token)
+  slack = new Slack(settings.actions.slack.token)
 
   return new Promise((resolve, reject) => {
     const message = (options.message || options.caption)
       ? options.message || options.caption
-      : config.actions.slack.message || ''
+      : settings.actions.slack.message || ''
     const media = options.media
       ? options.media
-      : config.actions.slack.media || ''
+      : settings.actions.slack.media || ''
 
     const isPath = fs.existsSync(media)
     const isPictureData = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/.test(media)
@@ -93,7 +93,7 @@ function run (options) {
         .catch((err) => {
           reject(err)})
     } else if (message) {
-      webclient.chat.postMessage(config.actions.slack.channel, message, (err, res) => {
+      webclient.chat.postMessage(settings.actions.slack.channel, message, (err, res) => {
         err && reject({ error: err })
         resolve(res)
       })

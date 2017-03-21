@@ -1,14 +1,14 @@
 'use strict'
 
 const Twit = require('twit')
-const config = require('../src/lib/config').actions.twitter
+const settings = require('nconf').get().actions.twitter
 const med = require('media-helper')
 
 const T = new Twit({
-  consumer_key: config.consumer_key,
-  consumer_secret: config.consumer_secret,
-  access_token: config.access_token,
-  access_token_secret: config.access_token_secret,
+  consumer_key: settings.consumer_key,
+  consumer_secret: settings.consumer_secret,
+  access_token: settings.access_token,
+  access_token_secret: settings.access_token_secret,
   timeout_ms: 60 * 1000
 })
 
@@ -57,7 +57,7 @@ function uploadVideo (message, media) {
 module.exports = {
   run: (options) => {
     return new Promise((resolve, reject) => {
-      const tweet = Object.assign({}, config, options)
+      const tweet = Object.assign({}, settings, options)
       const media = tweet.media
       const message = tweet.message
 

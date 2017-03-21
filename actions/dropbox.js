@@ -4,16 +4,16 @@ const passport = require('passport')
 const DropboxStrategy = require('passport-dropbox-oauth2').Strategy
 const Dropbox = require('dropbox')
 
-const config = require('../src/lib/config')
+const settings = require('nconf').get()
 const localStorage = require('../src/lib/localstorage')
 
 var dropboxSession = JSON.parse(localStorage.getItem('dropbox-session')) || { accessToken: '', refreshToken: '' }
 
-const loginURL = config.actions.dropbox.loginURL || '/login/dropbox'
-const callbackURL = config.actions.dropbox.callbackURL || '/login/dropbox/return'
-const failureURL = config.actions.dropbox.failureURL || '/?failure=dropbox'
-const successURL = config.actions.dropbox.successURL || '/?success=dropbox'
-const uploadDirectoryPath = config.actions.dropbox.uploadDirectoryPath ? config.actions.dropbox.uploadDirectoryPath : '/'
+const loginURL = settings.actions.dropbox.loginURL || '/login/dropbox'
+const callbackURL = settings.actions.dropbox.callbackURL || '/login/dropbox/return'
+const failureURL = settings.actions.dropbox.failureURL || '/?failure=dropbox'
+const successURL = settings.actions.dropbox.successURL || '/?success=dropbox'
+const uploadDirectoryPath = settings.actions.dropbox.uploadDirectoryPath ? settings.actions.dropbox.uploadDirectoryPath : '/'
 
 function storeTokens (aToken, rToken) {
   dropboxSession.accessToken = aToken
@@ -24,8 +24,8 @@ function storeTokens (aToken, rToken) {
 function auth (app) {
   passport.use(new DropboxStrategy({
     apiVersion: '2',
-    clientID: config.actions.dropbox.clientID,
-    clientSecret: config.actions.dropbox.clientSecret,
+    clientID: settings.actions.dropbox.clientID,
+    clientSecret: settings.actions.dropbox.clientSecret,
     callbackURL: callbackURL
   }, function (aToken, rToken, profile, done) {
     storeTokens(aToken, rToken)

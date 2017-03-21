@@ -4,7 +4,7 @@
 
 _Socialite is still in BETA._
 
-In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+In your `settings.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```json
 "actions": {
@@ -32,8 +32,8 @@ curl -X POST -H "Content-Type: multipart/form-data; boundary=----xxxxxxxxxxxxxxx
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**bucket**|`string`|_if not in config.json_|your bucket's name|
-|**token**|`string`|_if not in config.json_|your bucket's token|
+|**bucket**|`string`|_if not in settings.json_|your bucket's name|
+|**token**|`string`|_if not in settings.json_|your bucket's token|
 |**filename**|`string`|&times;|the filename to give to the post (extension is required)|
 |**media**|`file` or `path`|&times;|the picture to upload (you can upload as many files as you want)|  
 
@@ -43,7 +43,7 @@ curl -X POST -H "Content-Type: multipart/form-data; boundary=----xxxxxxxxxxxxxxx
 
 #### Setup
 
-In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+In your `settings.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```json
 "actions": {

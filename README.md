@@ -22,14 +22,14 @@ then, provide a configuration file based on the template we provide:
 
 ```sh
 # get the template
-$ wget https://raw.githubusercontent.com/soixantecircuits/altruist/master/config/config.example.json
+$ wget https://raw.githubusercontent.com/soixantecircuits/altruist/master/settings/settings.example.json
 # rename it
-$ mv config.example.json my-config.json
+$ mv settings.example.json settings.json
 # profit
-$ altruist my-config.json
+$ altruist -- -settings settings.json
 ```
 
-For details about what to write in the config file, See the `Actions` section below.
+For details about what to write in the settings file, See the `Actions` section below.
 
 Then:
 
@@ -59,7 +59,7 @@ POST http://localhost:6060/api/v1/actions/{action}
 * [socialite](/docs/socialite.md)
 * [print](/docs/print.md)
 
-⚠️  *Some actions may require that you log in before using them. You can get a list of those actions with their login url by sending a GET request to the url matching `authRedirect` in the config file (`/authRedirect` by default).*
+⚠️  *Some actions may require that you log in before using them. You can get a list of those actions with their login url by sending a GET request to the url matching `authRedirect` in the settings file (`/authRedirect` by default).*
 
 ## Contribute
 
