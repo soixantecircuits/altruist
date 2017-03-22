@@ -17,6 +17,7 @@ const loginURL = settings.actions.youtube.loginURL || '/login/youtube'
 const callbackURL = settings.actions.youtube.callbackURL || '/login/youtube/return'
 const failureURL = settings.actions.youtube.failureURL || '/?failure=youtube'
 const successURL = settings.actions.youtube.successURL || '/?success=youtube'
+const profileURL = settings.actions.youtube.profileURL || '/profile/youtube'
 let privacyStatus = settings.actions.youtube.privacyStatus || 'public'
 
 var googleAuth = new google.auth.OAuth2(
