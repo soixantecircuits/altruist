@@ -3,6 +3,7 @@
 const Twit = require('twit')
 const settings = require('nconf').get().actions.twitter
 const med = require('media-helper')
+const _ = require('lodash')
 
 const T = new Twit({
   consumer_key: settings.consumer_key,
@@ -58,8 +59,8 @@ module.exports = {
   run: (options) => {
     return new Promise((resolve, reject) => {
       const tweet = Object.assign({}, settings, options)
-      const media = tweet.media
-      const message = tweet.message
+      const media = _.get(tweet, 'media.content')
+      const message = _.get(tweet, 'message')
 
       // Supported formats: JPG, PNG, GIF, WEBP, MP4
       if (media) {

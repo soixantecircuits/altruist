@@ -5,6 +5,7 @@ const med = require('media-helper')
 const request = require('request')
 const fs = require('fs')
 const path = require('path')
+const _ = require('lodash')
 
 const baseURL = 'http://app.shh.ac'
 const route = '/wp-json/form/v1/postForm'
@@ -34,13 +35,16 @@ function sendRequest(formData) {
 function run (options, req) {
   return new Promise((resolve, reject) => {
     // Prepare data to post to the socialite server
-    if (options.filename === undefined) {
-      reject({ error: 'Invalid request', details: 'No filename provided' })
+    if (_.get(options, 'media.name') === undefined) {
+      return reject({ error: 'Invalid request', details: 'No media name provided' })
+    }
+    if (_.get(options, 'media.content') === undefined) {
+      return reject({ error: 'Invalid request', details: 'No media content provided' })
     }
     let formData = {
       bucket: options.bucket || settings.actions.socialite.bucket,
       token: options.token || settings.actions.socialite.token,
-      name: options.filename,
+      name: options.media.name,
       file: null
     }
 
@@ -52,19 +56,20 @@ function run (options, req) {
       .then(body => resolve(body))
       .catch(error => reject(error))
 
-    } else if (med.isFile(options.media)) {
+    } else if (med.isFile(options.media.content)) {
       media = options.media
-      med.getMimeType(media)
+      med.getMimeType(media.content)
       .then(type => {
-        let ext = '.' + path.basename(type)
-        formData.file = formDataFile(fs.readFileSync(media), options.filename + ext, type)
+        formData.file = formDataFile(fs.readFileSync(media.content), media.name, type)
         sendRequest(formData)
-        .then(body => resolve(body))
+        .then(body => {
+          console.log(body)
+          resolve(body)})
         .catch(error => reject(error))
 
       }).catch(error => reject(error))
     } else {
-      reject({ error: 'Invalid request', details: 'No media provided' })
+      reject({ error: 'Invalid media', details: options.media.content })
     }
   })
 }

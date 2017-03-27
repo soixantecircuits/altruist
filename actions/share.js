@@ -3,11 +3,15 @@
 const settings = require('nconf').get()
 const request = require('request')
 
-function callAction(actionName, actionOptions) {
+function callAction(actionName, options) {
   return new Promise((resolve, reject) => {
     request.post({url:'http://localhost:6060/api/v1/actions/' + actionName,
-    form: actionOptions}, function(error, response, body) {
-      resolve({ action: actionName, statusCode: response.statusCode })
+    form: options}, function(error, response, body) {
+      resolve({ action: actionName,
+        statusCode: response.statusCode,
+        body: body,
+        error: error
+      })
     })
   })
 }
@@ -15,10 +19,11 @@ function callAction(actionName, actionOptions) {
 function run (options) {
   return new Promise((resolve, reject) => {
     var promises = []
-    for (let actionName in options) {
-      var p = callAction(actionName, options[actionName])
+    let actions = settings.actions.share.actions
+    actions.forEach(actionName => {
+      var p = callAction(actionName, options)
       promises.push(p)
-    }
+    })
     Promise.all(promises).then(results => resolve(results))
   })
 }
