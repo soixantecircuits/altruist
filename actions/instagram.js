@@ -1,5 +1,6 @@
 const path = require('path')
 const Client = require('instagram-private-api').V1
+const _ = require('lodash')
 
 const settings = require('nconf').get().actions.instagram
 const cookiePath = path.join('/tmp', settings.account + '.json')
@@ -10,19 +11,20 @@ var storage = new Client.CookieFileStorage(cookiePath)
 module.exports = {
   run: (options) => {
     return new Promise((resolve, reject) => {
-      if (options.media === undefined || options.media === '') {
+      let media = _.get(options, 'path')
+      let message = _.get(options, 'meta.message')
+      if (media === undefined) {
         return reject({
-          error: 'invalid request',
-          details: 'Error: No media in request'
+          error: 'Invalid request',
+          details: 'No path in request'
         })
       }
 
       Client.Session.create(device, storage, settings.account, settings.password)
         .then((session) => {
-          Client.Upload.photo(session, options.media)
+          Client.Upload.photo(session, media)
             .then((upload) => {
-              console.log('Uploading ' + path.basename(options.media))
-              return Client.Media.configurePhoto(session, upload.params.uploadId, options.caption)
+              return Client.Media.configurePhoto(session, upload.params.uploadId, message)
             })
             .then((response) => resolve('Success'))
             .catch((err) => reject({

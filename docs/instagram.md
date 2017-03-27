@@ -17,8 +17,8 @@ In your `settings.json` file, you'll need to add the following configuration obj
 
 ```cURL
 curl -X POST -H "Content-Type: application/json" -d '{
-  "media": "/path/to/image.jpg"
-  "caption": "I love ponies !"
+  "path": "/path/to/image.jpg"
+  "meta": { "message": "Hello Instagram !" }
 }' "http://localhost:6060/api/v1/actions/instagram"
 ```
 
@@ -26,7 +26,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**media**|`string`|&times;|path to the image you want to share|
-|**caption**|`string`|&minus;|optionnal caption|
+|**path**|`string`|&times;|path to the image you want to share|
+|**meta.message**|`string`|&minus;|optionnal message|
 
 Only **JPG** files are supported for now
