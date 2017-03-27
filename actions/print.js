@@ -19,18 +19,19 @@ function listAvailableFormats (printer) {
 module.exports = {
   run: (options) => {
     return new Promise((resolve, reject) => {
-      var printer = options.printer || settings.printer
-      var format = options.format || settings.format || 'A4'
-      var copies = options.copies || settings.copies || 1
-      var media = options.media || settings.media
-      var customOptions = options.options || settings.options || ''
+      const metaOpt = Object.assign({}, settings, options.meta)
+      let printer = _.get(metaOpt, 'printer')
+      let format = _.get(metaOpt, 'format') || 'A4'
+      let copies = _.get(metaOpt, 'copies') || 1
+      let customOptions = _.get(metaOpt, 'options') || ''
+      let media = _.get(options, 'path')
 
       if (media === undefined) {
-        reject('Error: No media in settings/request')
+        reject({ error: 'Invalid request', details: 'No path in request' })
       }
       if (printer === undefined) {
         listAvailablePrinters()
-        reject('Error: No printer in settings/request')
+        reject({ error: 'Invalid request', details: 'No printer in request or settings' })
       }
 
       execa('lp', [ '-d', printer,
