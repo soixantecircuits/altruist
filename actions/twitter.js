@@ -59,8 +59,8 @@ module.exports = {
   run: (options) => {
     return new Promise((resolve, reject) => {
       const tweet = Object.assign({}, settings, options)
-      const media = _.get(tweet, 'media.content')
-      const message = _.get(tweet, 'message')
+      const media = _.get(tweet, 'path')
+      const message = _.get(tweet, 'meta.message')
 
       // Supported formats: JPG, PNG, GIF, WEBP, MP4
       if (media) {
