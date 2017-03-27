@@ -1,6 +1,7 @@
 'use strict'
 
 const passport = require('passport')
+const _ = require('lodash')
 const FacebookStrategy = require('passport-facebook').Strategy
 var fb = new require('fb')
 fb.options({ version: 'v2.8' })
@@ -173,13 +174,9 @@ function addRoutes (app) {
 
 function run (options, request) {
   return new Promise((resolve, reject) => {
-    const message = (options.message || options.caption)
-      ? options.message || options.caption
-      : settings.actions.facebook.message || ''
-    const media = options.media
-      ? options.media
-      : settings.actions.facebook.media || ''
-    const link = options.link ? options.link : settings.actions.facebook.link
+    const media = _.get(options, 'path') || _.get(settings, 'actions.facebook.path')
+    const message = _.get(options, 'meta.message') || _.get(settings, 'actions.facebook.message')
+    const link = _.get(options, 'meta.link') || _.get(settings, 'actions.facebook.link')
 
     if (!facebookSession || !facebookSession.userAccessToken) {
       return reject({
@@ -195,7 +192,7 @@ function run (options, request) {
 
     // If multer detects a file upload, get the first file and set options to upload to facebook
     if (request.files && request.files[0]) {
-      options.media = {
+      media = {
         isBinary: true,
         filename: request.files[0].originalname,
         data: request.files[0].buffer,
