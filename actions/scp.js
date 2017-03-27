@@ -2,39 +2,41 @@
 
 const settings = require('nconf').get()
 const scpClient = require('scp2')
+const _ = require('lodash')
 
 function run (options, request) {
   return new Promise((resolve, reject) => {
-    if (!options.source || options.source === '') {
+    const user = _.get(options, 'meta.user') || _.get(settings, 'actions.scp.user')
+    const password = _.get(options, 'meta.password') || _.get(settings, 'actions.scp.password') || ''
+    const hostname = _.get(options, 'meta.hostname') || _.get(settings, 'actions.scp.hostname')
+    const target = _.get(options, 'meta.target') || _.get(settings, 'actions.scp.target')
+    const source = _.get(options, 'meta.source')
+
+    if (!source || source === '') {
       return reject({
         error: 'invalid request',
         details: '"source" does not exist or is empty.'
       })
-    } else if ((!options.user || options.user === '') && (!settings.actions.scp.user || settings.actions.scp.user === '')) {
+    } else if (!user || user === '') {
       return reject({
         error: 'invalid request',
         details: '"user" does not exist or is empty.'
       })
-    } else if ((!options.hostname || options.hostname === '') && (!settings.actions.scp.hostname || settings.actions.scp.hostname === '')) {
+    } else if (!hostname || hostname === '') {
       return reject({
         error: 'invalid request',
         details: '"hostname" does not exist or is empty.'
       })
-    } else if ((!options.target || options.target === '') && (!settings.actions.scp.target || settings.actions.scp.target === '')) {
+    } else if (!target || target === '') {
       return reject({
         error: 'invalid request',
         details: '"target" does not exist or is empty.'
       })
     }
 
-    const user = options.user || settings.actions.scp.user
-    const password = options.password || settings.actions.scp.password || ''
-    const hostname = options.hostname || settings.actions.scp.hostname
-    const target = options.target || settings.actions.scp.target
-
     const dest = `${user}:${password}@${hostname}:${target}`
 
-    scpClient.scp(options.source, dest, function (err) {
+    scpClient.scp(source, dest, function (err) {
       if (err) {
         return reject(err)
       }
@@ -43,5 +45,4 @@ function run (options, request) {
   })
 }
 
-module.exports = {
-run}
+module.exports = { run }

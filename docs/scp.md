@@ -21,11 +21,13 @@ In your `settings.json` file, you'll need to add the following configuration obj
 
 ```cURL
 curl -X POST -H "Content-Type: application/json" -d '{
-	"source": "/source/file/or/directory"
-	"user": "foo",
-	"password": "bar",
-	"hostname": "example:port",
-	"target": "/target/directory/or/file"
+  "meta": {
+    "source": "/source/file/or/directory"
+    "user": "foo",
+    "password": "bar",
+    "hostname": "example:port",
+    "target": "/target/directory/or/file"
+  }
 }' "http://localhost:6060/api/v1/actions/scp"
 ```
 
@@ -33,8 +35,8 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**source**|`string`|&times;|path to the source file or directory to copy|
-|**user**|`string`|_if not in settings.json_|user name to connect to the host|
-|**password**|`string`|_if not in settings.json_|password to connect to the host|
-|**hostname**|`string`|_if not in settings.json_|host to connect to. _you can append the port_|
-|**target**|`string`|_if not in settings.json_|target directory or target file for the copy|
+|**meta.source**|`string`|&times;|path to the source file or directory to copy|
+|**meta.user**|`string`|_if not in settings.json_|user name to connect to the host|
+|**meta.password**|`string`|_if not in settings.json_|password to connect to the host|
+|**meta.hostname**|`string`|_if not in settings.json_|host to connect to. _you can append the port_|
+|**meta.target**|`string`|_if not in settings.json_|target directory or target file for the copy|
