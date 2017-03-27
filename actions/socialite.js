@@ -35,16 +35,16 @@ function sendRequest(formData) {
 function run (options, req) {
   return new Promise((resolve, reject) => {
     // Prepare data to post to the socialite server
-    if (_.get(options, 'media.name') === undefined) {
-      return reject({ error: 'Invalid request', details: 'No media name provided' })
+    if (_.get(options, 'file') === undefined) {
+      return reject({ error: 'Invalid request', details: 'No file name provided' })
     }
-    if (_.get(options, 'media.content') === undefined) {
-      return reject({ error: 'Invalid request', details: 'No media content provided' })
+    if (_.get(options, 'path') === undefined) {
+      return reject({ error: 'Invalid request', details: 'No file path provided' })
     }
     let formData = {
-      bucket: options.bucket || settings.actions.socialite.bucket,
-      token: options.token || settings.actions.socialite.token,
-      name: options.media.name,
+      bucket: _.get(options, 'meta.bucket') || settings.actions.socialite.bucket,
+      token: _.get(options, 'meta.token') || settings.actions.socialite.token,
+      name: options.file,
       file: null
     }
 
@@ -56,20 +56,14 @@ function run (options, req) {
       .then(body => resolve(body))
       .catch(error => reject(error))
 
-    } else if (med.isFile(options.media.content)) {
-      media = options.media
-      med.getMimeType(media.content)
-      .then(type => {
-        formData.file = formDataFile(fs.readFileSync(media.content), media.name, type)
-        sendRequest(formData)
-        .then(body => {
-          console.log(body)
-          resolve(body)})
-        .catch(error => reject(error))
+    } else if (med.isFile(options.path)) {
+      formData.file = formDataFile(fs.readFileSync(options.path), options.file, options.type)
+      sendRequest(formData)
+      .then(body => resolve(body))
+      .catch(error => reject(error))
 
-      }).catch(error => reject(error))
     } else {
-      reject({ error: 'Invalid media', details: options.media.content })
+      reject({ error: 'Invalid media', details: options.path })
     }
   })
 }
