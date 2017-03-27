@@ -2,6 +2,7 @@
 
 const fs = require('fs')
 const mime = require('mime')
+const _ = require('lodash')
 
 const settings = require('nconf').get()
 const fetchImage = require('../src/lib/fetch-image')
@@ -50,12 +51,8 @@ function run (options) {
   slack = new Slack(settings.actions.slack.token)
 
   return new Promise((resolve, reject) => {
-    const message = (options.message || options.caption)
-      ? options.message || options.caption
-      : settings.actions.slack.message || ''
-    const media = options.media
-      ? options.media
-      : settings.actions.slack.media || ''
+    const message = _.get(options, 'meta.message') || _.get(settings, 'actions.slack.message')
+    const media = _.get(options, 'path') || _.get(settings, 'actions.slack.path')
 
     const isPath = fs.existsSync(media)
     const isPictureData = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/.test(media)
