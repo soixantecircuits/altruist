@@ -1,5 +1,5 @@
 const execa = require('execa')
-const settings = require('nconf').get().actions.print
+const settings = require('nconf').get()
 
 function listAvailablePrinters () {
   var printers = execa.shellSync("lpstat -a | awk '{print $1}'").stdout
@@ -19,11 +19,12 @@ function listAvailableFormats (printer) {
 module.exports = {
   run: (options) => {
     return new Promise((resolve, reject) => {
-      const metaOpt = Object.assign({}, settings, options.meta)
-      let printer = _.get(metaOpt, 'printer')
-      let format = _.get(metaOpt, 'format') || 'A4'
-      let copies = _.get(metaOpt, 'copies') || 1
-      let customOptions = _.get(metaOpt, 'options') || ''
+      const meta = Object.assign({}, settings.meta, options.meta)
+      const store = Object.assign({}, _.get(settings, 'actions.print'), meta)
+      let printer = _.get(store, 'printer')
+      let format = _.get(store, 'format') || 'A4'
+      let copies = _.get(store, 'copies') || 1
+      let customOptions = _.get(store, 'options') || ''
       let media = _.get(options, 'path')
 
       if (media === undefined) {

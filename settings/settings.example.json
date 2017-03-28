@@ -122,5 +122,11 @@
       "sambaUser": "mysambauser",
       "sambaPassword": "mysambapassword"
     }
+  },
+  "meta": {
+    "title": "Title example",
+    "description": "Description example",
+    "message": "Message example",
+    "source": "Source example"
   }
 }

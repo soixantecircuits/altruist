@@ -1,15 +1,15 @@
 'use strict'
 
 const Twit = require('twit')
-const settings = require('nconf').get().actions.twitter
+const settings = require('nconf').get()
 const med = require('media-helper')
 const _ = require('lodash')
 
 const T = new Twit({
-  consumer_key: settings.consumer_key,
-  consumer_secret: settings.consumer_secret,
-  access_token: settings.access_token,
-  access_token_secret: settings.access_token_secret,
+  consumer_key: _.get(settings, 'actions.twitter.consumer_key'),
+  consumer_secret: _.get(settings, 'actions.twitter.consumer_secret'),
+  access_token: _.get(settings, 'actions.twitter.access_token'),
+  access_token_secret: _.get(settings, 'actions.twitter.access_token_secret'),
   timeout_ms: 60 * 1000
 })
 
@@ -58,9 +58,9 @@ function uploadVideo (message, media) {
 module.exports = {
   run: (options) => {
     return new Promise((resolve, reject) => {
-      const tweet = Object.assign({}, settings, options)
-      const media = _.get(tweet, 'path')
-      const message = _.get(tweet, 'meta.message')
+      const meta = Object.assign({}, settings.meta, options.meta)
+      const media = _.get(options, 'path')
+      const message = _.get(meta, 'message')
 
       // Supported formats: JPG, PNG, GIF, WEBP, MP4
       if (media) {

@@ -51,7 +51,8 @@ function run (options) {
   slack = new Slack(settings.actions.slack.token)
 
   return new Promise((resolve, reject) => {
-    const message = _.get(options, 'meta.message') || _.get(settings, 'actions.slack.message')
+    const meta = Object.assign({}, settings.meta, options.meta)
+    const message = _.get(meta, 'message') || _.get(settings, 'actions.slack.message')
     const media = _.get(options, 'path') || _.get(settings, 'actions.slack.path')
 
     const isPath = fs.existsSync(media)

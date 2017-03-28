@@ -34,6 +34,7 @@ function sendRequest(formData) {
 
 function run (options, req) {
   return new Promise((resolve, reject) => {
+    const meta = Object.assign({}, settings.meta, options.meta)
     // Prepare data to post to the socialite server
     if (_.get(options, 'file') === undefined) {
       return reject({ error: 'Invalid request', details: 'No file name provided' })
@@ -42,8 +43,8 @@ function run (options, req) {
       return reject({ error: 'Invalid request', details: 'No file path provided' })
     }
     let formData = {
-      bucket: _.get(options, 'meta.bucket') || settings.actions.socialite.bucket,
-      token: _.get(options, 'meta.token') || settings.actions.socialite.token,
+      bucket: _.get(meta, 'bucket') || _.get(settings, 'actions.socialite.bucket'),
+      token: _.get(meta, 'token') || _.get(settings, 'actions.socialite.token'),
       name: options.file,
       file: null
     }
