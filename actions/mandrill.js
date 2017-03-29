@@ -4,12 +4,13 @@ const fs = require('fs')
 const path = require('path')
 const med = require('media-helper')
 const request = require('request')
+const _ = require('lodash')
 
 const settings = require('nconf').get()
-const API_KEY = settings.actions.mandrill.APIkey
-const from = settings.actions.mandrill.from
-const subject = settings.actions.mandrill.subject
-const template = settings.actions.mandrill.template
+const API_KEY = _.get(settings, 'actions.mandrill.APIkey')
+const from = _.get(settings,'actions.mandrill.from')
+const subject = _.get(settings, 'actions.mandrill.subject')
+const template = _.get(settings, 'actions.mandrill.template')
 
 const Mandrill = require('mandrill-api/mandrill')
 const mandrill = new Mandrill.Mandrill(API_KEY)
@@ -40,11 +41,14 @@ function sendMail (params) {
 }
 
 function run (options) {
+
+  const meta = Object.assign({}, settings.meta, options.meta)
+
   try {
-    options.vars = options.vars ?
-      typeof options.vars === 'object'
-        ? options.vars
-        : JSON.parse(options.vars)
+    meta.vars = meta.vars ?
+      typeof meta.vars === 'object'
+        ? meta.vars
+        : JSON.parse(meta.vars)
       : {}
   } catch (e) {
     return new Promise((resolve, reject) => reject(e.toString()))
@@ -55,7 +59,7 @@ function run (options) {
     template_content: {},
     message: {
       to: [{
-        email: options.email
+        email: _.get(meta, 'email.to')
       }],
       from_email: from.email,
       from_name: from.name,
@@ -64,54 +68,53 @@ function run (options) {
       attachments: [],
       images: [],
       merge_language: 'handlebars',
-      global_merge_vars: options.vars.globals ? options.vars.globals.map(v => mapMandrillGlobals(v)) : [],
-      merge_vars: options.vars.targeted ? options.vars.targeted.map(v => mapMandrillTargeted(v)) : []
+      global_merge_vars: _.get(meta, 'vars.globals') ? _.get(meta, 'vars.globals').map(v => mapMandrillGlobals(v)) : [],
+      merge_vars: _.get(meta, 'vars.targeted') ? _.get(meta, 'vars.targeted').map(v => mapMandrillTargeted(v)) : []
     }
   }
 
-  if (options.media) {
+return new Promise ((resolve, reject) => {
 
-    return new Promise((resolve, reject) => {
-      let uploadedContent = 0
+  let promises = []
+  let nt = []
+  const attachments = _.get(meta, 'email.attachments')
+  if (attachments) {
 
-      options.media.forEach((media, index) => {
-        med.toBase64(media.content)
-        .then((content) => {
-          let ext = path.extname(media.content)
-          if ((/\.(mp4|mpeg|mkv|webm|avi)$/i).test(ext)) {
-            params.message.attachments.push({
-              type: "video/" + ext.substring(1),
-              name: media.name || 'video' + ext.substring(1) ,
-              content: content
-            })
-          } else {
-            params.message.images.push({
-              type: 'image/' + ext.substring(1),
-              name: media.name || 'IMAGEID',
-              content: content
-            })
-          }
-          uploadedContent += 1
-          if (uploadedContent === options.media.length) {
-            sendMail(params)
-            .then(response => resolve(response))
-            .catch(error => reject(error))
-          }
-        })
-        .catch((err) => {
-          console.log(err)
-          uploadedContent += 1
-          if (uploadedContent === options.media.length) {
-            sendMail(params)
-            .then(response => resolve(response))
-            .catch(error => reject(error))
-          }
+    attachments.forEach((at, index) => {
+      let p = med.toBase64(at.content)
+      nt.push({
+        name: at.name || 'attachment' + index.toString(),
+        type: at.type
+      })
+      promises.push(p)
+    })
+
+    Promise.all(promises).then(results => {
+      params.attachments = results
+      results.forEach((data, index) => {
+        params.message.attachments.push({
+          content: data,
+          name: nt[index].name,
+          type: nt[index].type
         })
       })
+      resolve()
     })
-  } else {
-    return sendMail(params)
-  }
-}
 
+  } else { resolve() }
+})
+.then(a => {
+  if (options.path) {
+    let media = options.path
+    return med.toBase64(media)
+    .then((content) => {
+      params.message.images.push({
+        name: options.file || 'IMAGEID',
+        content: content
+      })
+      return sendMail(params)
+    }).catch((err) => sendMail(params) )
+  } else { return sendMail(params) }
+})
+}
 module.exports.run = run
