@@ -22,9 +22,9 @@ then, provide a configuration file based on the template we provide:
 
 ```sh
 # get the template
-$ wget https://raw.githubusercontent.com/soixantecircuits/altruist/master/settings/settings.example.json
+$ wget https://raw.githubusercontent.com/soixantecircuits/altruist/master/settings/settings.default.json
 # rename it
-$ mv settings.example.json settings.json
+$ mv settings.default.json settings.json
 # profit
 $ altruist -- -settings settings.json
 ```
