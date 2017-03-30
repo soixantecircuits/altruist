@@ -7,7 +7,7 @@ const fs = require('fs-extra')
 const cors = require('cors')
 const path = require('path')
 
-const settings = require(path.resolve(__dirname, './lib/settings'))
+const settings = require(path.resolve(__dirname, './lib/settings')).app
 const passport = require('passport')
 
 const router = express.Router()

@@ -1,6 +1,6 @@
 'use strict'
 
-const settings = require('nconf').get()
+const settings = require('nconf').get('app')
 const request = require('request')
 
 function run (options) {

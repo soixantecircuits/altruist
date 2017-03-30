@@ -6,7 +6,7 @@ const med = require('media-helper')
 const request = require('request')
 const _ = require('lodash')
 
-const settings = require('nconf').get()
+const settings = require('nconf').get('app')
 const API_KEY = _.get(settings, 'actions.mandrill.APIkey')
 const from = _.get(settings,'actions.mandrill.from')
 const subject = _.get(settings, 'actions.mandrill.subject')

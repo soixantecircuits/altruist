@@ -4,7 +4,7 @@ const passport = require('passport')
 const DropboxStrategy = require('passport-dropbox-oauth2').Strategy
 const Dropbox = require('dropbox')
 
-const settings = require('nconf').get()
+const settings = require('nconf').get('app')
 const localStorage = require('../src/lib/localstorage')
 
 var dropboxSession = JSON.parse(localStorage.getItem('dropbox-session')) || { accessToken: '', refreshToken: '' }

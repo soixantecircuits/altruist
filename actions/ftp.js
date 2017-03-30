@@ -1,7 +1,7 @@
 const FTPClient = require('ftp')
 const SSHClient = require('ssh2').Client
 const path = require('path')
-const settings = require('nconf').get().actions.ftp
+const settings = require('nconf').get('app').actions.ftp
 
 function isDefined (variable) {
   return !(variable === undefined || variable === '' || variable === null)

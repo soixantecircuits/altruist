@@ -5,7 +5,7 @@ const _ = require('lodash')
 const FacebookStrategy = require('passport-facebook').Strategy
 var fb = new require('fb')
 fb.options({ version: 'v2.8' })
-const settings = require('nconf').get()
+const settings = require('nconf').get('app')
 const localStorage = require('../src/lib/localstorage')
 
 let facebookSession = JSON.parse(localStorage.getItem('facebook-session')) || {}

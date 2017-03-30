@@ -1,5 +1,5 @@
 const execa = require('execa')
-const settings = require('nconf').get()
+const settings = require('nconf').get('app')
 
 function listAvailablePrinters () {
   var printers = execa.shellSync("lpstat -a | awk '{print $1}'").stdout
