@@ -1,7 +1,7 @@
 'use strict'
 
 const Twit = require('twit')
-const settings = require('nconf').get('app')
+const settings = require('nconf').get()
 const med = require('media-helper')
 const _ = require('lodash')
 

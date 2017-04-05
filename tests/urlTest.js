@@ -1,6 +1,6 @@
 const assert = require('assert')
 const request = require('request')
-const settings = require('../src/lib/settings')
+const settings = require('standard-settings')()
 
 var authRedirects
 /**

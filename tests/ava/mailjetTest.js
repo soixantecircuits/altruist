@@ -1,7 +1,7 @@
 'use strict'
 
 const test = require('ava')
-const settings = require('../../src/lib/settings')
+const settings = require('standard-settings')()
 const mailjet = require('../../actions/mailjet')
 
 test('Mailjet - Send valid mail (need fromEmail and templateID in settings.json)', t => {

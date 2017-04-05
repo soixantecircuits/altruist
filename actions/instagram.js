@@ -2,7 +2,7 @@ const path = require('path')
 const Client = require('instagram-private-api').V1
 const _ = require('lodash')
 
-const settings = require('nconf').get('app').actions.instagram
+const settings = require('nconf').get().actions.instagram
 const cookiePath = path.join('/tmp', settings.account + '.json')
 
 var device = new Client.Device(settings.account)

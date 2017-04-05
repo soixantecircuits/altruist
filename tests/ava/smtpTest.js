@@ -1,7 +1,7 @@
 'use strict'
 
 const test = require('ava')
-const settings = require('../../src/lib/settings')
+const settings = require('standard-settings')()
 const smtp = require('../../actions/smtp')
 
 test('SMTP - Send valid mail', t => {

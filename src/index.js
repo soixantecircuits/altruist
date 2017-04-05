@@ -6,8 +6,9 @@ const bodyparser = require('body-parser')
 const fs = require('fs-extra')
 const cors = require('cors')
 const path = require('path')
+const ip = require('ip')
 
-const settings = require(path.resolve(__dirname, './lib/settings')).app
+const settings = require('standard-settings')()
 const passport = require('passport')
 
 const router = express.Router()
@@ -86,6 +87,6 @@ app.get('/', (req, res) => {
   `)
 })
 
-app.listen(settings.server.port, () => {
-  console.log(`altruist running on: http://localhost:${settings.server.port} with actions: [ ${Object.keys(settings.actions)} ]`)
+app.listen(settings.server.port, settings.server.host, () => {
+  console.log(`altruist running on: http://${ip.address()}:${settings.server.port} with actions: [ ${Object.keys(settings.actions)} ]`)
 })

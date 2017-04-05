@@ -1,7 +1,7 @@
 'use strict'
 
 const Mailchimp = require('mailchimp-api-v3')
-const settings = require('nconf').get('app')
+const settings = require('nconf').get()
 
 const API_KEY = settings.actions.mailchimp.apiKey
 const mailchimp = (API_KEY) ? new Mailchimp(API_KEY) : null

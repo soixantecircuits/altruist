@@ -1,127 +1,124 @@
 {
-  "app": {
-    "name": "altruist",
-    "storageDir": "./storage",
-    "authRedirectURL": "/authRedirect",
-    "secret": "my-secret",
-    "server": {
-      "host": "localhost",
-      "port": 6060
+  "storageDir": "./storage",
+  "authRedirectURL": "/authRedirect",
+  "secret": "my-secret",
+  "server": {
+    "host": "localhost",
+    "port": 6060
+  },
+  "actions": {
+    "share": {
+      "actions": ["slack", "twitter", "mandrill"]
     },
-    "actions": {
-      "share": {
-        "actions": ["slack", "twitter", "mandrill"]
-      },
-      "mailchimp": {
-        "apiKey": "abcd-xyz",
-        "listID": "1234"
-      },
-      "slack": {
-        "token": "abdc-xyz",
-        "channel": "random"
-      },
-      "mandrill": {
-        "APIkey": "",
-        "from": {
-          "name": "Altruist 🚀",
-          "email": "altruist@shh.ac"
-        },
-        "subject": "Altruist",
-        "template": "altruist-test"
-      },
-      "facebook": {
-        "appID": "abcd-xyz",
-        "appSecret": "shhh",
-        "loginURL": "/login/facebook",
-        "callbackURL": "/login/facebook/return",
-        "failureURL": "/?failure=facebook",
-        "successURL": "/?success=facebook",
-        "profileURL": "/profile/facebook",
-        "accountsURL": "/accounts/facebook",
-        "pageID": ""
-      },
-      "twitter": {
-        "consumer_key": "<your_consumer_key>",
-        "consumer_secret": "<your_consumer_secret>",
-        "access_token": "<your_access_token>",
-        "access_token_secret": "<your_access_token_secret>"
-      },
-      "dropbox": {
-        "clientID": "xxxxxxx",
-        "clientSecret": "xxxxxxxxxx",
-        "loginURL": "/login/dropbox",
-        "callbackURL": "/login/dropbox/return",
-        "failureURL": "/?failure=dropbox",
-        "successURL": "/?success=dropbox",
-        "uploadDirectoryPath": ""
-      },
-      "googledrive": {
-        "clientID": "xxxxxxxx",
-        "clientSecret": "xxxxxxxxxxxxxx",
-        "uploadDirectoryID": "",
-        "loginURL": "/login/gdrive",
-        "callbackURL": "/login/gdrive/return",
-        "failureURL": "/?failure=gdrive",
-        "successURL": "/?success=gdrive",
-        "profileURL": "/profile/gdrive"
-      },
-      "youtube": {
-        "clientID": "xxxxxxxx",
-        "clientSecret": "xxxxxxxxxxxxxx",
-        "loginURL": "/login/youtube",
-        "callbackURL": "/login/youtube/return",
-        "failureURL": "/?failure=youtube",
-        "successURL": "/?success=youtube",
-        "profileURL": "/profile/youtube",
-        "privacyStatus": "public"
-      },
-      "instagram": {
-        "account": "johndoe",
-        "password": "pony123"
-      },
-      "mailjet": {
-        "apiKey": "xxxxxxx",
-        "secretKey": "xxxxxxxx",
-        "fromEmail": "your@e.mail",
-        "templateID": "xxxxxx"
-      },
-      "smtp": {
-        "user": "your@mail.com",
-        "password": "yourpassword",
-        "smtpServer": "your.smtp.server",
-        "from": "Altruist 🚀 <altruist@example.com>"
-      },
-      "scp": {
-        "user": "foo",
-        "password": "bar",
-        "hostname": "example:5050",
-        "target": "/directory/or/file"
-      },
-      "1000mercis": {
-        "url": "https://1000mercis.com",
-        "login": "login",
-        "password": "pass",
-        "templateName": "my-template"
-      },
-      "socialite-v0": {
-        "baseURL": "http://url.com",
-        "uploadRoute": "/upload.php"
-      },
-      "socialite": {
-        "bucket": "xxxxx",
-        "token": "xxxxxx"
-      },
-      "print": {
-        "printer": "myPrinter",
-        "format": "A4",
-        "copies": 1
-      }
+    "mailchimp": {
+      "apiKey": "abcd-xyz",
+      "listID": "1234"
     },
-    "meta": {
-      "title": "Title example",
-      "description": "Description example",
-      "message": "Message example",
-      "source": "Source example"
+    "slack": {
+      "token": "abdc-xyz",
+      "channel": "random"
+    },
+    "mandrill": {
+      "APIkey": "",
+      "from": {
+        "name": "Altruist 🚀",
+        "email": "altruist@shh.ac"
+      },
+      "subject": "Altruist",
+      "template": "altruist-test"
+    },
+    "facebook": {
+      "appID": "abcd-xyz",
+      "appSecret": "shhh",
+      "loginURL": "/login/facebook",
+      "callbackURL": "/login/facebook/return",
+      "failureURL": "/?failure=facebook",
+      "successURL": "/?success=facebook",
+      "profileURL": "/profile/facebook",
+      "accountsURL": "/accounts/facebook",
+      "pageID": ""
+    },
+    "twitter": {
+      "consumer_key": "<your_consumer_key>",
+      "consumer_secret": "<your_consumer_secret>",
+      "access_token": "<your_access_token>",
+      "access_token_secret": "<your_access_token_secret>"
+    },
+    "dropbox": {
+      "clientID": "xxxxxxx",
+      "clientSecret": "xxxxxxxxxx",
+      "loginURL": "/login/dropbox",
+      "callbackURL": "/login/dropbox/return",
+      "failureURL": "/?failure=dropbox",
+      "successURL": "/?success=dropbox",
+      "uploadDirectoryPath": ""
+    },
+    "googledrive": {
+      "clientID": "xxxxxxxx",
+      "clientSecret": "xxxxxxxxxxxxxx",
+      "uploadDirectoryID": "",
+      "loginURL": "/login/gdrive",
+      "callbackURL": "/login/gdrive/return",
+      "failureURL": "/?failure=gdrive",
+      "successURL": "/?success=gdrive",
+      "profileURL": "/profile/gdrive"
+    },
+    "youtube": {
+      "clientID": "xxxxxxxx",
+      "clientSecret": "xxxxxxxxxxxxxx",
+      "loginURL": "/login/youtube",
+      "callbackURL": "/login/youtube/return",
+      "failureURL": "/?failure=youtube",
+      "successURL": "/?success=youtube",
+      "profileURL": "/profile/youtube",
+      "privacyStatus": "public"
+    },
+    "instagram": {
+      "account": "johndoe",
+      "password": "pony123"
+    },
+    "mailjet": {
+      "apiKey": "xxxxxxx",
+      "secretKey": "xxxxxxxx",
+      "fromEmail": "your@e.mail",
+      "templateID": "xxxxxx"
+    },
+    "smtp": {
+      "user": "your@mail.com",
+      "password": "yourpassword",
+      "smtpServer": "your.smtp.server",
+      "from": "Altruist 🚀 <altruist@example.com>"
+    },
+    "scp": {
+      "user": "foo",
+      "password": "bar",
+      "hostname": "example:5050",
+      "target": "/directory/or/file"
+    },
+    "1000mercis": {
+      "url": "https://1000mercis.com",
+      "login": "login",
+      "password": "pass",
+      "templateName": "my-template"
+    },
+    "socialite-v0": {
+      "baseURL": "http://url.com",
+      "uploadRoute": "/upload.php"
+    },
+    "socialite": {
+      "bucket": "xxxxx",
+      "token": "xxxxxx"
+    },
+    "print": {
+      "printer": "myPrinter",
+      "format": "A4",
+      "copies": 1
     }
+  },
+  "meta": {
+    "title": "Title example",
+    "description": "Description example",
+    "message": "Message example",
+    "source": "Source example"
   }
 }

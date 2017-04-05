@@ -5,7 +5,7 @@ const request = require('request')
 const stream = require("stream")
 var fb = new require('fb')
 fb.options({ version: 'v2.8' })
-const settings = require('nconf').get('app')
+const settings = require('nconf').get()
 
 const communityID = settings.actions.workplace.communityID
 const token = settings.actions.workplace.token

@@ -1,7 +1,7 @@
 'use strict'
 
 const nodemailer = require('nodemailer')
-const settings = require('nconf').get('app')
+const settings = require('nconf').get()
 
 function run (options, request) {
   return new Promise((resolve, reject) => {

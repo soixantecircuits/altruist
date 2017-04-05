@@ -1,7 +1,7 @@
 'use strict'
 
 const test = require('ava')
-const settings = require('../../src/lib/settings')
+const settings = require('standard-settings')()
 const mandrill = require('../../actions/mandrill')
 
 test(`Mandrill - Send template '${settings.actions.mandrill.template}' to ${settings.actions.mandrill.from.email} (need email and template in settings.json)`, t => {

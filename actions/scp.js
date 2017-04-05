@@ -1,6 +1,6 @@
 'use strict'
 
-const settings = require('nconf').get('app')
+const settings = require('nconf').get()
 const scpClient = require('scp2')
 const _ = require('lodash')
 

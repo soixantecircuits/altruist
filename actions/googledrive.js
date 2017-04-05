@@ -3,7 +3,7 @@
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 
-const settings = require('nconf').get('app')
+const settings = require('nconf').get()
 const localStorage = require('../src/lib/localstorage')
 const google = require('googleapis')
 
