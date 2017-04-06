@@ -3,13 +3,14 @@
 const express = require('express')
 const morgan = require('morgan')
 const bodyparser = require('body-parser')
+const passport = require('passport')
 const fs = require('fs-extra')
 const cors = require('cors')
 const path = require('path')
 const ip = require('ip')
 
-const settings = require('standard-settings')()
-const passport = require('passport')
+const standardSettings = require('standard-settings')
+const settings = require('nconf').get()
 
 const router = express.Router()
 const app = express()

@@ -115,10 +115,12 @@
       "copies": 1
     }
   },
-  "meta": {
-    "title": "Title example",
-    "description": "Description example",
-    "message": "Message example",
-    "source": "Source example"
+  "media": {
+    "meta": {
+      "title": "Title example",
+      "description": "Description example",
+      "message": "Message example",
+      "source": "Source example"
+    }
   }
 }

@@ -4126,9 +4126,9 @@ stack-utils@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/stack-utils/-/stack-utils-1.0.0.tgz#2392cd8ddbd222492ed6c047960f7414b46c0f83"
 
-standard-settings@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/standard-settings/-/standard-settings-1.0.1.tgz#8d17e7986056409f52123374f90f143b3a349d86"
+standard-settings@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/standard-settings/-/standard-settings-1.1.0.tgz#1d7a7c6d24591150f6828085af20006bbe3d4ff1"
   dependencies:
     fs "^0.0.1-security"
     nconf "^0.8.4"
