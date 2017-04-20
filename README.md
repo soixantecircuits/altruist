@@ -8,7 +8,7 @@ Altruist supports the following data formats:
 * URL-encoded
 * form-data
 
-## Installation
+## 🌍 Installation
 
 Install the tool:
 
@@ -38,7 +38,7 @@ POST http://localhost:6060/api/v1/actions/{action}
 ```
 *More details in the actions docs*
 
-## Actions
+## 👋 Usage
 
 ##### List of available actions:
 
@@ -61,7 +61,7 @@ POST http://localhost:6060/api/v1/actions/{action}
 
 ⚠️  *Some actions may require that you log in before using them. You can get a list of those actions with their login url by sending a GET request to the url matching `authRedirect` in the settings file (`/authRedirect` by default).*
 
-## Contribute
+## ❤️ Contribute
 
 Thanks for helping us! 👏
 
@@ -69,3 +69,5 @@ Please follow:
 
 * [JavaScript standard style](http://standardjs.com/)
 * [This git branching model](nvie.com/posts/a-successful-git-branching-model/)
+
+Please use the `develop` branch if you want to contribute.
