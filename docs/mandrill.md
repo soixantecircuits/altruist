@@ -74,3 +74,16 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |**media**|`Object`|&minus;||
 |**media.name**|`string`|&minus;|name of the media that you will retrieve via `cid:name`|
 |**media.content**|`string`|&minus;|Can be either a path the media (in the filesystem or via http) or straight base64 datas|
+
+##### Examples
+
+###### Video with thumbnail
+let data = { 
+  email: 'user@site.com',
+  media: [
+    { name: 'video', content: '/path/to/video.mp4' },
+    { name: 'IMAGEID', content: '/path/to.thumbnail' }
+  ]
+}
+
+
