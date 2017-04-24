@@ -78,12 +78,14 @@ curl -X POST -H "Content-Type: application/json" -d '{
 ##### Examples
 
 ###### Video with thumbnail
+```
 let data = { 
   email: 'user@site.com',
+  vars: { globals: [{ share: 'http://path.to/url/of/user/page' }] }
   media: [
     { name: 'video', content: '/path/to/video.mp4' },
     { name: 'IMAGEID', content: '/path/to.thumbnail' }
   ]
 }
-
+```
 
