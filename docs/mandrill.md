@@ -2,6 +2,8 @@
 
 ### Setup
 
+For mandrill template, the default language is **handlebars**, you should use `{{}}` instead of `*||*`.
+
 In your `settings.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```json

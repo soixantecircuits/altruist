@@ -61,6 +61,14 @@ POST http://localhost:6060/api/v1/actions/{action}
 
 ⚠️  *Some actions may require that you log in before using them. You can get a list of those actions with their login url by sending a GET request to the url matching `authRedirect` in the settings file (`/authRedirect` by default).*
 
+## 🕳 Troubleshoot
+
+#### POSTMAN + MULTER
+You can meet some issue while uploading file and JSON. This is a bug in POSTMAN. See here:
+https://github.com/postmanlabs/postman-app-support/issues/2602
+A way to fix it is to close and reopen the tab you are using to test the query. (http://stackoverflow.com/questions/35851660/multer-req-file-always-undefined/38461398#38461398)
+
+
 ## ❤️ Contribute
 
 Thanks for helping us! 👏
