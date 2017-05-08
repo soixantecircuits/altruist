@@ -80,6 +80,9 @@
   "bugs": {
     "url": "https://github.com/soixantecircuits/altruist/issues"
   },
+  "engines": {
+    "node": ">= 6.0.0"
+  },
   "homepage": "https://github.com/soixantecircuits/altruist#readme",
   "license": "MIT"
 }
