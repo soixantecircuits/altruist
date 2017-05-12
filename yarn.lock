@@ -2712,9 +2712,9 @@ md5-o-matic@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/md5-o-matic/-/md5-o-matic-0.1.1.tgz#822bccd65e117c514fab176b25945d54100a03c3"
 
-media-helper@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/media-helper/-/media-helper-1.0.3.tgz#168c47185b92f09c694bd4a591184edf623aa4b8"
+media-helper@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/media-helper/-/media-helper-1.0.4.tgz#335d1d19be1cec60763cc91210aed6d030dc748d"
   dependencies:
     file-type "^4.0.0"
     mmmagic "^0.4.5"
