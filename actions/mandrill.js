@@ -72,7 +72,7 @@ function run (options, req) {
       }],
       from_email: from.email,
       from_name: from.name,
-      subject,
+      subject: subject,
       merge: true,
       attachments: [],
       images: [],
