@@ -40,7 +40,7 @@ function sendMail (params) {
 }
 
 function run (options, req) {
-  if (options.media === undefined) {
+  if (options.media === undefined && req.files) {
     options.media = []
     req.files.forEach((el, index) => {
       let mediaEl = {
