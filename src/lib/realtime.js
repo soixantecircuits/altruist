@@ -25,22 +25,27 @@ spacebroClient.on('disconnect', () => {
 
 if (settings.autoshare) {
   spacebroClient.on(settings.service.spacebro.inputMessage, (data) => {
-    share(data.url)
+    share(data)
   })
 }
 
-var share = (url, action) => {
-  console.log(url)
+var share = (media, action) => {
+  console.log(media)
   let today = new Date()
   request
-
   .post(`http://localhost:${settings.server.port}/api/v1/actions/${settings.autoshare.actionName}`,
-  {form: {filename: today.getTime(), media: url}, json: true},
+  {form: {filename: today.getTime(), media: media.url}, json: true},
   (err, httpResponse, body) => {
     if (err) {
       console.error(err)
     } else {
-      console.log(body.url)
+      const meta = Object.assign({}, media.meta, {
+        socialite: {
+          url: body.url
+        }
+      })
+      media.meta = meta
+      spacebroClient.emit('media-update', media)
     }
   })
 }

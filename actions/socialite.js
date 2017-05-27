@@ -74,10 +74,13 @@ function run (options, req) {
       let streamTmp = request(options.media).on('error', (err) => {
         return reject(err)
       }).pipe(fs.createWriteStream(mediaTmp))
-      streamTmp.on('finish', ()=>{
+      streamTmp.on('finish', () => {
         formData.file = formDataFile(fs.readFileSync(mediaTmp), options.filename + ext, type)
         sendRequest(formData)
-        .then(body => resolve(body))
+        .then(body => {
+          fs.unlink(mediaTmp)
+          resolve(body)
+        })
         .catch(error => reject(error))
       })
     } else {
