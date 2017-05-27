@@ -3,8 +3,8 @@
   "version": "1.0.2",
   "description": "Altruist lets you share your content with others",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "dev": "./node_modules/.bin/nodemon ./src/index.js",
+    "start": "node ./src/index.js",
     "debug": "nodemon --inspect src/index.js",
     "bin": "./bin/altruist",
     "test": "mocha ./settings/settings.json ./tests/urlTest.js && ava --verbose"
@@ -54,7 +54,9 @@
     "passport-google-oauth20": "^1.0.0",
     "request": "^2.79.0",
     "scp2": "^0.5.0",
+    "spacebro-client": "^0.3.4",
     "ssh2": "^0.5.4",
+    "standard-settings": "^1.1.7",
     "twit": "^2.2.5"
   },
   "devDependencies": {

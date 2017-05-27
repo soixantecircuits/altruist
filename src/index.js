@@ -21,6 +21,8 @@ const version = 'v1'
 const multer = require('multer')
 const upload = multer({ storage: multer.memoryStorage() })
 
+const realtime = require('./lib/realtime')
+
 app.use(morgan('dev'))
 app.use(cors())
 app.use(bodyparser.urlencoded({extended: true, limit: '50mb'}))
