@@ -64,7 +64,16 @@ for (let action in settings.actions) {
           res.status(404).send('No such action.')
         } else {
           module.run(req.body, req)
-            .then(response => res.send(response))
+            .then(response => {
+              try {
+                if (typeof response === 'string') {
+                  response = JSON.parse(response)
+                }
+                res.json(response)
+              } catch (err) {
+                console.error('can not parse response')
+              }
+            })
             .catch(reason => {
               console.log(reason)
               res.status(500).send(reason)

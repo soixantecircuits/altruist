@@ -5,6 +5,19 @@
   "server": {
     "port": 6060
   },
+  "service": {
+    "spacebro": {
+      "address": "spacebro.space",
+      "port": 3333,
+      "clientName": "altruist",
+      "channelName": "media-stream",
+      "inputMessage": "new-media-from-etna",
+      "outputMessage": "new-media-from-altruist"
+    }
+  },
+  "autoshare":{
+    "actionName":"socialite"
+  },
   "actions": {
     "mailchimp": {
       "apiKey": "abcd-xyz",
