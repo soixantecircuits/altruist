@@ -30,7 +30,6 @@ if (settings.autoshare) {
 }
 
 var share = (media, action) => {
-  console.log(media)
   let today = new Date()
   request
   .post(`http://localhost:${settings.server.port}/api/v1/actions/${settings.autoshare.actionName}`,
@@ -45,6 +44,7 @@ var share = (media, action) => {
         }
       })
       media.meta = meta
+      console.log(media)
       spacebroClient.emit('media-update', media)
     }
   })
