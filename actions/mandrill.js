@@ -52,7 +52,7 @@ function run (options, req) {
       options.media.push(mediaEl)
     })
   }
-
+  console.log(options.vars)
   try {
     options.vars = options.vars ?
       typeof options.vars === 'object'
@@ -85,8 +85,8 @@ function run (options, req) {
   if (options.media) {
     return new Promise((resolve, reject) => {
       let uploadedContent = 0
-
       options.media.forEach((media, index) => {
+        console.log(media.content)
         med.toBase64(media.content)
           .then((content) => {
             let ext = (media.mimetype) ? path.extname(media.originalname) : path.extname(media.content)

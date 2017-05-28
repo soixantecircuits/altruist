@@ -2965,9 +2965,9 @@ md5-o-matic@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/md5-o-matic/-/md5-o-matic-0.1.1.tgz#822bccd65e117c514fab176b25945d54100a03c3"
 
-media-helper@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/media-helper/-/media-helper-1.1.0.tgz#ca0f458c9b0e7dd8d4c15062dafe064d06772bbe"
+media-helper@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/media-helper/-/media-helper-1.1.1.tgz#705c58bb605d8ce94a6e781e41eb20427b63814d"
   dependencies:
     file-type "^4.0.0"
     mime-types "^2.1.15"
