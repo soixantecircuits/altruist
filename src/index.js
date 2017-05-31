@@ -21,10 +21,12 @@ const version = 'v1'
 const multer = require('multer')
 const upload = multer({ storage: multer.memoryStorage() })
 
+const realtime = require('./lib/realtime')
+
 app.use(morgan('dev'))
 app.use(cors())
-app.use(bodyparser.json())
-app.use(bodyparser.urlencoded({ extended: true }))
+app.use(bodyparser.urlencoded({extended: true, limit: '50mb'}))
+app.use(bodyparser.json({limit: '50mb'}))
 app.use(upload.any())
 app.use(require('cookie-parser')())
 app.use(require('express-session')({ secret: settings.secret, resave: true, saveUninitialized: true }))
