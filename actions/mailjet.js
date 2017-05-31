@@ -1,7 +1,7 @@
 'use strict'
 
 const settings = require('nconf').get()
-const mediaUtils = require('../src/lib/media')
+const mediaUtils = require('media-helper')
 const mailjet = require('node-mailjet').connect(settings.actions.mailjet.apiKey, settings.actions.mailjet.secretKey)
 
 function run (options, request) {
