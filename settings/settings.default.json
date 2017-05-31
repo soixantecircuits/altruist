@@ -5,6 +5,7 @@
   "server": {
     "port": 6060
   },
+  "action": "",
   "actions": {
     "mailchimp": {
       "apiKey": "abcd-xyz",
