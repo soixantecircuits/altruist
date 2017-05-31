@@ -51,28 +51,6 @@ router.get('/status', (req, res) => {
   res.send('up')
 })
 
-for (let action in settings.actions) {
-  getActionModule(action)
-    .then(module => {
-      typeof (module.auth) === 'function' && module.auth(app)
-      typeof (module.loginURL) === 'string' && authRedirect.push({ name: action, URL: module.loginURL })
-      typeof (module.addRoutes) === 'function' && module.addRoutes(app)
-
-      router.post(`/actions/${action}`, (req, res) => {
-        module.run(req.body, req)
-          .then(response => res.send(response))
-          .catch(reason => {
-            console.log(reason)
-            res.status(500).send(reason)
-          })
-      })
-    })
-}
-
-app.get(authRedirectURL, (req, res) => {
-  res.send({ 'map': authRedirect })
-})
-
 function getActionModule (actionName) {
   return new Promise((resolve, reject) => {
     if (typeof actionName !== 'string' || actionName.length === 0) {
@@ -91,8 +69,33 @@ function getActionModule (actionName) {
   })
 }
 
+for (let action in settings.actions) {
+  getActionModule(action)
+    .then(module => {
+      typeof (module.auth) === 'function' && module.auth(app)
+      typeof (module.loginURL) === 'string' && authRedirect.push({ name: action, URL: module.loginURL })
+      typeof (module.addRoutes) === 'function' && module.addRoutes(app)
+
+      router.post(`/actions/${action}`, (req, res) => {
+        module.run(req.body, req)
+          .then(response => res.send(response))
+          .catch(reason => {
+            console.log(reason)
+            res.status(500).send(reason)
+          })
+      })
+    })
+    .catch(err => {
+      console.warn(err)
+    })
+}
+
+app.get(authRedirectURL, (req, res) => {
+  res.send({ 'map': authRedirect })
+})
+
 // Register a call to a default action on a spacebro event
-// It only works for the socialite action for now.
+// For now, it only works for actions that just need a media.
 realtime.registerEvent('new-media', (data) => {
   var action = settings.defaultAction || ''
   if (data.action !== undefined) {
@@ -105,6 +108,7 @@ realtime.registerEvent('new-media', (data) => {
         filename: path.basename(data.path),
         media: data.path
       }
+
       module.run(socialiteData, null)
         .then(response => {
           console.log(`${action} executed on new-media event.`)

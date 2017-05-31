@@ -1,6 +1,6 @@
 'use strict'
 
-const settings = require('nconf').get()
+const settings = require('../src/lib/settings')
 const med = require('media-helper')
 const request = require('request')
 const fs = require('fs')

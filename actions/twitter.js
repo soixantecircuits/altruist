@@ -1,7 +1,7 @@
 'use strict'
 
 const Twit = require('twit')
-const settings = require('nconf').get().actions.twitter
+const settings = require('../src/lib/settings').actions.twitter
 const med = require('media-helper')
 
 const T = new Twit({

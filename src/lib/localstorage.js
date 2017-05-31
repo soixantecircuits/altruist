@@ -1,4 +1,4 @@
-const settings = require('nconf').get()
+const settings = require('standard-settings').getSettings()
 const LocalStorage = require('node-localstorage').LocalStorage
 const localstorage = new LocalStorage(settings.storageDir)
 

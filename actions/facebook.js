@@ -4,7 +4,7 @@ const passport = require('passport')
 const FacebookStrategy = require('passport-facebook').Strategy
 var fb = new require('fb')
 fb.options({ version: 'v2.8' })
-const settings = require('nconf').get()
+const settings = require('../src/lib/settings')
 const localStorage = require('../src/lib/localstorage')
 
 let facebookSession = JSON.parse(localStorage.getItem('facebook-session')) || {}
@@ -186,7 +186,7 @@ function run (options, request) {
         error: 'invalid TOKEN',
         details: `No facebook user access token found in local storage. Please log in at ${loginURL}.`
       })
-    } else if ((!message) && (!media) && !request.file && link) {
+    } else if ((!message) && (!media) && (!request || !request.file) && link) {
       return reject({
         error: 'invalid argument',
         details: 'No message or media in facebook POST request.'
@@ -194,7 +194,7 @@ function run (options, request) {
     }
 
     // If multer detects a file upload, get the first file and set options to upload to facebook
-    if (request.files && request.files[0]) {
+    if (request && request.files && request.files[0]) {
       options.media = {
         isBinary: true,
         filename: request.files[0].originalname,
