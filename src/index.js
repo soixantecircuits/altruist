@@ -25,8 +25,8 @@ const realtime = require('./lib/realtime')
 
 app.use(morgan('dev'))
 app.use(cors())
-app.use(bodyparser.urlencoded({extended: true, limit: '50mb'}))
-app.use(bodyparser.json({limit: '50mb'}))
+app.use(bodyparser.urlencoded({ extended: true, limit: '50mb' }))
+app.use(bodyparser.json({ limit: '50mb' }))
 app.use(upload.any())
 app.use(require('cookie-parser')())
 app.use(require('express-session')({ secret: settings.secret, resave: true, saveUninitialized: true }))
@@ -52,33 +52,82 @@ router.get('/status', (req, res) => {
 })
 
 for (let action in settings.actions) {
-  const modulePath = path.resolve(`${__dirname}/../actions/${action}.js`)
-  fs.access(modulePath, (err) => {
-    if (!err) {
-      const module = require(modulePath)
+  getActionModule(action)
+    .then(module => {
       typeof (module.auth) === 'function' && module.auth(app)
       typeof (module.loginURL) === 'string' && authRedirect.push({ name: action, URL: module.loginURL })
       typeof (module.addRoutes) === 'function' && module.addRoutes(app)
+
       router.post(`/actions/${action}`, (req, res) => {
-        if (err) {
-          res.status(404).send('No such action.')
-        } else {
-          module.run(req.body, req)
-            .then(response => res.send(response))
-            .catch(reason => {
-              console.log(reason)
-              res.status(500).send(reason)
-            })
-        }
+        module.run(req.body, req)
+          .then(response => res.send(response))
+          .catch(reason => {
+            console.log(reason)
+            res.status(500).send(reason)
+          })
       })
-    } else {
-      console.log(`Error loading module "${modulePath}": ${err}`)
-    }
-  })
+    })
 }
 
 app.get(authRedirectURL, (req, res) => {
   res.send({ 'map': authRedirect })
+})
+
+function getActionModule (actionName) {
+  return new Promise((resolve, reject) => {
+    if (typeof actionName !== 'string' || actionName.length === 0) {
+      return reject('Error loading module. Action name is invalid.')
+    }
+
+    const modulePath = path.resolve(`${__dirname}/../actions/${actionName}.js`)
+    fs.access(modulePath, (err) => {
+      if (!err) {
+        const module = require(modulePath)
+        return resolve(module)
+      } else {
+        return reject(`Error loading module "${modulePath}": ${err}`)
+      }
+    })
+  })
+}
+
+// Register a call to a default action on a spacebro event
+// It only works for the socialite action for now.
+realtime.registerEvent('new-media', (data) => {
+  var action = settings.defaultAction || ''
+  if (data.action !== undefined) {
+    action = data.action
+  }
+
+  getActionModule(action)
+    .then(module => {
+      var socialiteData = {
+        filename: path.basename(data.path),
+        media: data.path
+      }
+      module.run(socialiteData, null)
+        .then(response => {
+          console.log(`${action} executed on new-media event.`)
+          realtime.emitEvent('altruist-action', {
+            action,
+            response
+          })
+        })
+        .catch(reason => {
+          console.log(reason)
+          realtime.emitEvent('altruist-error', {
+            action,
+            error: reason
+          })
+        })
+    })
+    .catch(err => {
+      console.error(err)
+      realtime.emitEvent('altruist-error', {
+        action,
+        error: err
+      })
+    })
 })
 
 app.get('/', (req, res) => {

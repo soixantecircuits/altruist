@@ -5,7 +5,15 @@
   "server": {
     "port": 6060
   },
-  "action": "",
+  "service": {
+    "spacebro": {
+      "host": "localhost",
+      "port": 8888,
+      "clientName": "altruist",
+      "channelName": "media-stream"
+    }
+  },
+  "defaultAction": "",
   "actions": {
     "mailchimp": {
       "apiKey": "abcd-xyz",

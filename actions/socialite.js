@@ -9,7 +9,7 @@ const path = require('path')
 const baseURL = 'http://app.shh.ac'
 const route = '/wp-json/form/v1/postForm'
 
-function formDataFile(value, name, type) {
+function formDataFile (value, name, type) {
   return {
     value: value,
     options: {
@@ -19,7 +19,7 @@ function formDataFile(value, name, type) {
   }
 }
 
-function sendRequest(formData) {
+function sendRequest (formData) {
   return new Promise((resolve, reject) => {
     request.post({
       url: `${baseURL}${route}`,
@@ -45,24 +45,24 @@ function run (options, req) {
     }
 
     let media = undefined
-    if (req.files) {
+    if (req && req.files) {
       media = req.files[0]
       formData.file = formDataFile(media.buffer, media.originalname, media.mimetype)
       sendRequest(formData)
-      .then(body => resolve(body))
-      .catch(error => reject(error))
+        .then(body => resolve(body))
+        .catch(error => reject(error))
 
     } else if (med.isFile(options.media)) {
       media = options.media
       med.getMimeType(media)
-      .then(type => {
-        let ext = '.' + path.basename(type)
-        formData.file = formDataFile(fs.readFileSync(media), options.filename + ext, type)
-        sendRequest(formData)
-        .then(body => resolve(body))
-        .catch(error => reject(error))
+        .then(type => {
+          let ext = '.' + path.basename(type)
+          formData.file = formDataFile(fs.readFileSync(media), options.filename + ext, type)
+          sendRequest(formData)
+            .then(body => resolve(body))
+            .catch(error => reject(error))
 
-      }).catch(error => reject(error))
+        }).catch(error => reject(error))
     } else {
       reject({ error: 'Invalid request', details: 'No media provided' })
     }

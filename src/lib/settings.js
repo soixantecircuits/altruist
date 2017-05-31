@@ -18,8 +18,8 @@ if (program.settings) {
   console.log('Settings loaded from:', path.join(settingsDir, 'settings.json'))
   nconf.file({ file: path.join(settingsDir, 'settings.json') })
 } else {
-  console.log('Settings loaded from:', path.join(settingsDir, 'settings.example.json'))
-  nconf.file({ file: path.join(settingsDir, 'settings.example.json') })
+  console.log('Settings loaded from:', path.join(settingsDir, 'settings.default.json'))
+  nconf.file({ file: path.join(settingsDir, 'settings.default.json') })
 }
 
 module.exports = nconf.get()
