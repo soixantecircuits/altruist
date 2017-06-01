@@ -7,13 +7,17 @@
   },
   "service": {
     "spacebro": {
-      "host": "localhost",
-      "port": 8888,
+      "host": "spacebro.space",
+      "port": 3333,
       "clientName": "altruist",
-      "channelName": "media-stream"
+      "channelName": "media-stream",
+      "inputMessage": "new-media-from-etna",
+      "outputMessage": "new-media-from-altruist"
     }
   },
-  "defaultAction": "",
+  "autoshare":{
+    "actionName":"socialite"
+  },
   "actions": {
     "mailchimp": {
       "apiKey": "abcd-xyz",

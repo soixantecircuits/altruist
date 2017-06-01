@@ -8,9 +8,9 @@ spacebroClient.connect(config.service.spacebro.host, config.service.spacebro.por
 })
 
 setTimeout(function () {
-  spacebroClient.emit('new-media', {
-    path: '/path/to/file',
-    action: 'twitter'
+  spacebroClient.emit('new-media-from-etna', {
+    url: '/path/to/file',
+    action: 'socialite'
   })
   console.log('Event emitted')
 }, 1500)

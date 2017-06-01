@@ -2,6 +2,7 @@
 
 const spacebroClient = require('spacebro-client')
 const settings = require('standard-settings').getSettings()
+const request = require('request')
 
 spacebroClient.connect(settings.service.spacebro.host, settings.service.spacebro.port, {
   clientName: settings.service.spacebro.clientName,
@@ -22,15 +23,31 @@ spacebroClient.on('disconnect', () => {
   console.error('spacebro: connection lost.')
 })
 
-function registerEvent (eventName, callback) {
-  spacebroClient.on(eventName, callback)
+if (settings.autoshare) {
+  spacebroClient.on(settings.service.spacebro.inputMessage, (data) => {
+    share(data, data.action)
+  })
 }
 
-function emitEvent (eventName, data) {
-  spacebroClient.emit(eventName, data)
-}
-
-module.exports = {
-  registerEvent,
-  emitEvent
+var share = (media, action) => {
+  let today = new Date()
+  request
+  .post(`http://localhost:${settings.server.port}/api/v1/actions/${action || settings.autoshare.actionName}`,
+  {form: {filename: today.getTime(), media: media.url}, json: true},
+  (err, httpResponse, body) => {
+    if (err) {
+      console.error(err)
+    } else {
+      const meta = Object.assign({}, media.meta, {
+        socialite: {
+          url: body.url
+        }
+      })
+      media.meta = meta
+      console.log(media)
+      spacebroClient.emit(settings.service.spacebro.outputMessage, media)
+      // Cant't update the media if we do not have its id in media-manager. This only works when catching media-to-db event.
+      // spacebroClient.emit('media-update', media)
+    }
+  })
 }

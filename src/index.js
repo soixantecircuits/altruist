@@ -78,7 +78,16 @@ for (let action in settings.actions) {
 
       router.post(`/actions/${action}`, (req, res) => {
         module.run(req.body, req)
-          .then(response => res.send(response))
+          .then(response => {
+            try {
+              if (typeof response === 'string') {
+                response = JSON.parse(response)
+              }
+              res.json(response)
+            } catch (err) {
+              console.error('can not parse response')
+            }
+          })
           .catch(reason => {
             console.log(reason)
             res.status(500).send(reason)
@@ -92,46 +101,6 @@ for (let action in settings.actions) {
 
 app.get(authRedirectURL, (req, res) => {
   res.send({ 'map': authRedirect })
-})
-
-// Register a call to a default action on a spacebro event
-// For now, it only works for actions that just need a media.
-realtime.registerEvent('new-media', (data) => {
-  var action = settings.defaultAction || ''
-  if (data.action !== undefined) {
-    action = data.action
-  }
-
-  getActionModule(action)
-    .then(module => {
-      var socialiteData = {
-        filename: path.basename(data.path),
-        media: data.path
-      }
-
-      module.run(socialiteData, null)
-        .then(response => {
-          console.log(`${action} executed on new-media event.`)
-          realtime.emitEvent('altruist-action', {
-            action,
-            response
-          })
-        })
-        .catch(reason => {
-          console.log(reason)
-          realtime.emitEvent('altruist-error', {
-            action,
-            error: reason
-          })
-        })
-    })
-    .catch(err => {
-      console.error(err)
-      realtime.emitEvent('altruist-error', {
-        action,
-        error: err
-      })
-    })
 })
 
 app.get('/', (req, res) => {
