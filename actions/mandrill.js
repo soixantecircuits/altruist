@@ -5,7 +5,7 @@ const path = require('path')
 const med = require('media-helper')
 const request = require('request')
 
-const settings = require('nconf').get()
+const settings = require('../src/lib/settings')
 const API_KEY = settings.actions.mandrill.APIkey
 const from = settings.actions.mandrill.from
 const subject = settings.actions.mandrill.subject
@@ -40,7 +40,7 @@ function sendMail (params) {
 }
 
 function run (options, req) {
-  if (options.media === undefined && req.files) {
+  if (options.media === undefined && (req && req.files)) {
     options.media = []
     req.files.forEach((el, index) => {
       let mediaEl = {
@@ -52,7 +52,7 @@ function run (options, req) {
       options.media.push(mediaEl)
     })
   }
-
+  console.log(options.vars)
   try {
     options.vars = options.vars ?
       typeof options.vars === 'object'
@@ -85,8 +85,8 @@ function run (options, req) {
   if (options.media) {
     return new Promise((resolve, reject) => {
       let uploadedContent = 0
-
       options.media.forEach((media, index) => {
+        console.log(media.content)
         med.toBase64(media.content)
           .then((content) => {
             let ext = (media.mimetype) ? path.extname(media.originalname) : path.extname(media.content)

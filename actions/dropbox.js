@@ -4,7 +4,7 @@ const passport = require('passport')
 const DropboxStrategy = require('passport-dropbox-oauth2').Strategy
 const Dropbox = require('dropbox')
 
-const settings = require('nconf').get()
+const settings = require('../src/lib/settings')
 const localStorage = require('../src/lib/localstorage')
 
 var dropboxSession = JSON.parse(localStorage.getItem('dropbox-session')) || { accessToken: '', refreshToken: '' }
@@ -45,7 +45,7 @@ function run (options, request) {
         error: 'invalid token',
         details: 'No access token has been found. Please log in.'
       })
-    } else if (!request.files || !request.files[0]) {
+    } else if (request && (!request.files || !request.files[0])) {
       return reject({
         error: 'invalid request',
         details: 'No file has been found. Please upload a file with your request.'
