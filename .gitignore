@@ -119,7 +119,7 @@ jspm_packages
 *.swo
 
 settings/*.json
-!settings/settings.example.json
+!settings/settings.default.json
 mock/fakedata.json
 mock/fakedata.json
 storage/*

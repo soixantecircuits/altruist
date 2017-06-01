@@ -26,7 +26,7 @@ function checkAvailableAuthenticationURLs () {
     for (let i = 0; i < authRedirects.length; ++i) {
       it(`${authRedirects[i].name} at ${authRedirects[i].URL} should exist`, function (done) {
         request.get(`http://localhost:${settings.server.port}${authRedirects[i].URL}`, function (err, res, body) {
-          assert(!err && res.statusCode === 200)
+          assert(!err && (res.statusCode === 200 || res.statusCode === 401))
           done()
         })
       })

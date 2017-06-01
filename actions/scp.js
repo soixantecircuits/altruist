@@ -1,6 +1,6 @@
 'use strict'
 
-const settings = require('nconf').get()
+const settings = require('../src/lib/settings')
 const scpClient = require('scp2')
 
 function run (options, request) {

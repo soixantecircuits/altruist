@@ -1,6 +1,6 @@
 'use strict'
 
-const settings = require('nconf').get()
+const settings = require('../src/lib/settings')
 const med = require('media-helper')
 const request = require('request')
 const fs = require('fs')
@@ -51,7 +51,7 @@ function run (options, req) {
 
     let media = undefined
     // NEED REFACTOR
-    if (req.files && req.files.length > 0) {
+    if (req && req.files && req.files.length > 0) {
       media = req.files[0]
       formData.file = formDataFile(media.buffer, media.originalname, media.mimetype)
       sendRequest(formData)

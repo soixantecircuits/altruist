@@ -7,7 +7,7 @@
   },
   "service": {
     "spacebro": {
-      "address": "spacebro.space",
+      "host": "spacebro.space",
       "port": 3333,
       "clientName": "altruist",
       "channelName": "media-stream",

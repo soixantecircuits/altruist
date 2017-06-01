@@ -1,7 +1,7 @@
 'use strict'
 
 const nodemailer = require('nodemailer')
-const settings = require('nconf').get()
+const settings = require('../src/lib/settings')
 
 function run (options, request) {
   return new Promise((resolve, reject) => {
@@ -38,7 +38,7 @@ function run (options, request) {
       }
     }
 
-    if (request.files && request.files.length > 0) {
+    if (request && request.files && request.files.length > 0) {
       mailData.attachments = mailData.attachments || []
       for (let i = 0; i < request.files.length; ++i) {
         mailData.attachments.push({
