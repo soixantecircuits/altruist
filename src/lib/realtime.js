@@ -33,7 +33,7 @@ var share = (media, action) => {
   let today = new Date()
   request
   .post(`http://localhost:${settings.server.port}/api/v1/actions/${action || settings.autoshare.actionName}`,
-  {form: {filename: today.getTime(), media: media.url || media.path}, json: true},
+  {form: {filename: media.file || today.getTime(), media: media.url || media.path}, json: true},
   (err, httpResponse, body) => {
     if (err) {
       console.error(err)
