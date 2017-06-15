@@ -18,7 +18,7 @@ function updateStatus (message, mediaIdStr) {
       { status: message, media_ids: [mediaIdStr] },
       function (err, data, response) {
         if (!err) {
-          resolve('Success')
+          resolve(JSON.stringify(data))
         } else { reject({ error: err.message }) }
       })
   })
