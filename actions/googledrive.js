@@ -3,7 +3,7 @@
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 
-const settings = require('nconf').get()
+const settings = require('../src/lib/settings')
 const localStorage = require('../src/lib/localstorage')
 const google = require('googleapis')
 
@@ -26,7 +26,7 @@ var googleAuth = new OAuth2(
   settings.actions.googledrive.clientSecret,
   settings.actions.googledrive.callbackURL
 )
-var drive = google.drive({ version: 'v3', auth: googleAuth})
+var drive = google.drive({ version: 'v3', auth: googleAuth })
 
 function storeTokens (atoken, rtoken) {
   driveSession.accessToken = atoken
@@ -45,7 +45,7 @@ function uploadFile (options, resolve, reject) {
     mimeType: options.media.contentType
   }
   if (uploadDirectoryID !== '') {
-    fileResource.parents = [ uploadDirectoryID ]
+    fileResource.parents = [uploadDirectoryID]
   }
 
   drive.files.create({
@@ -112,7 +112,7 @@ function run (options, request) {
         error: 'invalid token',
         details: 'No access token has been found. Please log in.'
       })
-    } else if (!request.files || !request.files[0]) {
+    } else if (!request || !request.files || !request.files[0]) {
       return reject({
         error: 'invalid request',
         details: 'No file has been found. Please upload a file with your request.'
@@ -155,4 +155,5 @@ module.exports = {
   loginURL,
   auth,
   addRoutes,
-run}
+  run
+}

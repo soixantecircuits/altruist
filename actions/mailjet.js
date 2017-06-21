@@ -1,7 +1,7 @@
 'use strict'
 
-const settings = require('nconf').get()
-const mediaUtils = require('../src/lib/media')
+const settings = require('../src/lib/settings')
+const mediaUtils = require('media-helper')
 const mailjet = require('node-mailjet').connect(settings.actions.mailjet.apiKey, settings.actions.mailjet.secretKey)
 
 function run (options, request) {
@@ -34,7 +34,7 @@ function run (options, request) {
     let fromEmail = options.fromEmail || settings.actions.mailjet.fromEmail
     let templateID = options.templateID || settings.actions.mailjet.templateID
     let medias
-    if (request.files && request.files.length > 0) {
+    if (request && request.files && request.files.length > 0) {
       medias = []
       for (let i = 0; i < request.files.length; ++i) {
         medias[i] = {
@@ -56,7 +56,7 @@ function run (options, request) {
       'Vars': options.vars ? JSON.parse(options.vars) : options.vars,
       'Attachments': medias
     }
-console.log(mailProperties)
+
     mailjet.post('send')
       .request(mailProperties)
       .then((result) => {
@@ -69,4 +69,5 @@ console.log(mailProperties)
 }
 
 module.exports = {
-run}
+  run
+}

@@ -5,7 +5,7 @@ const path = require('path')
 const med = require('media-helper')
 const request = require('request')
 
-const settings = require('nconf').get()
+const settings = require('../src/lib/settings')
 const API_KEY = settings.actions.mandrill.APIkey
 const from = settings.actions.mandrill.from
 const subject = settings.actions.mandrill.subject
@@ -40,7 +40,7 @@ function sendMail (params) {
 }
 
 function run (options, req) {
-  if (options.media === undefined && req.files) {
+  if (options.media === undefined && (req && req.files)) {
     options.media = []
     req.files.forEach((el, index) => {
       let mediaEl = {

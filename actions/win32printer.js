@@ -1,6 +1,6 @@
 const execa = require('execa')
 const path = require('path')
-const settings = require('nconf').get().actions.win32printer
+const settings = require('../src/lib/settings').actions.win32printer
 
 module.exports = {
   run: (options) => {

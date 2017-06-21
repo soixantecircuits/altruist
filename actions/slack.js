@@ -3,7 +3,7 @@
 const fs = require('fs')
 const mime = require('mime')
 
-const settings = require('nconf').get()
+const settings = require('../src/lib/settings')
 const fetchImage = require('../src/lib/fetch-image')
 
 const WebClient = require('@slack/client').WebClient

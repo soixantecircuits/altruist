@@ -25,8 +25,8 @@ const realtime = require('./lib/realtime')
 
 app.use(morgan('dev'))
 app.use(cors())
-app.use(bodyparser.urlencoded({extended: true, limit: '50mb'}))
-app.use(bodyparser.json({limit: '50mb'}))
+app.use(bodyparser.urlencoded({ extended: true, limit: '50mb' }))
+app.use(bodyparser.json({ limit: '50mb' }))
 app.use(upload.any())
 app.use(require('cookie-parser')())
 app.use(require('express-session')({ secret: settings.secret, resave: true, saveUninitialized: true }))
@@ -51,39 +51,52 @@ router.get('/status', (req, res) => {
   res.send('up')
 })
 
+function getActionModule (actionName) {
+  return new Promise((resolve, reject) => {
+    if (typeof actionName !== 'string' || actionName.length === 0) {
+      return reject('Error loading module. Action name is invalid.')
+    }
+
+    const modulePath = path.resolve(`${__dirname}/../actions/${actionName}.js`)
+    fs.access(modulePath, (err) => {
+      if (!err) {
+        const module = require(modulePath)
+        return resolve(module)
+      } else {
+        return reject(`Error loading module "${modulePath}": ${err}`)
+      }
+    })
+  })
+}
+
 for (let action in settings.actions) {
-  const modulePath = path.resolve(`${__dirname}/../actions/${action}.js`)
-  fs.access(modulePath, (err) => {
-    if (!err) {
-      const module = require(modulePath)
+  getActionModule(action)
+    .then(module => {
       typeof (module.auth) === 'function' && module.auth(app)
       typeof (module.loginURL) === 'string' && authRedirect.push({ name: action, URL: module.loginURL })
       typeof (module.addRoutes) === 'function' && module.addRoutes(app)
+
       router.post(`/actions/${action}`, (req, res) => {
-        if (err) {
-          res.status(404).send('No such action.')
-        } else {
-          module.run(req.body, req)
-            .then(response => {
-              try {
-                if (typeof response === 'string') {
-                  response = JSON.parse(response)
-                }
-                res.json(response)
-              } catch (err) {
-                console.error('can not parse response')
+        module.run(req.body, req)
+          .then(response => {
+            try {
+              if (typeof response === 'string') {
+                response = JSON.parse(response)
               }
-            })
-            .catch(reason => {
-              console.log(reason)
-              res.status(500).send(reason)
-            })
-        }
+              res.json(response)
+            } catch (err) {
+              console.error('can not parse response')
+            }
+          })
+          .catch(reason => {
+            console.log(reason)
+            res.status(500).send(reason)
+          })
       })
-    } else {
-      console.log(`Error loading module "${modulePath}": ${err}`)
-    }
-  })
+    })
+    .catch(err => {
+      console.warn(err)
+    })
 }
 
 app.get(authRedirectURL, (req, res) => {

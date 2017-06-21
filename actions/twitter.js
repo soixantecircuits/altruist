@@ -1,7 +1,7 @@
 'use strict'
 
 const Twit = require('twit')
-const settings = require('nconf').get().actions.twitter
+const settings = require('../src/lib/settings').actions.twitter
 const med = require('media-helper')
 
 const T = new Twit({
@@ -18,7 +18,7 @@ function updateStatus (message, mediaIdStr) {
       { status: message, media_ids: [mediaIdStr] },
       function (err, data, response) {
         if (!err) {
-          resolve('Success')
+          resolve(JSON.stringify(data))
         } else { reject({ error: err.message }) }
       })
   })
