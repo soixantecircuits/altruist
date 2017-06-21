@@ -86,10 +86,17 @@ function run (options, req) {
     return new Promise((resolve, reject) => {
       let uploadedContent = 0
       options.media.forEach((media, index) => {
-        console.log(media.content)
+        console.log('media.content', media.content)
+        console.log('media.mimetype', media.mimetype)
+        console.log('media.originalname', media.originalname)
+        console.log('media.name', media.name)
+        med.isBase64(media.content)
         med.toBase64(media.content)
           .then((content) => {
             let ext = (media.mimetype) ? path.extname(media.originalname) : path.extname(media.content)
+            if (ext === '') {
+              ext = path.extname(media.originalname)
+            }
             if ((/\.(mp4|mpeg|mkv|webm|avi)$/i).test(ext)) {
               params.message.attachments.push({
                 type: 'video/' + ext.substring(1),
