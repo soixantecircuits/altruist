@@ -33,7 +33,7 @@ program.on('-h, --help', function () {
 program.parse(process.argv)
 
 const settings = program.settings
-  ? require(path.resolve(process.cwd(), program.settings))
+  ? require(path.resolve(process.cwd(), resolveHome(program.settings)))
   : {}
 
 if (equal(settings, {})) {

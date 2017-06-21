@@ -1,20 +1,30 @@
-# Altruist
+# 💌 Altruist
 
-> 💌 Altruist lets you share content with humans ✌️
+Gateway micro service for sharing content with ease ✌️
 
 ## ❓Why
 
-Altruist is a bridge to a pletory of services. All the hard work has been done. No more manual wiring of API of services, reading the docs for each service, finding the right module or developing one to communicate with a social network or a file cloud hosting service.
+Altruist is a bridge to a pletory of services. It acts as a server. All the wiring hard work has been done, no more:
+  - manual coding of social services API,
+  - reading outdated docs for each services you want to use,
+  - comparing and finding the right module,
+  - developing a new custom lib for a specific service.
 
-If you need to easily talk with one of the following [services](#list-of-available-actions), then 💌 Altruist is for you.
+It focuses on **Social Network** and **File SAAS** and it abstract the internal differences of all of this services.
 
-Connect your prefered account and post your data to 💌 Altruist in the same form for any of these [services](#list-of-available-actions).
+If you need to share with one of the following [services](#list-of-available-actions), then 💌 Altruist is for you.
+
+Simply connect your prefered account through the web server altruist provide and post your data to 💌 Altruist.
+
+All the APIs have been meticulously integrated to respond to the same form of media POST to 💌 Altruist.
 
 Currently 💌 Altruist supports the following data form POST:
 
 * [x] `application/json` raw
 * [x] `application/x-www-form-urlencode`
 * [x] `multipart/form-data`
+
+![image](./altruist-diagram.png)
 
 ## 🌍 Installation as a binary
 
@@ -26,7 +36,7 @@ $ yarn global add altruist
 $ npm install -g altruist
 ```
 
-then, provide a settings file based on the template we provide:
+then, provide a settings file:
 
 ```sh
 # get the template
@@ -34,12 +44,12 @@ $ wget https://raw.githubusercontent.com/soixantecircuits/altruist/master/settin
 # rename it
 $ mv settings.example.json settings.json
 # profit
-$ altruist -- -settings settings.json
+$ altruist --settings settings.json
 ```
 
 For details about what to write in the settings file, See the [Actions](#list-of-available-actions) section below.
 
-Then:
+Then, from a server, an app or POSTMAN you can post to:
 
 ```
 POST http://localhost:6060/api/v1/actions/{ACTION_NAME}
