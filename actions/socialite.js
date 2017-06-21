@@ -49,7 +49,7 @@ function run (options, req) {
       file: null
     }
 
-    let media = undefined
+    let media
     // NEED REFACTOR
     if (req && req.files && req.files.length > 0) {
       media = req.files[0]

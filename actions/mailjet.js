@@ -52,7 +52,7 @@ function run (options, request) {
       'Text-part': options.textPart,
       'Html-part': options.htmlPart,
       'MJ-TemplateID': templateID,
-      'MJ-TemplateLanguage': templateID ? true : false,
+      'MJ-TemplateLanguage': !!templateID,
       'Vars': options.vars ? JSON.parse(options.vars) : options.vars,
       'Attachments': medias
     }

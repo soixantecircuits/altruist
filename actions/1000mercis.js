@@ -22,24 +22,24 @@ function run (options) {
     }
 
     request({
-        method: 'POST',
-        uri: url,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(datas)
-      }, (err, res, data) => {
-        if (err) {
+      method: 'POST',
+      uri: url,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(datas)
+    }, (err, res, data) => {
+      if (err) {
+        reject(err)
+      } else {
+        try {
+          data = JSON.parse(data)
+          resolve(data)
+        } catch (err) {
           reject(err)
-        } else {
-          try {
-            data = JSON.parse(data)
-            resolve(data)
-          } catch (err) {
-            reject(err)
-          }
         }
-      })
+      }
+    })
   })
 }
 

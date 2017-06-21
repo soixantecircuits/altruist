@@ -2,7 +2,7 @@
 
 const passport = require('passport')
 const request = require('request')
-const stream = require("stream")
+const stream = require('stream')
 var fb = new require('fb')
 fb.options({ version: 'v2.8' })
 const settings = require('../src/lib/settings')
@@ -86,7 +86,7 @@ function run (options, request) {
       : settings.actions.facebook.media || ''
     const link = options.link ? options.link : settings.actions.facebook.link
 
-     if ((!message) && (!media) && !request.file && !link) {
+    if ((!message) && (!media) && !request.file && !link) {
       return reject({
         error: 'invalid argument',
         details: 'No message, link or media in facebook POST request.'
@@ -109,4 +109,4 @@ function run (options, request) {
 }
 
 module.exports = {
-run}
+  run}

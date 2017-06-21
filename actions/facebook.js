@@ -130,13 +130,13 @@ function auth (app) {
   passport.use(new FacebookStrategy({
     clientID: settings.actions.facebook.appID,
     clientSecret: settings.actions.facebook.appSecret,
-  callbackURL}, function (accessToken, refreshToken, profile, done) {
-    storeUserAccessToken(accessToken)
-    storeUserProfile(profile)
-    getPagesList(() => {
-      done(null, profile)
-    })
-  }))
+    callbackURL}, function (accessToken, refreshToken, profile, done) {
+      storeUserAccessToken(accessToken)
+      storeUserProfile(profile)
+      getPagesList(() => {
+        done(null, profile)
+      })
+    }))
 
   app.get(loginURL, passport.authenticate('facebook', {
     authType: 'reauthenticate',
@@ -212,4 +212,4 @@ module.exports = {
   loginURL,
   auth,
   addRoutes,
-run}
+  run}

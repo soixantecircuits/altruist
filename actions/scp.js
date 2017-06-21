@@ -44,4 +44,4 @@ function run (options, request) {
 }
 
 module.exports = {
-run}
+  run}

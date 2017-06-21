@@ -24,12 +24,12 @@ function run (options) {
       .post(`/lists/${settings.actions.mailchimp.listID}`, {
         members: members
       }).then((results) => {
-      if (results.errors.length) {
-        console.log(`error on post ${results.errors[0]}`)
-        return reject(results.errors)
-      }
-      resolve(results)
-    })
+        if (results.errors.length) {
+          console.log(`error on post ${results.errors[0]}`)
+          return reject(results.errors)
+        }
+        resolve(results)
+      })
       .catch((err) => {
         console.log(err)
         reject({

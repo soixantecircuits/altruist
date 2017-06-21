@@ -39,9 +39,11 @@ function uploadB64 (dataURL) {
 
     upload({file, filetype, filename})
       .then((success) => {
-        resolve(success)})
+        resolve(success)
+      })
       .catch((err) => {
-        reject(err)})
+        reject(err)
+      })
   })
 }
 
@@ -69,29 +71,36 @@ function run (options) {
 
         upload({file, filetype, filename})
           .then((success) => {
-            resolve(success)})
+            resolve(success)
+          })
           .catch((err) => {
-            reject(err)})
+            reject(err)
+          })
       } catch (err) {
         reject(err)
       }
     } else if (isPictureData) {
       uploadB64(media)
         .then((success) => {
-          resolve(success)})
+          resolve(success)
+        })
         .catch((err) => {
-          reject(err)})
+          reject(err)
+        })
     } else if (isURL) {
       fetchImage(media)
         .then((imageData) => {
           uploadB64(imageData)
             .then((success) => {
-              resolve(success)})
+              resolve(success)
+            })
             .catch((err) => {
-              reject(err)})
+              reject(err)
+            })
         })
         .catch((err) => {
-          reject(err)})
+          reject(err)
+        })
     } else if (message) {
       webclient.chat.postMessage(settings.actions.slack.channel, message, (err, res) => {
         err && reject({ error: err })

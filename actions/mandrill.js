@@ -54,8 +54,8 @@ function run (options, req) {
   }
   console.log(options.vars)
   try {
-    options.vars = options.vars ?
-      typeof options.vars === 'object'
+    options.vars = options.vars
+      ? typeof options.vars === 'object'
         ? options.vars
         : JSON.parse(options.vars)
       : {}

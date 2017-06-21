@@ -5,9 +5,6 @@ const morgan = require('morgan')
 const bodyparser = require('body-parser')
 
 const cors = require('cors')
-const path = require('path')
-
-const settings = require(path.resolve(__dirname, './lib/settings'))
 const passport = require('passport')
 const actions = require('./lib/action')
 const realtime = require('./lib/realtime')

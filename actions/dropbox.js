@@ -67,7 +67,7 @@ function run (options, request) {
 }
 
 module.exports =
-  {
-    loginURL,
-    auth,
+{
+  loginURL,
+  auth,
   run}
