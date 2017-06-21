@@ -26,11 +26,11 @@ module.exports = {
       var customOptions = options.options || settings.options || ''
 
       if (media === undefined) {
-        reject('Error: No media in settings/request')
+        reject(new Error('Error: No media in settings/request'))
       }
       if (printer === undefined) {
         listAvailablePrinters()
-        reject('Error: No printer in settings/request')
+        reject(new Error('Error: No printer in settings/request'))
       }
 
       execa('lp', [ '-d', printer,
@@ -44,7 +44,7 @@ module.exports = {
         resolve(res.stdout)
       }).catch(error => {
         listAvailableFormats(printer)
-        reject(error.stderr)
+        reject(new Error(error.stderr))
       })
     })
   }

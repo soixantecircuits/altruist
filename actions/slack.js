@@ -20,7 +20,7 @@ function upload ({ file, filetype, filename }) {
       filename,
       channels: settings.actions.slack.channel
     }, (err, data) => {
-      err && reject({ error: err })
+      err && reject(new Error({ error: err }))
       resolve(data)
     })
   })
@@ -42,7 +42,7 @@ function uploadB64 (dataURL) {
         resolve(success)
       })
       .catch((err) => {
-        reject(err)
+        reject(new Error(err))
       })
   })
 }
@@ -74,10 +74,10 @@ function run (options) {
             resolve(success)
           })
           .catch((err) => {
-            reject(err)
+            reject(new Error(err))
           })
       } catch (err) {
-        reject(err)
+        reject(new Error(err))
       }
     } else if (isPictureData) {
       uploadB64(media)
@@ -85,7 +85,7 @@ function run (options) {
           resolve(success)
         })
         .catch((err) => {
-          reject(err)
+          reject(new Error(err))
         })
     } else if (isURL) {
       fetchImage(media)
@@ -103,16 +103,18 @@ function run (options) {
         })
     } else if (message) {
       webclient.chat.postMessage(settings.actions.slack.channel, message, (err, res) => {
-        err && reject({ error: err })
+        err && reject(new Error({ error: err }))
         resolve(res)
       })
     } else {
-      reject({
+      reject(new Error({
         error: 'invalid request',
         details: 'No media or message in request.'
-      })
+      }))
     }
   })
 }
 
-module.exports = { run}
+module.exports = {
+  run
+}

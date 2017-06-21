@@ -1,10 +1,7 @@
 'use strict'
 
-const fs = require('fs')
 const path = require('path')
 const med = require('media-helper')
-const request = require('request')
-
 const settings = require('../src/lib/settings')
 const API_KEY = settings.actions.mandrill.APIkey
 const from = settings.actions.mandrill.from
@@ -34,7 +31,7 @@ function sendMail (params) {
     mandrill.messages.sendTemplate(params, (result) => {
       resolve(result)
     }, (err) => {
-      if (err) return reject({ error: err.name, details: err.message })
+      if (err) return reject(new Error({ error: err.name, details: err.message }))
     })
   })
 }
@@ -60,7 +57,7 @@ function run (options, req) {
         : JSON.parse(options.vars)
       : {}
   } catch (e) {
-    return new Promise((resolve, reject) => reject(e.toString()))
+    return new Promise((resolve, reject) => reject(new Error(e.toString())))
   }
 
   const params = {
@@ -114,7 +111,7 @@ function run (options, req) {
             if (uploadedContent === options.media.length) {
               sendMail(params)
                 .then(response => resolve(response))
-                .catch(error => reject(error))
+                .catch(error => reject(new Error(error)))
             }
           })
           .catch((err) => {
@@ -123,7 +120,7 @@ function run (options, req) {
             if (uploadedContent === options.media.length) {
               sendMail(params)
                 .then(response => resolve(response))
-                .catch(error => reject(error))
+                .catch(error => reject(new Error(error)))
             }
           })
       })

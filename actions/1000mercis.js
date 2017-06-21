@@ -30,13 +30,13 @@ function run (options) {
       body: JSON.stringify(datas)
     }, (err, res, data) => {
       if (err) {
-        reject(err)
+        reject(new Error(err))
       } else {
         try {
           data = JSON.parse(data)
           resolve(data)
         } catch (err) {
-          reject(err)
+          reject(new Error(err))
         }
       }
     })

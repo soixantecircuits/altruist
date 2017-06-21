@@ -1,13 +1,10 @@
 'use strict'
 
-const passport = require('passport')
-const request = require('request')
-const stream = require('stream')
-var fb = new require('fb')
+var FB = require('fb')
+var fb = new FB.Facebook()
 fb.options({ version: 'v2.8' })
 const settings = require('../src/lib/settings')
 
-const communityID = settings.actions.workplace.communityID
 const token = settings.actions.workplace.token
 const groupID = settings.actions.workplace.groupID
 
@@ -70,7 +67,7 @@ function handlePostRequest (options, resolve, reject) {
 
   fb.api(`/${groupID}/${isMedia ? mediaType : 'feed'}`, 'post', datas, (res) => {
     if (!res || res.error) {
-      return reject({ error: res.error.code, details: res.error.message })
+      return reject(new Error({ error: res.error.code, details: res.error.message }))
     }
     return resolve(res)
   })
@@ -87,10 +84,10 @@ function run (options, request) {
     const link = options.link ? options.link : settings.actions.facebook.link
 
     if ((!message) && (!media) && !request.file && !link) {
-      return reject({
+      return reject(new Error({
         error: 'invalid argument',
         details: 'No message, link or media in facebook POST request.'
-      })
+      }))
     }
 
     // If multer detects a file upload, get the first file and set options to upload to facebook

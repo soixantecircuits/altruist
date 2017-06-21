@@ -41,18 +41,17 @@ function auth (app) {
 function run (options, request) {
   return new Promise((resolve, reject) => {
     if (!dropboxSession || !dropboxSession.accessToken) {
-      return reject({
+      return reject(new Error({
         error: 'invalid token',
         details: 'No access token has been found. Please log in.'
-      })
+      }))
     } else if (request && (!request.files || !request.files[0])) {
-      return reject({
+      return reject(new Error({
         error: 'invalid request',
         details: 'No file has been found. Please upload a file with your request.'
-      })
+      }))
     }
 
-    let targetDir = options.uploadDirectoryPath && options.uploadDirectoryPath !== '' ? options.uploadDirectoryPath : uploadDirectoryPath
     let filename = options.filename && options.filename !== '' ? options.filename : request.files[0].originalname
 
     let dropbox = new Dropbox({accessToken: dropboxSession.accessToken})
@@ -61,13 +60,13 @@ function run (options, request) {
         resolve(res)
       })
       .catch(function (error) {
-        reject(error)
+        reject(new Error(error))
       })
   })
 }
 
-module.exports =
-{
+module.exports = {
   loginURL,
   auth,
-  run}
+  run
+}

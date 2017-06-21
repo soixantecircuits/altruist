@@ -19,7 +19,7 @@ module.exports = {
       var sambaPassword = options.sambaPassword || settings.sambaPassword
 
       if (file === undefined) {
-        reject('Error: No file in settings/request')
+        reject(new Error('Error: No file in settings/request'))
       }
       /*
       if (printer === undefined) {
@@ -42,7 +42,7 @@ module.exports = {
         resolve(res.stdout)
       }).catch(error => {
         console.log(error)
-        reject(error.stderr)
+        reject(new Error(error.stderr))
       })
     })
   }

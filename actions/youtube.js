@@ -76,21 +76,21 @@ function addRoutes (app) {
 function run (options, request) {
   return new Promise((resolve, reject) => {
     if (!youtubeSession || !youtubeSession.accessToken || youtubeSession.accessToken === '') {
-      return reject({
+      return reject(new Error({
         error: 'invalid token',
         details: 'No access token has been found. Please log in.'
-      })
+      }))
     } else if (request && (!request.files || !request.files[0])) {
-      return reject({
+      return reject(new Error({
         error: 'invalid request',
         details: 'No file has been found. Please upload a file with your request.'
-      })
+      }))
     }
 
     googleAuth.setCredentials({ access_token: youtubeSession.accessToken, refresh_token: youtubeSession.refreshToken })
     googleAuth.refreshAccessToken((err, tokens) => {
       if (err) {
-        return reject(err)
+        return reject(new Error(err))
       }
 
       storeTokens(tokens.access_token, youtubeSession.refreshToken)
@@ -107,7 +107,7 @@ function run (options, request) {
 
       magic.detect(request.files[0].buffer, (err, res) => {
         if (err) {
-          return reject(err)
+          return reject(new Error(err))
         }
 
         let media = {
@@ -122,7 +122,7 @@ function run (options, request) {
           media: media
         }, (err, result) => {
           if (err) {
-            return reject(err)
+            return reject(new Error(err))
           }
           return resolve(result)
         })

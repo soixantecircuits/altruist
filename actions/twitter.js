@@ -19,7 +19,9 @@ function updateStatus (message, mediaIdStr) {
       function (err, data, response) {
         if (!err) {
           resolve(JSON.stringify(data))
-        } else { reject({ error: err.message }) }
+        } else {
+          reject(new Error({ error: err.message }))
+        }
       })
   })
 }
@@ -32,9 +34,9 @@ function uploadImage (message, mediaData) {
         if (!err) {
           updateStatus(message, data.media_id_string)
             .then(response => resolve(response))
-            .catch(error => reject(error))
+            .catch(error => reject(new Error(error)))
         } else {
-          reject({ error: err.message })
+          reject(new Error({error: err.message}))
         }
       })
   })
@@ -48,8 +50,10 @@ function uploadVideo (message, media) {
         if (!err) {
           updateStatus(message, data.media_id_string)
             .then(response => resolve(response))
-            .catch(error => reject(error))
-        } else { reject({ error: err.message }) }
+            .catch(error => reject(new Error(error)))
+        } else {
+          reject(new Error({ error: err.message }))
+        }
       })
   })
 }
@@ -66,44 +70,44 @@ module.exports = {
         if (med.isBase64(media)) {
           uploadImage(message, media)
             .then(response => resolve(response))
-            .catch(error => reject(error))
+            .catch(error => reject(new Error(error)))
         } else if (med.isFile(media)) {
           med.getMimeType(media)
             .then(type => {
               if (type === 'video/mp4') {
                 uploadVideo(message, media)
                   .then(response => resolve(response))
-                  .catch(error => reject(error))
+                  .catch(error => reject(new Error(error)))
               } else {
                 med.fileToBase64(media)
                   .then(data => {
                     uploadImage(message, data)
                       .then(response => resolve(response))
-                      .catch(error => reject(error))
+                      .catch(error => reject(new Error(error)))
                   })
-                  .catch(error => reject(error))
+                  .catch(error => reject(new Error(error)))
               }
             })
-            .catch(error => reject(error))
+            .catch(error => reject(new Error(error)))
         } else if (med.isURL(media)) {
           med.urlToBase64(media)
             .then(data => {
               uploadImage(message, data)
                 .then(response => resolve(response))
-                .catch(error => reject(error))
+                .catch(error => reject(new Error(error)))
             })
-            .catch(error => reject(error))
+            .catch(error => reject(new Error(error)))
         }
       } else if (message) {
         // Text-only tweet
         updateStatus(message)
           .then(response => resolve(response))
-          .catch(error => reject(error))
+          .catch(error => reject(new Error(error)))
       } else {
-        reject({
+        reject(new Error({
           error: 'invalid request',
           details: 'Error: No message or media in request'
-        })
+        }))
       }
     })
   }

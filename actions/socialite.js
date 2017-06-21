@@ -30,7 +30,7 @@ function sendRequest (formData) {
       url: `${baseURL}${route}`,
       formData: formData
     }, (err, res, body) => {
-      err && reject(err)
+      err && reject(new Error(err))
       resolve(body)
     })
   })
@@ -40,7 +40,7 @@ function run (options, req) {
   return new Promise((resolve, reject) => {
     // Prepare data to post to the socialite server
     if (options.filename === undefined) {
-      reject({ error: 'Invalid request', details: 'No filename provided' })
+      reject(new Error({ error: 'Invalid request', details: 'No filename provided' }))
     }
     let formData = {
       bucket: options.bucket || settings.actions.socialite.bucket,
@@ -56,7 +56,7 @@ function run (options, req) {
       formData.file = formDataFile(media.buffer, media.originalname, media.mimetype)
       sendRequest(formData)
       .then(body => resolve(body))
-      .catch(error => reject(error))
+      .catch(error => reject(new Error(error)))
     } else if (med.isFile(options.media)) {
       media = options.media
       med.getMimeType(media)
@@ -65,14 +65,14 @@ function run (options, req) {
         formData.file = formDataFile(fs.readFileSync(media), options.filename + ext, type)
         sendRequest(formData)
         .then(body => resolve(body))
-        .catch(error => reject(error))
-      }).catch(error => reject(error))
+        .catch(error => reject(new Error(error)))
+      }).catch(error => reject(new Error(error)))
     } else if (med.isURL(options.media)) {
       let ext = getExtension(options.media)
       let type = med.getMimeFromName(ext)
       let mediaTmp = path.join('/tmp', options.filename + ext)
       let streamTmp = request(options.media).on('error', (err) => {
-        return reject(err)
+        return reject(new Error(err))
       }).pipe(fs.createWriteStream(mediaTmp))
       streamTmp.on('finish', () => {
         formData.file = formDataFile(fs.readFileSync(mediaTmp), options.filename + ext, type)
@@ -81,10 +81,10 @@ function run (options, req) {
           fs.unlink(mediaTmp)
           resolve(body)
         })
-        .catch(error => reject(error))
+        .catch(error => reject(new Error(error)))
       })
     } else {
-      reject({ error: 'Invalid request', details: 'No media provided' })
+      reject(new Error({ error: 'Invalid request', details: 'No media provided' }))
     }
   })
 }

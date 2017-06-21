@@ -26,16 +26,16 @@ function run (options) {
       }).then((results) => {
         if (results.errors.length) {
           console.log(`error on post ${results.errors[0]}`)
-          return reject(results.errors)
+          return reject(new Error(results.errors))
         }
         resolve(results)
       })
       .catch((err) => {
         console.log(err)
-        reject({
+        reject(new Error({
           error: err.title,
           details: err.detail
-        })
+        }))
       })
   })
 }
