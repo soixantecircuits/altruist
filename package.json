@@ -3,13 +3,13 @@
   "version": "1.0.2",
   "description": "Altruist lets you share your content with others",
   "scripts": {
-    "dev": "./node_modules/.bin/nodemon ./src/index.js",
-    "start": "node ./src/index.js",
-    "debug": "nodemon --inspect src/index.js",
+    "dev": "./node_modules/.bin/nodemon index.js",
+    "start": "node index.js",
+    "debug": "nodemon --inspect index.js",
     "bin": "./bin/altruist",
     "test": "mocha ./settings/settings.json ./tests/urlTest.js && ava --verbose"
   },
-  "main": "src/index.js",
+  "main": "src/app.js",
   "bin": {
     "altruist": "bin/altruist"
   },
@@ -25,6 +25,7 @@
     "commander": "^2.9.0",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.1",
+    "deep-equal": "^1.0.1",
     "dropbox": "^2.5.0",
     "execa": "^0.6.0",
     "express": "^4.14.0",

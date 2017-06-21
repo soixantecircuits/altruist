@@ -1,4 +1,43 @@
 #! /usr/bin/env node
+
 'use strict'
 
-require('../')
+const altruist = require('../')
+const program = require('commander')
+const pkg = require('../package.json')
+const path = require('path')
+const equal = require('deep-equal')
+
+var resolveHome = (filepath) => {
+  if (filepath[0] === '~') {
+    return path.join(process.env.HOME, filepath.slice(1))
+  }
+  return filepath
+}
+
+program
+  .version(pkg.version)
+  .usage('[options]')
+  .option('--settings [value]', 'path to the settings.json file')
+
+program.name = 'altruist'
+
+program.on('-h, --help', function () {
+  console.log('  Examples:')
+  console.log('')
+  console.log('    $ chokibro --settings ./settings.json')
+  console.log('')
+})
+
+// init command
+program.parse(process.argv)
+
+const settings = program.settings
+  ? require(path.resolve(process.cwd(), program.settings))
+  : {}
+
+if (equal(settings, {})) {
+  console.error('No settings provided')
+} else {
+  altruist.init(settings)
+}
