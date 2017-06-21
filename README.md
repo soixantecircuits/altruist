@@ -1,14 +1,22 @@
 # Altruist
 
-> 💌 Altruist lets you share your content with people ✌️
+> 💌 Altruist lets you share content with humans ✌️
 
-Altruist supports the following data formats:
+## ❓Why
 
-* raw `application/json`
-* URL-encoded
-* form-data
+Altruist is a bridge to a pletory of services. All the hard work has been done. No more manual wiring of API of services, reading the docs for each service, finding the right module or developing one to communicate with a social network or a file cloud hosting service.
 
-## 🌍 Installation
+If you need to easily talk with one of the following [services](#list-of-available-actions), then 💌 Altruist is for you.
+
+Connect your prefered account and post your data to 💌 Altruist in the same form for any of these [services](#list-of-available-actions).
+
+Currently 💌 Altruist supports the following data form POST:
+
+* [x] `application/json` raw
+* [x] `application/x-www-form-urlencode`
+* [x] `multipart/form-data`
+
+## 🌍 Installation as a binary
 
 Install the tool:
 
@@ -18,7 +26,7 @@ $ yarn global add altruist
 $ npm install -g altruist
 ```
 
-then, provide a configuration file based on the template we provide:
+then, provide a settings file based on the template we provide:
 
 ```sh
 # get the template
@@ -29,16 +37,17 @@ $ mv settings.example.json settings.json
 $ altruist -- -settings settings.json
 ```
 
-For details about what to write in the settings file, See the `Actions` section below.
+For details about what to write in the settings file, See the [Actions](#list-of-available-actions) section below.
 
 Then:
 
 ```
-POST http://localhost:6060/api/v1/actions/{action}
+POST http://localhost:6060/api/v1/actions/{ACTION_NAME}
 ```
-*More details in the actions docs*
 
 ## 👋 Usage
+
+One action = one service
 
 ##### List of available actions:
 
@@ -67,7 +76,6 @@ POST http://localhost:6060/api/v1/actions/{action}
 You can meet some issue while uploading file and JSON. This is a bug in POSTMAN. See here:
 https://github.com/postmanlabs/postman-app-support/issues/2602
 A way to fix it is to close and reopen the tab you are using to test the query. (http://stackoverflow.com/questions/35851660/multer-req-file-always-undefined/38461398#38461398)
-
 
 ## ❤️ Contribute
 
