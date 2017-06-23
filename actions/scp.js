@@ -6,25 +6,25 @@ const scpClient = require('scp2')
 function run (options, request) {
   return new Promise((resolve, reject) => {
     if (!options.source || options.source === '') {
-      return reject(new Error({
-        error: 'invalid request',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid request',
         details: '"source" does not exist or is empty.'
-      }))
+      })))
     } else if ((!options.user || options.user === '') && (!settings.actions.scp.user || settings.actions.scp.user === '')) {
-      return reject(new Error({
-        error: 'invalid request',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid request',
         details: '"user" does not exist or is empty.'
-      }))
+      })))
     } else if ((!options.hostname || options.hostname === '') && (!settings.actions.scp.hostname || settings.actions.scp.hostname === '')) {
-      return reject(new Error({
-        error: 'invalid request',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid request',
         details: '"hostname" does not exist or is empty.'
-      }))
+      })))
     } else if ((!options.target || options.target === '') && (!settings.actions.scp.target || settings.actions.scp.target === '')) {
-      return reject(new Error({
-        error: 'invalid request',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid request',
         details: '"target" does not exist or is empty.'
-      }))
+      })))
     }
 
     const user = options.user || settings.actions.scp.user
@@ -36,7 +36,7 @@ function run (options, request) {
 
     scpClient.scp(options.source, dest, function (err) {
       if (err) {
-        return reject(new Error(err))
+        return reject(new Error(JSON.stringify(err)))
       }
       resolve()
     })

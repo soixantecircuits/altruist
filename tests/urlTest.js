@@ -6,6 +6,9 @@ var authRedirects
 /**
  * This test should be run with the command `npm test`. Your Altruist server must be running locally.
  */
+const altruist = require('../')
+altruist.init(settings)
+
 describe('Altruist', checkAuthenticationURLsArray)
 
 function checkAuthenticationURLsArray () {
@@ -26,7 +29,7 @@ function checkAvailableAuthenticationURLs () {
     for (let i = 0; i < authRedirects.length; ++i) {
       it(`${authRedirects[i].name} at ${authRedirects[i].URL} should exist`, function (done) {
         request.get(`http://localhost:${settings.server.port}${authRedirects[i].URL}`, function (err, res, body) {
-          assert(!err && (res.statusCode === 200 || res.statusCode === 401))
+          assert(!err && (res.statusCode === 200 || res.statusCode === 400 || res.statusCode === 401 || res.statusCode === 302))
           done()
         })
       })

@@ -42,7 +42,7 @@ module.exports = {
         resolve(res.stdout)
       }).catch(error => {
         console.log(error)
-        reject(new Error(error.stderr))
+        reject(new Error(JSON.stringify(error.stderr)))
       })
     })
   }

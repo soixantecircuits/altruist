@@ -54,8 +54,8 @@
       "access_token_secret": "<your_access_token_secret>"
     },
     "dropbox": {
-      "clientID": "xxxxxxx",
-      "clientSecret": "xxxxxxxxxx",
+      "clientID": "xx",
+      "clientSecret": "xx",
       "loginURL": "/login/dropbox",
       "callbackURL": "/login/dropbox/return",
       "failureURL": "/?failure=dropbox",
@@ -63,8 +63,8 @@
       "uploadDirectoryPath": ""
     },
     "googledrive": {
-      "clientID": "xxxxxxxx",
-      "clientSecret": "xxxxxxxxxxxxxx",
+      "clientID": "xx",
+      "clientSecret": "xx",
       "uploadDirectoryID": "",
       "loginURL": "/login/gdrive",
       "callbackURL": "/login/gdrive/return",

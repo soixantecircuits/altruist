@@ -76,15 +76,15 @@ function addRoutes (app) {
 function run (options, request) {
   return new Promise((resolve, reject) => {
     if (!youtubeSession || !youtubeSession.accessToken || youtubeSession.accessToken === '') {
-      return reject(new Error({
-        error: 'invalid token',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid token',
         details: 'No access token has been found. Please log in.'
-      }))
+      })))
     } else if (request && (!request.files || !request.files[0])) {
-      return reject(new Error({
-        error: 'invalid request',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid request',
         details: 'No file has been found. Please upload a file with your request.'
-      }))
+      })))
     }
 
     googleAuth.setCredentials({ access_token: youtubeSession.accessToken, refresh_token: youtubeSession.refreshToken })

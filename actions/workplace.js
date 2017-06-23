@@ -67,7 +67,7 @@ function handlePostRequest (options, resolve, reject) {
 
   fb.api(`/${groupID}/${isMedia ? mediaType : 'feed'}`, 'post', datas, (res) => {
     if (!res || res.error) {
-      return reject(new Error({ error: res.error.code, details: res.error.message }))
+      return reject(new Error(JSON.stringify({ err: res.error.code, details: res.error.message })))
     }
     return resolve(res)
   })
@@ -84,10 +84,10 @@ function run (options, request) {
     const link = options.link ? options.link : settings.actions.facebook.link
 
     if ((!message) && (!media) && !request.file && !link) {
-      return reject(new Error({
-        error: 'invalid argument',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid argument',
         details: 'No message, link or media in facebook POST request.'
-      }))
+      })))
     }
 
     // If multer detects a file upload, get the first file and set options to upload to facebook

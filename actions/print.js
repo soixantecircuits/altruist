@@ -44,7 +44,7 @@ module.exports = {
         resolve(res.stdout)
       }).catch(error => {
         listAvailableFormats(printer)
-        reject(new Error(error.stderr))
+        reject(new Error(JSON.stringify(error.stderr)))
       })
     })
   }

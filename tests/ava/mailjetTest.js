@@ -3,12 +3,13 @@
 const test = require('ava')
 const settings = require('../../src/lib/settings')
 const mailjet = require('../../actions/mailjet')
+const testSettings = require('../settings.json')
 
 test('Mailjet - Send valid mail (need fromEmail and templateID in settings.json)', t => {
   const validSimpleOptions = {
-    "fromEmail": settings.actions.mailjet.fromEmail,
-    "recipients": [{"Email": settings.actions.mailjet.fromEmail}],
-    "subject": "Simple mailjet template test"
+    'fromEmail': settings.actions.mailjet.fromEmail,
+    'recipients': [{'Email': testSettings.actions.mailjet.to}],
+    'subject': 'Simple mailjet template test'
   }
   return mailjet.run(validSimpleOptions, {})
   .then(res => {

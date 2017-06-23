@@ -3,13 +3,14 @@
 const test = require('ava')
 const settings = require('../../src/lib/settings')
 const smtp = require('../../actions/smtp')
+const testSettings = require('../settings.json')
 
 test('SMTP - Send valid mail', t => {
   const validSimpleOptions = {
-    "from": settings.actions.smtp.user,
-    "to": settings.actions.smtp.user,
-    "subject": "Simple mail test",
-    "text": "Simple mail working"
+    'from': settings.actions.smtp.user,
+    'to': testSettings.actions.mailjet.to,
+    'subject': 'Simple mail test',
+    'text': 'Simple mail working'
   }
   return smtp.run(validSimpleOptions, {})
   .then(res => {
@@ -28,6 +29,6 @@ test('SMTP - Send empty query', t => {
     t.fail('Action did not return an error')
   })
   .catch(err => {
-    t.is(err.error, 'invalid request')
+    t.is(JSON.parse(err.message).err, 'invalid request')
   })
 })

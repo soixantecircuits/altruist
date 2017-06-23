@@ -12,10 +12,13 @@ function run (options, req) {
   return new Promise((resolve, reject) => {
     console.log(options)
     if (options.media === undefined) {
-      return reject(new Error({ error: 'Invalid request', details: 'No media provided' }))
+      return reject(new Error(JSON.stringify({
+        err: 'Invalid request',
+        details: 'No media provided' 
+      })))
     }
     med.toBase64(options.media)
-    .catch(error => reject(new Error(error)))
+    .catch(error => reject(new Error(JSON.stringify(error))))
     .then(result => {
       if (options.filename === undefined) {
         options.filename = path.basename(options.media)
@@ -29,7 +32,7 @@ function run (options, req) {
         url: `${baseURL}${route}`,
         formData: formData
       }, (err, res, body) => {
-        err && reject(new Error(err))
+        err && reject(new Error(JSON.stringify(err)))
         resolve(body)
       })
     })

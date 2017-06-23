@@ -1,0 +1,13 @@
+{
+  "actions":{
+    "mailjet":{
+      "to": ""
+    },
+    "smtp": {
+      "to": ""
+    },
+    "mandrill": {
+      "to": ""
+    }
+  }
+}

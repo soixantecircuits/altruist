@@ -121,7 +121,7 @@ function handlePostRequest ({message, link, media}, resolve, reject) {
 
   fb.api(`/${currentID}/${isMedia ? mediaType : 'feed'}`, 'post', datas, (res) => {
     if (!res || res.error) {
-      reject(new Error({ error: res.error.code, details: res.error.message }))
+      reject(new Error(JSON.stringify({ err: res.error.code, details: res.error.message })))
     }
     resolve(res)
   })
@@ -183,15 +183,15 @@ function run (options, request) {
     const link = options.link ? options.link : settings.actions.facebook.link
 
     if (!facebookSession || !facebookSession.userAccessToken) {
-      return reject(new Error({
-        error: 'invalid TOKEN',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid TOKEN',
         details: `No facebook user access token found in local storage. Please log in at ${loginURL}.`
-      }))
+      })))
     } else if ((!message) && (!media) && (!request || !request.file) && link) {
-      return reject(new Error({
-        error: 'invalid argument',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid argument',
         details: 'No message or media in facebook POST request.'
-      }))
+      })))
     }
 
     // If multer detects a file upload, get the first file and set options to upload to facebook

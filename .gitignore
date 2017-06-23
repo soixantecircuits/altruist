@@ -118,6 +118,7 @@ jspm_packages
 *.swp
 *.swo
 
+tests/settings.json
 settings/*.json
 !settings/settings.default.json
 mock/fakedata.json

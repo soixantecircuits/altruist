@@ -12,20 +12,20 @@ function run (options, request) {
     try {
       var transporter = nodemailer.createTransport(`smtps://${user}:${password}@${smtpServer}`)
     } catch (err) {
-      return reject(new Error(err))
+      return reject(new Error(JSON.stringify(err)))
     }
 
     if ((!options.from || options.from === '') && (!settings.actions.smtp.from || settings.actions.smtp.from === '')) {
-      return reject(new Error({
-        error: 'invalid request',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid request',
         details: 'Parameter "from" is missing.'
-      }))
+      })))
     }
     if (!options.to || options.to === '') {
-      return reject(new Error({
-        error: 'invalid request',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid request',
         details: 'Parameter "to" is missing.'
-      }))
+      })))
     }
 
     const mailData = options
@@ -34,7 +34,7 @@ function run (options, request) {
       try {
         mailData.attachments = JSON.parse(mailData.attachments)
       } catch (err) {
-        return reject(new Error(err))
+        return reject(new Error(JSON.stringify(err)))
       }
     }
 
@@ -51,7 +51,7 @@ function run (options, request) {
 
     transporter.sendMail(mailData, function (err, res) {
       if (err) {
-        return reject(new Error(err))
+        return reject(new Error(JSON.stringify(err)))
       }
       return resolve(res)
     })
@@ -59,4 +59,5 @@ function run (options, request) {
 }
 
 module.exports = {
-  run}
+  run
+}

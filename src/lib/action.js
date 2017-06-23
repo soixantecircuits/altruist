@@ -36,7 +36,11 @@ let init = (app, router, settings) => {
           .then(response => {
             try {
               if (typeof response === 'string') {
-                response = JSON.parse(response)
+                try {
+                  response = JSON.parse(response)
+                } catch (err) {
+                  console.error(response)
+                }
               }
               res.json(response)
             } catch (err) {
@@ -44,7 +48,15 @@ let init = (app, router, settings) => {
             }
           })
           .catch(reason => {
-            console.log(reason)
+            console.error(`An error occured with ${action}`)
+            if (reason instanceof Error) {
+              try {
+                reason = JSON.parse(reason.message)
+              } catch (err) {
+                console.log('Can\'t parse JSON response, must be a string')
+                console.error(reason.message)
+              }
+            }
             res.status(500).send(reason)
           })
       })

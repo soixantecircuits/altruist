@@ -36,7 +36,7 @@ function run (options) {
           data = JSON.parse(data)
           resolve(data)
         } catch (err) {
-          reject(new Error(err))
+          reject(new Error(JSON.stringify({type: 'parsing', 'err': err})))
         }
       }
     })

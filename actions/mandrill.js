@@ -31,7 +31,7 @@ function sendMail (params) {
     mandrill.messages.sendTemplate(params, (result) => {
       resolve(result)
     }, (err) => {
-      if (err) return reject(new Error({ error: err.name, details: err.message }))
+      if (err) return reject(new Error(JSON.stringify({ err: err.name, details: err.message })))
     })
   })
 }
@@ -56,8 +56,8 @@ function run (options, req) {
         ? options.vars
         : JSON.parse(options.vars)
       : {}
-  } catch (e) {
-    return new Promise((resolve, reject) => reject(new Error(e.toString())))
+  } catch (err) {
+    return new Promise((resolve, reject) => reject(new Error(JSON.stringify({type: 'parsing', details: err}))))
   }
 
   const params = {
@@ -111,7 +111,7 @@ function run (options, req) {
             if (uploadedContent === options.media.length) {
               sendMail(params)
                 .then(response => resolve(response))
-                .catch(error => reject(new Error(error)))
+                .catch(error => reject(new Error(JSON.stringify(error))))
             }
           })
           .catch((err) => {
@@ -120,7 +120,7 @@ function run (options, req) {
             if (uploadedContent === options.media.length) {
               sendMail(params)
                 .then(response => resolve(response))
-                .catch(error => reject(new Error(error)))
+                .catch(error => reject(new Error(JSON.stringify(error))))
             }
           })
       })

@@ -20,7 +20,7 @@ function updateStatus (message, mediaIdStr) {
         if (!err) {
           resolve(JSON.stringify(data))
         } else {
-          reject(new Error({ error: err.message }))
+          reject(new Error(JSON.stringify({ err: err.message })))
         }
       })
   })
@@ -34,9 +34,9 @@ function uploadImage (message, mediaData) {
         if (!err) {
           updateStatus(message, data.media_id_string)
             .then(response => resolve(response))
-            .catch(error => reject(new Error(error)))
+            .catch(error => reject(new Error(JSON.stringify(error))))
         } else {
-          reject(new Error({error: err.message}))
+          reject(new Error(JSON.stringify({error: err.message})))
         }
       })
   })
@@ -50,9 +50,9 @@ function uploadVideo (message, media) {
         if (!err) {
           updateStatus(message, data.media_id_string)
             .then(response => resolve(response))
-            .catch(error => reject(new Error(error)))
+            .catch(error => reject(new Error(JSON.stringify(error))))
         } else {
-          reject(new Error({ error: err.message }))
+          reject(new Error(JSON.stringify({ err: err.message })))
         }
       })
   })
@@ -70,22 +70,22 @@ module.exports = {
         if (med.isBase64(media)) {
           uploadImage(message, media)
             .then(response => resolve(response))
-            .catch(error => reject(new Error(error)))
+            .catch(error => reject(new Error(JSON.stringify(error))))
         } else if (med.isFile(media)) {
           med.getMimeType(media)
             .then(type => {
               if (type === 'video/mp4') {
                 uploadVideo(message, media)
                   .then(response => resolve(response))
-                  .catch(error => reject(new Error(error)))
+                  .catch(error => reject(new Error(JSON.stringify(error))))
               } else {
                 med.fileToBase64(media)
                   .then(data => {
                     uploadImage(message, data)
                       .then(response => resolve(response))
-                      .catch(error => reject(new Error(error)))
+                      .catch(error => reject(new Error(JSON.stringify(error))))
                   })
-                  .catch(error => reject(new Error(error)))
+                  .catch(error => reject(new Error(JSON.stringify(error))))
               }
             })
             .catch(error => reject(new Error(error)))
@@ -94,20 +94,20 @@ module.exports = {
             .then(data => {
               uploadImage(message, data)
                 .then(response => resolve(response))
-                .catch(error => reject(new Error(error)))
+                .catch(error => reject(new Error(JSON.stringify(error))))
             })
-            .catch(error => reject(new Error(error)))
+            .catch(error => reject(new Error(JSON.stringify(error))))
         }
       } else if (message) {
         // Text-only tweet
         updateStatus(message)
           .then(response => resolve(response))
-          .catch(error => reject(new Error(error)))
+          .catch(error => reject(new Error(JSON.stringify(error))))
       } else {
-        reject(new Error({
-          error: 'invalid request',
+        reject(new Error(JSON.stringify({
+          err: 'invalid request',
           details: 'Error: No message or media in request'
-        }))
+        })))
       }
     })
   }

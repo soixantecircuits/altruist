@@ -31,7 +31,6 @@ function auth (app) {
     storeTokens(aToken, rToken)
     return done(null, profile)
   }))
-
   app.get(loginURL, passport.authenticate('dropbox-oauth2'))
   app.get(callbackURL, passport.authenticate('dropbox-oauth2', { failureRedirect: failureURL }), function (req, res) {
     res.redirect(successURL)
@@ -41,15 +40,15 @@ function auth (app) {
 function run (options, request) {
   return new Promise((resolve, reject) => {
     if (!dropboxSession || !dropboxSession.accessToken) {
-      return reject(new Error({
-        error: 'invalid token',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid token',
         details: 'No access token has been found. Please log in.'
-      }))
+      })))
     } else if (request && (!request.files || !request.files[0])) {
-      return reject(new Error({
-        error: 'invalid request',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid request',
         details: 'No file has been found. Please upload a file with your request.'
-      }))
+      })))
     }
 
     let filename = options.filename && options.filename !== '' ? options.filename : request.files[0].originalname
@@ -60,7 +59,7 @@ function run (options, request) {
         resolve(res)
       })
       .catch(function (error) {
-        reject(new Error(error))
+        reject(new Error(JSON.stringify(error)))
       })
   })
 }

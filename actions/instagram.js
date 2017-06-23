@@ -11,10 +11,10 @@ module.exports = {
   run: (options) => {
     return new Promise((resolve, reject) => {
       if (options.media === undefined || options.media === '') {
-        return reject(new Error({
-          error: 'invalid request',
+        return reject(new Error(JSON.stringify({
+          err: 'invalid request',
           details: 'Error: No media in request'
-        }))
+        })))
       }
 
       Client.Session.create(device, storage, settings.account, settings.password)
@@ -25,10 +25,10 @@ module.exports = {
               return Client.Media.configurePhoto(session, upload.params.uploadId, options.caption)
             })
             .then((response) => resolve('Success'))
-            .catch((err) => reject(new Error({
-              error: err.name,
+            .catch((err) => reject(new Error(JSON.stringify({
+              err: err.name,
               details: err.message
-            })))
+            }))))
         })
     })
   }

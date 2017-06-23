@@ -7,28 +7,28 @@ const mailjet = require('node-mailjet').connect(settings.actions.mailjet.apiKey,
 function run (options, request) {
   return new Promise((resolve, reject) => {
     if (!options.fromEmail && !settings.actions.mailjet.fromEmail) {
-      return reject(new Error({
-        error: 'missing parameter',
+      return reject(new Error(JSON.stringify({
+        err: 'missing parameter',
         details: 'The "fromEmail" parameter is missing in the request.'
-      }))
+      })))
     }
     if (!options.recipients) {
-      return reject(new Error({
-        error: 'missing parameter',
+      return reject(new Error(JSON.stringify({
+        err: 'missing parameter',
         details: 'The "recipients" parameter is missing in the request.'
-      }))
+      })))
     }
     if (!options.subject) {
-      return reject(new Error({
-        error: 'missing parameter',
+      return reject(new Error(JSON.stringify({
+        err: 'missing parameter',
         details: 'The "subject" parameter is missing in the request.'
-      }))
+      })))
     }
     if (!options.textPart && !options.htmlPart && !options.templateID && !settings.actions.mailjet.templateID) {
-      return reject(new Error({
-        error: 'missing parameter',
+      return reject(new Error(JSON.stringify({
+        err: 'missing parameter',
         details: 'No "textPart" or "htmlPart" or "templateID" parameter was found in the request. Provide at least one of those parameters.'
-      }))
+      })))
     }
 
     let fromEmail = options.fromEmail || settings.actions.mailjet.fromEmail
@@ -63,7 +63,7 @@ function run (options, request) {
         return resolve(result)
       })
       .catch((error) => {
-        return reject(new Error(error))
+        return reject(new Error(JSON.stringify(error)))
       })
   })
 }

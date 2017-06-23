@@ -20,7 +20,7 @@ function upload ({ file, filetype, filename }) {
       filename,
       channels: settings.actions.slack.channel
     }, (err, data) => {
-      err && reject(new Error({ error: err }))
+      err && reject(new Error(JSON.stringify({ err: err })))
       resolve(data)
     })
   })
@@ -42,7 +42,7 @@ function uploadB64 (dataURL) {
         resolve(success)
       })
       .catch((err) => {
-        reject(new Error(err))
+        reject(new Error(JSON.stringify(err)))
       })
   })
 }
@@ -74,10 +74,10 @@ function run (options) {
             resolve(success)
           })
           .catch((err) => {
-            reject(new Error(err))
+            reject(new Error(JSON.stringify(err)))
           })
       } catch (err) {
-        reject(new Error(err))
+        reject(new Error(JSON.stringify(err)))
       }
     } else if (isPictureData) {
       uploadB64(media)
@@ -85,7 +85,7 @@ function run (options) {
           resolve(success)
         })
         .catch((err) => {
-          reject(new Error(err))
+          reject(new Error(JSON.stringify(err)))
         })
     } else if (isURL) {
       fetchImage(media)
@@ -95,7 +95,7 @@ function run (options) {
               resolve(success)
             })
             .catch((err) => {
-              reject(err)
+              reject(JSON.stringify(err))
             })
         })
         .catch((err) => {
@@ -103,14 +103,14 @@ function run (options) {
         })
     } else if (message) {
       webclient.chat.postMessage(settings.actions.slack.channel, message, (err, res) => {
-        err && reject(new Error({ error: err }))
+        err && reject(new Error(JSON.stringify({ error: err })))
         resolve(res)
       })
     } else {
-      reject(new Error({
+      reject(new Error(JSON.stringify({
         error: 'invalid request',
         details: 'No media or message in request.'
-      }))
+      })))
     }
   })
 }

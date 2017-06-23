@@ -56,10 +56,10 @@ function uploadFile (options, resolve, reject) {
     }
   }, (error, result) => {
     if (error) {
-      reject(new Error({
+      reject(new Error(JSON.stringify({
         error: error.errors[0].reason,
         details: error.errors[0].message
-      }))
+      })))
     } else {
       resolve(result)
     }
@@ -108,15 +108,15 @@ function addRoutes (app) {
 function run (options, request) {
   return new Promise((resolve, reject) => {
     if (!driveSession || !driveSession.accessToken || driveSession.accessToken === '') {
-      return reject(new Error({
-        error: 'invalid token',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid token',
         details: 'No access token has been found. Please log in.'
-      }))
+      })))
     } else if (!request || !request.files || !request.files[0]) {
-      return reject(new Error({
-        error: 'invalid request',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid request',
         details: 'No file has been found. Please upload a file with your request.'
-      }))
+      })))
     }
 
     options.media = {
@@ -127,20 +127,20 @@ function run (options, request) {
 
     magic.detect(options.media.data, (err, res) => {
       if (err) {
-        return reject(new Error({
-          error: 'mmmagic error',
+        return reject(new Error(JSON.stringify({
+          err: 'mmmagic error',
           details: err
-        }))
+        })))
       }
       options.media.mimeType = res
 
       googleAuth.setCredentials({ access_token: driveSession.accessToken, refresh_token: driveSession.refreshToken })
       googleAuth.refreshAccessToken((err, tokens) => {
         if (err) {
-          return reject(new Error({
-            error: 'OAuth error',
+          return reject(new Error(JSON.stringify({
+            err: 'OAuth error',
             details: err
-          }))
+          })))
         }
 
         storeTokens(tokens.access_token, driveSession.refreshToken)
