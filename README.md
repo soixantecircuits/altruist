@@ -94,6 +94,6 @@ Thanks for helping us! 👏
 Please follow:
 
 * [JavaScript standard style](http://standardjs.com/)
-* [This git branching model](nvie.com/posts/a-successful-git-branching-model/)
+* [This git branching model](http://nvie.com/posts/a-successful-git-branching-model/)
 
 Please use the `develop` branch if you want to contribute.
