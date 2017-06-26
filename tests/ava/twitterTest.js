@@ -3,7 +3,7 @@
 const test = require('ava')
 const twitter = require('../../actions/twitter')
 
-test(`Twitter - Send simple tweet`, t => {
+test(`Twitter - Send simple tweet (twitter rejects duplicate tweets)`, t => {
   const validOptions = {
     message: 'Altruist Twitter test'
   }

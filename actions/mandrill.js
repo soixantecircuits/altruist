@@ -83,10 +83,6 @@ function run (options, req) {
     return new Promise((resolve, reject) => {
       let uploadedContent = 0
       options.media.forEach((media, index) => {
-        console.log('media.content', media.content)
-        console.log('media.mimetype', media.mimetype)
-        console.log('media.originalname', media.originalname)
-        console.log('media.name', media.name)
         med.isBase64(media.content)
         med.toBase64(media.content)
           .then((content) => {
