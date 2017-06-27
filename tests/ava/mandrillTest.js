@@ -6,9 +6,11 @@ const test = require('ava')
 const settings = require('../../src/lib/settings')
 const mandrill = require('../../actions/mandrill')
 const testSettings = require('../settings.json')
-
 const altruist = require('../../')
-altruist.init(settings)
+
+test.before(t => {
+  altruist.init(settings)
+})
 
 test(`Mandrill - Send template '${settings.actions.mandrill.template}' to ${settings.actions.mandrill.from.email} (need email and template in settings.json)`, t => {
   const validOptions = {

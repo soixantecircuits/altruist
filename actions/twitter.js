@@ -36,7 +36,7 @@ function uploadImage (message, mediaData) {
             .then(response => resolve(response))
             .catch(error => reject(new Error(JSON.stringify(error))))
         } else {
-          reject(new Error(JSON.stringify({error: err.message})))
+          reject(new Error(JSON.stringify({ error: err.message })))
         }
       })
   })
@@ -59,11 +59,15 @@ function uploadVideo (message, media) {
 }
 
 module.exports = {
-  run: (options) => {
+  run: (options, req) => {
     return new Promise((resolve, reject) => {
       const tweet = Object.assign({}, settings, options)
-      const media = tweet.media
       const message = tweet.message
+      var media = tweet.media
+
+      if (media === undefined && (req && req.files)) {
+        media = req.files[0].buffer.toString('base64')
+      }
 
       // Supported formats: JPG, PNG, GIF, WEBP, MP4
       if (media) {
@@ -97,6 +101,11 @@ module.exports = {
                 .catch(error => reject(new Error(JSON.stringify(error))))
             })
             .catch(error => reject(new Error(JSON.stringify(error))))
+        } else {
+          reject(new Error(JSON.stringify({
+            err: 'internal error',
+            details: "Could not determine media's type"
+          })))
         }
       } else if (message) {
         // Text-only tweet

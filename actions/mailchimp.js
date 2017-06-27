@@ -31,7 +31,6 @@ function run (options) {
         resolve(results)
       })
       .catch((err) => {
-        console.log(err)
         reject(new Error(JSON.stringify({
           err: err.title,
           details: err.detail

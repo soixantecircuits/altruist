@@ -7,7 +7,7 @@
     "start": "node index.js",
     "debug": "nodemon --inspect index.js",
     "bin": "./bin/altruist",
-    "test": "mocha ./settings/settings.json ./tests/urlTest.js && ava --verbose"
+    "test": "ava --serial --verbose"
   },
   "main": "src/app.js",
   "bin": {

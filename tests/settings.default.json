@@ -8,6 +8,10 @@
     },
     "mandrill": {
       "to": ""
+    },
+    "twitter": {
+      "simpleTweetMessage": "Altruist tweet test",
+      "formDataTweetMessage": "Altruist form data tweet test"
     }
   }
 }
