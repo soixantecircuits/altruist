@@ -1,7 +1,8 @@
 # Slack
 
 ## Setup
-
+First get your personal token [here](https://api.slack.com/tokens).  
+  
 In your `settings.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```json

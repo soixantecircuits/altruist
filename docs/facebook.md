@@ -2,7 +2,7 @@
 
 You will need a Facebook app to authenticate an account via OAuth2.
 If you do not have one set up, you can follow the instructions on the [facebook app development documentation](https://developers.facebook.com/docs/apps/register).
-Choose `website` as a platform for your app. When your app is created, go to the settings and add the domain the app will be running on in `App Domains`.
+Choose `website` as a platform for your app. When your app is created, go to the settings and add the domain (for example: `localhost`) the app will be running on in `App Domains`.
 Get your app ID and your app secret, and copy them to your `settings.json` file.
 
 In your `settings.json` file, you'll need to add the following configuration object to the `actions` property:
@@ -18,14 +18,14 @@ In your `settings.json` file, you'll need to add the following configuration obj
     "successURL": "/",
     "profileURL": "/profile/facebook",
     "accountsURL": "/accounts/facebook",
-    "pageID": "" // optionnal
+    "pageID": "" // optional
   }
 }
 ```
 
 ## Usage
 
-Before being able to post, you will need to log in facebook by going to the url matching `loginURL` in your config file and authorizing the application.
+Before being able to post, you will need to log in facebook by going to the url matching `loginURL` in your config file (don't forget the prefix of `http://localhost:6060`) and authorizing the application.
 When logged in, you can post on your feed using JSON or form-data :
 
 `POST /api/v1/actions/facebook`
@@ -34,7 +34,7 @@ When logged in, you can post on your feed using JSON or form-data :
 curl -X POST -H "Content-Type: application/json" -d '{
   "message": "Hello Facebook!",
   "media": "/path/to/my/img.jpg"
-}' "http://localhost:7070/api/v1/actions/facebook"
+}' "http://localhost:6060/api/v1/actions/facebook"
 ```
 
 The 'media' option must be one of the following:

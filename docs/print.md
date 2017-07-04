@@ -1,4 +1,4 @@
-# Instagram
+# Print
 
 ## Setup
 

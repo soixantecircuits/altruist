@@ -42,7 +42,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
       }]
     }]
   }
-}' "http://localhost:7070/api/v1/actions/mandrill"
+}' "http://localhost:6060/api/v1/actions/mandrill"
 ```
 
 ```html
