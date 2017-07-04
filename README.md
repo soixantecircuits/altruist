@@ -40,10 +40,10 @@ then, provide a settings file:
 
 ```sh
 # get the template
-$ wget https://raw.githubusercontent.com/soixantecircuits/altruist/master/settings/settings.example.json
+$ wget https://raw.githubusercontent.com/soixantecircuits/altruist/master/settings/settings.default.json
 # rename it
-$ mv settings.example.json settings.json
-# profit
+$ mv settings.default.json settings.json
+# start altruist web server
 $ altruist --settings settings.json
 ```
 
