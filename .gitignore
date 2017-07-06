@@ -127,3 +127,5 @@ storage/*
 uploads/*
 scratch/*
 settings/settings.json.bk
+dist/*
+config/*

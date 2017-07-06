@@ -2,7 +2,7 @@
 
 'use strict'
 
-const altruist = require('../')
+const altruist = require('../src/app')
 const program = require('commander')
 const pkg = require('../package.json')
 const path = require('path')
@@ -38,6 +38,6 @@ const settings = program.settings
 
 if (equal(settings, {})) {
   console.error('No settings provided')
-} else {
+} else if (altruist) {
   altruist.init(settings)
 }

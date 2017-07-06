@@ -52,6 +52,7 @@ let init = (settings, cb) => {
       <p><small>Go to the <a href="https://github.com/soixantecircuits/altruist" target="_blank">Altruist GitHub</a> for more details.</small></p>
     `)
   })
+  
   actions.init(app, router, settings)
   app.listen(settings.server.port, (err) => {
     realtime.init(settings)
