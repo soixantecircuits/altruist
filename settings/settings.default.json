@@ -51,7 +51,8 @@
       "consumer_key": "<your_consumer_key>",
       "consumer_secret": "<your_consumer_secret>",
       "access_token": "<your_access_token>",
-      "access_token_secret": "<your_access_token_secret>"
+      "access_token_secret": "<your_access_token_secret>",
+      "message": ""
     },
     "dropbox": {
       "clientID": "xx",
@@ -60,7 +61,8 @@
       "callbackURL": "/login/dropbox/return",
       "failureURL": "/?failure=dropbox",
       "successURL": "/?success=dropbox",
-      "uploadDirectoryPath": ""
+      "uploadDirectoryPath": "",
+      "autoRename": true
     },
     "googledrive": {
       "clientID": "xx",
