@@ -38,7 +38,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
       }],
       "media": [{
         "name": 'media.ext',
-        "content": "/path/to/my/media.ext"
+        "path": "/path/to/my/media.ext"
       }]
     }]
   }
@@ -64,18 +64,18 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 #### Options
 
-*note: you can only attach one media*
-
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**email**|`string`|`array`|&times;|address(es) that will receive the email|
+|**email**|`string` or `array`|&times;|address(es) that will receive the email|
 |**vars.globals**|`array`|&minus;|array of object defining your Mandrill `merge_vars` (with key = name and value = content)|
 |**vars.targeted**|`array`|&minus;||
 |**vars.targeted.target**|`string`|&minus;|address targeted|
 |**vars.targeted.vars**|`array`|&minus;|create/override `merge_vars` for the concerned address. Works the same as `vars.global`|
-|**media**|`Object`|&minus;||
-|**media.name**|`string`|&minus;|name of the media that you will retrieve via `cid:name`|
-|**media.content**|`string`|&minus;|Can be either a path the media (in the filesystem or via http) or straight base64 datas|
+|**media**|`object` or `string` or `File`|&minus;|can be a form data uploaded file, a path, a URL or an object with the media's infos|
+|**media.path**|`string`|&minus|(if media is an object) path to the local file|
+|**media.url**|`string`|&minus|(if media is an object) url to the file|
+|**media.content**|`string`|_if no path or url_|(if media is an object) base64 data from the media|
+|**media.name**|`string`|&minus;|(if media is an object) name of the media that you will retrieve via `cid:name`|
 
 ##### Examples
 
@@ -85,8 +85,8 @@ let data = {
   email: 'user@site.com',
   vars: { globals: [{ share: 'http://path.to/url/of/user/page' }] }
   media: [
-    { name: 'video', content: '/path/to/video.mp4' },
-    { name: 'IMAGEID', content: '/path/to.thumbnail' }
+    { name: 'video', path: '/path/to/video.mp4' },
+    { name: 'IMAGEID', path: '/path/to.thumbnail' }
   ]
 }
 ```
