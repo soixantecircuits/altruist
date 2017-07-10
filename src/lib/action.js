@@ -36,26 +36,28 @@ async function runAction (actionName, options) {
     console.error(`An error occured with ${actionName}`)
 
     if (reason instanceof Error) {
-      try {
-        return JSON.parse(reason.message)
-      } catch (err) {
-        console.error(reason.message)
-        return reason
-      }
+      console.error(reason)
+      throw reason
     }
   }
 }
 
 async function handlePostRequest (action, req, res) {
   var options = req.body
-  // If files are uploaded through form-data, add them to the options object
-  requestHelper.getFormDataFiles(options, req)
 
   try {
+    await requestHelper.formatOptionsMedia(options)
+    // If files are uploaded through form-data, add them to the options object
+    await requestHelper.getFormDataFiles(options, req)
+
     let response = await runAction(action, options)
     res.send(response)
   } catch (e) {
-    res.status(500).send(e)
+    if (e instanceof Error) {
+      res.status(500).send(e.message)
+    } else {
+      res.status(500).send(e) // Assuming 'e' is a string
+    }
   }
 }
 
@@ -81,6 +83,7 @@ async function init (app, router, settings) {
     }
   }
 
+  // Create route that returns all the available authentication URLs
   app.get(authRedirectURL, (req, res) => {
     res.send({ 'map': authRedirect })
   })

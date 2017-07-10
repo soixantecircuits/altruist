@@ -7,34 +7,55 @@ import mediaHelper from 'media-helper'
 async function formatMedia (media) {
   try {
     if (mediaHelper.isFile(media)) {
+      let type = await mediaHelper.getMimeType(media)
+      let content = await mediaHelper.fileToBase64(media)
       return {
         path: media,
         name: path.basename(media),
-        mimetype: await mediaHelper.getMimeType(media),
-        content: await mediaHelper.fileToBase64(media)
+        type,
+        content
       }
     }
 
     if (mediaHelper.isURL(media)) {
+      let content = await mediaHelper.urlToBase64(media)
+      let type = await mediaHelper.getMimeType(Buffer.from(content, 'base64'))
       return {
         url: media,
-        mimetype: await mediaHelper.getMimeType(media),
-        content: await mediaHelper.urlToBase64(media)
+        type,
+        content
       }
     }
 
     if (mediaHelper.isBuffer(media)) {
+      let type = await mediaHelper.getMimeType(media)
+      let content = await mediaHelper.toBase64(media)
       return {
-        mimetype: await mediaHelper.getMimeType(media),
-        content: await mediaHelper.toBase64(media)
+        type,
+        content
       }
     }
 
     if (mediaHelper.isBase64(media)) {
+      let type = await mediaHelper.getMimeType(Buffer.from(media, 'base64'))
       return {
-        mimetype: await mediaHelper.getMimeType(media),
+        type,
         content: media
       }
+    }
+
+    if (typeof media === 'object') {
+      // make sure the media has a mime type and base64 data
+      if (!media.content) {
+        if (media.path) {
+          media.type = await mediaHelper.getMimeType(media.path)
+          media.content = await mediaHelper.fileToBase64(media.path)
+        } else if (media.url) {
+          media.content = await mediaHelper.urlToBase64(media.url)
+          media.type = await mediaHelper.getMimeType(Buffer.from(media.content, 'base64'))
+        }
+      }
+      return media
     }
   } catch (e) {
     console.error(e)
@@ -50,31 +71,36 @@ async function formatOptionsMedia (options) {
     options.media = []
   }
 
-  options.media = await Promise.all(_.map(options.media, formatMedia))
-}
-
-async function getFormDataFiles (options, req) {
-  await formatOptionsMedia(options)
-
-  if (req && req.files) {
-    let filesToAdd = await Promise.all(_.map(req.files, async (file) => {
-      try {
-        return {
-          name: file.originalname,
-          mimetype: await mediaHelper.getMimeType(file.buffer),
-          content: await mediaHelper.toBase64(file.buffer)
-        }
-      } catch (e) {
-        console.error(e)
-        return null
-      }
-    }))
-
-    options.media = _.concat([options.media, filesToAdd])
+  try {
+    options.media = await Promise.all(_.map(options.media, formatMedia))
+  } catch (e) {
+    return e
   }
 }
 
-export default {
+async function getFormDataFiles (options, req) {
+  if (req && req.files && req.files.length > 0) {
+    try {
+      let filesToAdd = await Promise.all(_.map(req.files, async (file) => {
+        try {
+          return {
+            name: file.originalname,
+            type: await mediaHelper.getMimeType(file.buffer),
+            content: await mediaHelper.toBase64(file.buffer)
+          }
+        } catch (e) {
+          return e
+        }
+      }))
+
+      options.media = _.concat(options.media, filesToAdd)
+    } catch (err) {
+      return err
+    }
+  }
+}
+
+module.exports = {
   formatOptionsMedia,
   getFormDataFiles
 }

@@ -4,8 +4,8 @@
   "description": "Altruist lets you share your content with others",
   "scripts": {
     "start": "npm run dev",
-    "dev": "nodemon src/index.js --exec babel-node",
-    "debug": "nodemon --inspect src/index.js --exec babel-node",
+    "dev": "nodemon src/index.js --exec babel-node --source-maps",
+    "debug": "nodemon --inspect src/index.js --exec babel-node --source-maps",
     "bin": "./bin/altruist",
     "build": "babel-cli src --out-dir dist",
     "test": "ava --serial --verbose"
