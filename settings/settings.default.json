@@ -117,6 +117,8 @@
       "uploadRoute": "/upload.php"
     },
     "socialite": {
+      "baseURL": "http://url.com",
+      "uploadRoute": "/upload.php",
       "bucket": "xxxxx",
       "token": "xxxxxx"
     },
