@@ -18,23 +18,23 @@ function mapListMember (member) {
 }
 
 function run (options) {
-  const members = Array.isArray(options) ? options.map(m => mapListMember(m)) : [ mapListMember(options) ]
   return new Promise((resolve, reject) => {
+    if (!options.to || !Array.isArray(options.to) || options.to.length < 1) {
+      reject(new Error('No email to subscribe in the request'))
+    }
+
+    const members = options.to.map(m => mapListMember(m))
     mailchimp
       .post(`/lists/${settings.actions.mailchimp.listID}`, {
         members: members
       }).then((results) => {
         if (results.errors.length) {
-          console.log(`error on post ${results.errors[0]}`)
           return reject(new Error(JSON.stringify(results.errors)))
         }
         resolve(results)
       })
       .catch((err) => {
-        reject(new Error(JSON.stringify({
-          err: err.title,
-          details: err.detail
-        })))
+        reject(err)
       })
   })
 }
