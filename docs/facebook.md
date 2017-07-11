@@ -14,8 +14,8 @@ In your `settings.json` file, you'll need to add the following configuration obj
     "appSecret": "shhh",
     "loginURL": "/login/facebook",
     "callbackURL": "/login/facebook/return",
-    "failureURL": "/",
-    "successURL": "/",
+    "failureURL": "/?failure=facebook",
+    "successURL": "/?success=facebook",
     "profileURL": "/profile/facebook",
     "accountsURL": "/accounts/facebook",
     "pageID": "" // optional
@@ -41,11 +41,28 @@ The 'media' option must be one of the following:
  * path to a file on your system (example: `/path/to/image.png`)
  * url (example: `http://some_site.com/image.png`)
  * ~~base64 encoded string~~ *(soon)*
+ * a form data uploaded file
 
 Supported formats are **JPG**, **PNG**, **GIF**, **WEBP** (for images) and **MOV**, **WMV** or **MP4** (for videos)
+_**Note**: MP4 files MUST be local files on your system or url (no base64)_
+
+|name|type|required|description|
+|:---|:---|:---:|:---|
+|**message**|`string`|*if no media*|message to post on your feed|
+|**media**|`string` or `object` or `File`|*if no message*|image or video|
+|**link**|`string`|&minus;|create a special post which links to a URL (only works if there is no media)|
+
+You can also set `message` and/or `media` into your config directly, if they don't need to be set by the user.
+
+You **have** to provide at least one of the two options (be it in config or in request).
+
 
 You can get your profile's informations and a list of accounts (like pages) you manage by sending a GET request to urls matching respectively `profileURL` and `accountsURL`.
 You will be returned JSON object containing the datas requested.
+
+<!-- When you log in, an array of pages you manage is stored in `userAccounts`.
+You can switch the current used id to post on a page or on your feed by calling the function `setID(newId)` and it will set the access token accordingly.
+To switch back to your account, you can call `setID('me')` or just call it with you account's ID. -->
 
 `GET /profileURL`
 ```json
@@ -71,19 +88,3 @@ You will be returned JSON object containing the datas requested.
 }
 ```
 
-<!-- When you log in, an array of pages you manage is stored in `userAccounts`.
-You can switch the current used id to post on a page or on your feed by calling the function `setID(newId)` and it will set the access token accordingly.
-To switch back to your account, you can call `setID('me')` or just call it with you account's ID. -->
-
-## Options
-
-_**Note**: MP4 files MUST be local files on your system or url (no base64)_
-
-|name|type|required|description|
-|:---|:---|:---:|:---|
-|**message**|`string`|*if no media*|message to post on your feed|
-|**media**|`string`|*if no message*|image or video|
-
-You can also set `message` and/or `media` into your config directly, if they don't need to be set by the user.
-
-You **have** to provide at least one of the two options (be it in config or in request).
