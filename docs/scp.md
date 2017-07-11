@@ -10,7 +10,7 @@ In your `settings.json` file, you'll need to add the following configuration obj
       "user": "foo",
       "password": "bar",
       "hostname": "example:5050",
-      "target": "/directory/or/file"
+      "destination": "/directory/or/file"
     }
   }
 ```
@@ -25,7 +25,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 	"user": "foo",
 	"password": "bar",
 	"hostname": "example:port",
-	"target": "/target/directory/or/file"
+	"destination": "/target/directory/or/file"
 }' "http://localhost:6060/api/v1/actions/scp"
 ```
 
@@ -37,4 +37,4 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |**user**|`string`|_if not in settings.json_|user name to connect to the host|
 |**password**|`string`|_if not in settings.json_|password to connect to the host|
 |**hostname**|`string`|_if not in settings.json_|host to connect to. _you can append the port_|
-|**target**|`string`|_if not in settings.json_|target directory or target file for the copy|
+|**destination**|`string`|_if not in settings.json_|target directory or target file for the copy|
