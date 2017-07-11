@@ -10,25 +10,23 @@ var storage = new Client.CookieFileStorage(cookiePath)
 module.exports = {
   run: (options) => {
     return new Promise((resolve, reject) => {
-      if (options.media === undefined || options.media === '') {
-        return reject(new Error(JSON.stringify({
-          err: 'invalid request',
-          details: 'Error: No media in request'
-        })))
+      if (!options.media || !Array.isArray(options.media) || options.media.length < 1) {
+        return reject(new Error('No media provided in request'))
+      }
+
+      if (!options.media[0].path) {
+        return reject(new Error('The media provided has no path'))
       }
 
       Client.Session.create(device, storage, settings.account, settings.password)
         .then((session) => {
-          Client.Upload.photo(session, options.media)
+          Client.Upload.photo(session, options.media[0].path)
             .then((upload) => {
-              console.log('Uploading ' + path.basename(options.media))
+              console.log('Uploading ' + options.media[0].name)
               return Client.Media.configurePhoto(session, upload.params.uploadId, options.caption)
             })
-            .then((response) => resolve('Success'))
-            .catch((err) => reject(new Error(JSON.stringify({
-              err: err.name,
-              details: err.message
-            }))))
+            .then((response) => resolve(response))
+            .catch((err) => reject(err))
         })
     })
   }
