@@ -67,6 +67,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |name|type|required|description|
 |:---|:---|:---:|:---|
 |**email**|`string` or `array`|&times;|address(es) that will receive the email|
+|**mergeLanguage**|`string`|&minus;|string stating which merge language should be used for the template: `mailchimp` or `handlebars`|
 |**vars.globals**|`array`|&minus;|array of object defining your Mandrill `merge_vars` (with key = name and value = content)|
 |**vars.targeted**|`array`|&minus;||
 |**vars.targeted.target**|`string`|&minus;|address targeted|
