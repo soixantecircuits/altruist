@@ -42,9 +42,9 @@ function auth (app) {
 async function run (options, request) {
   try {
     if (!dropboxSession || !dropboxSession.accessToken) {
-      throw new Error('No access token has been found. Please log in.')
-    } else if (!Array.isArray(options.media) || options.media.length < 1) {
-      throw new Error('No file has been found. Please upload a file with your request.')
+      throw new Error(JSON.stringify({response: 'No access token has been found. Please log in.'}))
+    } else if (!options.media || !Array.isArray(options.media) || options.media.length < 1) {
+      throw new Error(JSON.stringify({response: 'No file has been found. Please upload a file with your request.'}))
     }
 
     let dropbox = new Dropbox({ accessToken: dropboxSession.accessToken })

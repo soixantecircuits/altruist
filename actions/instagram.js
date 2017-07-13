@@ -8,26 +8,22 @@ var device = new Client.Device(settings.account)
 var storage = new Client.CookieFileStorage(cookiePath)
 
 module.exports = {
-  run: (options) => {
-    return new Promise((resolve, reject) => {
+  run: async (options) => {
+    try {
       if (!options.media || !Array.isArray(options.media) || options.media.length < 1) {
-        return reject(new Error('No media provided in request'))
+        throw new Error('No media provided in request')
       }
-
       if (!options.media[0].path) {
-        return reject(new Error('The media provided has no path'))
+        throw new Error('The media provided has no path')
       }
 
-      Client.Session.create(device, storage, settings.account, settings.password)
-        .then((session) => {
-          Client.Upload.photo(session, options.media[0].path)
-            .then((upload) => {
-              console.log('Uploading ' + options.media[0].name)
-              return Client.Media.configurePhoto(session, upload.params.uploadId, options.caption)
-            })
-            .then((response) => resolve(response))
-            .catch((err) => reject(err))
-        })
-    })
+      var session = await Client.Session.create(device, storage, settings.account, settings.password)
+      var upload = await Client.Upload.photo(session, options.media[0].path)
+      console.log('Uploading ' + options.media[0].name)
+      var response = await Client.Media.configurePhoto(session, upload.params.uploadId, options.message)
+      return response
+    } catch (err) {
+      throw err
+    }
   }
 }

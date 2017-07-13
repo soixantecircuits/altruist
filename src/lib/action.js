@@ -34,7 +34,6 @@ async function runAction (actionName, options) {
     return response
   } catch (reason) {
     console.error(`An error occured with ${actionName}`)
-
     if (reason instanceof Error) {
       console.error(reason)
       throw reason
@@ -51,12 +50,33 @@ async function handlePostRequest (action, req, res) {
     await requestHelper.getFormDataFiles(options, req)
 
     let response = await runAction(action, options)
-    res.send(response)
+    res.send({
+      action,
+      success: true,
+      code: 200,
+      response
+    })
   } catch (e) {
     if (e instanceof Error) {
-      res.status(500).send(e.message)
-    } else {
-      res.status(500).send(e) // Assuming 'e' is a string
+      var errorResponse = e.message
+      try {
+        // the error's message might be a stringified object
+        errorResponse = JSON.parse(errorResponse)
+      } finally {
+        if (typeof errorResponse === 'object') {
+          errorResponse.action = action
+          errorResponse.success = false
+          res.status(errorResponse.code || 500).send(errorResponse)
+        } else {
+          // Assuming errorResponse is a string
+          res.status(500).send({
+            action,
+            success: false,
+            code: 500,
+            response: errorResponse
+          })
+        }
+      }
     }
   }
 }
@@ -91,5 +111,6 @@ async function init (app, router, settings) {
 
 module.exports = {
   init,
-  runAction
+  runAction,
+  handlePostRequest
 }

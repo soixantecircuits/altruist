@@ -1,8 +1,8 @@
 'use strict'
 
-import _ from 'lodash'
-import path from 'path'
-import mediaHelper from 'media-helper'
+const _ = require('lodash')
+const path = require('path')
+const mediaHelper = require('media-helper')
 
 async function formatMedia (media) {
   try {
@@ -44,21 +44,21 @@ async function formatMedia (media) {
       }
     }
 
-    if (typeof media === 'object') {
-      // make sure the media has a mime type and base64 data
-      if (!media.content) {
-        if (media.path) {
-          media.type = await mediaHelper.getMimeType(media.path)
-          media.content = await mediaHelper.fileToBase64(media.path)
-        } else if (media.url) {
-          media.content = await mediaHelper.urlToBase64(media.url)
-          media.type = await mediaHelper.getMimeType(Buffer.from(media.content, 'base64'))
-        }
+    if (typeof media === 'object' && (media.content || media.path || media.url)) {
+      if (media.path) {
+        media.name = media.name || path.basename(media.path)
+        media.type = media.type || await mediaHelper.getMimeType(media.path)
+        media.content = media.content || await mediaHelper.fileToBase64(media.path)
+      } else if (media.url) {
+        media.content = media.content || await mediaHelper.urlToBase64(media.url)
+        media.type = media.type || await mediaHelper.getMimeType(Buffer.from(media.content, 'base64'))
       }
       return media
     }
+
+    return null
   } catch (e) {
-    console.error(e)
+    console.error('Error when formatting media', e)
     return null
   }
 }
@@ -101,6 +101,7 @@ async function getFormDataFiles (options, req) {
 }
 
 module.exports = {
+  formatMedia,
   formatOptionsMedia,
   getFormDataFiles
 }

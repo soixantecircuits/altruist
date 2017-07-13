@@ -67,7 +67,7 @@ module.exports = {
 
     // Supported formats: JPG, PNG, GIF, WEBP, MP4
     try {
-      if (media && Array.isArray(media) && media.length > 0) { // If there are media to send
+      if (media && Array.isArray(media) && media.length > 0 && media[0]) { // If there are media to send
         if (media[0].type.indexOf('image') > -1) {
           let res = await uploadImage(message, media[0].content)
           return res
