@@ -1,7 +1,7 @@
 'use strict'
 
 const settings = require('standard-settings').getSettings()
-const altruist = require('./app')
+const altruist = require('./src/app')
 altruist.init(settings, (err, infos) => {
   if (err) {
     console.error(err)

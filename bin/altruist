@@ -5,15 +5,16 @@
 const altruist = require('../src/app')
 const program = require('commander')
 const pkg = require('../package.json')
-const path = require('path')
+// const path = require('path')
 const equal = require('deep-equal')
+const settings = require('standard-settings').getSettings()
 
-var resolveHome = (filepath) => {
-  if (filepath[0] === '~') {
-    return path.join(process.env.HOME, filepath.slice(1))
-  }
-  return filepath
-}
+// var resolveHome = (filepath) => {
+//   if (filepath[0] === '~') {
+//     return path.join(process.env.HOME, filepath.slice(1))
+//   }
+//   return filepath
+// }
 
 program
   .version(pkg.version)
@@ -30,11 +31,10 @@ program.on('-h, --help', function () {
 })
 
 // init command
-program.parse(process.argv)
-
-const settings = program.settings
-  ? require(path.resolve(process.cwd(), resolveHome(program.settings)))
-  : {}
+// program.parse(process.argv)
+// const settings = program.settings
+//   ? require(path.resolve(process.cwd(), resolveHome(program.settings)))
+//   : {}
 
 if (equal(settings, {})) {
   console.error('No settings provided')
