@@ -78,6 +78,8 @@ One action = one service
 * [socialite](/docs/socialite.md)
 * [print](/docs/print.md)
 
+In addition to http POST requests, you can also run actions using spacebro. To learn more about it read the documentation [here](docs/spacebroRequest.md)
+
 ⚠️  *Some actions may require that you log in before using them. You can get a list of those actions with their login url by sending a GET request to the url matching `authRedirect` in the settings file (`/authRedirect` by default).*
 
 ## 🕳 Troubleshoot
