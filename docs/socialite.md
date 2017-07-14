@@ -25,7 +25,7 @@ curl -X POST -H "Content-Type: multipart/form-data; boundary=----xxxxxxxxxxxxxxx
 -F "token=xxxxxxxxx"
 -F "filename=picture"
 -F "media=@picture.jpg"
-"http://localhost:6060/api/v1/actions/socialite"
+"http://localhost:36500/api/v1/actions/socialite"
 ```
 
 #### Options
@@ -35,8 +35,7 @@ curl -X POST -H "Content-Type: multipart/form-data; boundary=----xxxxxxxxxxxxxxx
 |**bucket**|`string`|_if not in settings.json_|your bucket's name|
 |**token**|`string`|_if not in settings.json_|your bucket's token|
 |**filename**|`string`|&times;|the filename to give to the post (extension is required)|
-|**media**|`file` or `path`|&times;|the picture to upload (you can upload as many files as you want)|  
-
+|**media**|`array`|&times;|array with the pictures to upload (more infos on sending media [here](/postRequest.md))|
 
 
 ### Socialite-v0 (depreciated)
@@ -62,7 +61,7 @@ You can upload pictures via a POST request:
 curl -X POST -H "Content-Type: application/json" -d '{
   "filename": "optional_file_name",
   "media": "/path/to/your/file.jpg"
-  }' "http://localhost:6060/api/v1/actions/socialite"
+  }' "http://localhost:36500/api/v1/actions/socialite"
   ```
 
   #### Options

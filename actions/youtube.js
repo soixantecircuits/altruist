@@ -38,7 +38,7 @@ function storeProfile (profile) {
 }
 
 function auth (app) {
-  passport.use(new GoogleStrategy({
+  passport.use('google-youtube', new GoogleStrategy({
     clientID: settings.actions.youtube.clientID,
     clientSecret: settings.actions.youtube.clientSecret,
     callbackURL: settings.actions.youtube.callbackURL
@@ -51,7 +51,7 @@ function auth (app) {
     }
   ))
 
-  app.get(loginURL, passport.authenticate('google', {
+  app.get(loginURL, passport.authenticate('google-youtube', {
     scope: [
       'https://www.googleapis.com/auth/userinfo.profile',
       'https://www.googleapis.com/auth/youtube'
@@ -60,7 +60,7 @@ function auth (app) {
     prompt: 'select_account'
   }))
 
-  app.get(callbackURL, passport.authenticate('google', {
+  app.get(callbackURL, passport.authenticate('google-youtube', {
     failureRedirect: failureURL
   }), (req, res) => {
     res.redirect(successURL)

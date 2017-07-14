@@ -22,15 +22,19 @@ module.exports = {
       var printer = options.printer || settings.printer
       var format = options.format || settings.format || 'A4'
       var copies = options.copies || settings.copies || 1
-      var media = options.media || settings.media
+      var media = settings.media
       var customOptions = options.options || settings.options || ''
 
+      if (options.media && Array.isArray(options.media) && options.media > 0) {
+        media = options.media[0].path
+      }
+
       if (media === undefined) {
-        reject(new Error('Error: No media in settings/request'))
+        reject(new Error('No media in settings/request'))
       }
       if (printer === undefined) {
         listAvailablePrinters()
-        reject(new Error('Error: No printer in settings/request'))
+        reject(new Error('No printer in settings/request'))
       }
 
       execa('lp', [ '-d', printer,

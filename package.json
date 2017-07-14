@@ -36,6 +36,7 @@
     "ftp": "^0.3.10",
     "googleapis": "^15.0.0",
     "instagram-private-api": "^0.5.2",
+    "lodash": "^4.17.4",
     "mailchimp-api-v3": "1.6.0",
     "mandrill-api": "^1.0.45",
     "media-helper": "^1.1.1",

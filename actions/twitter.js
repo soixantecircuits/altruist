@@ -2,7 +2,6 @@
 
 const Twit = require('twit')
 const settings = require('../src/lib/settings').actions.twitter
-const med = require('media-helper')
 
 const T = new Twit({
   consumer_key: settings.consumer_key,
@@ -12,112 +11,83 @@ const T = new Twit({
   timeout_ms: 60 * 1000
 })
 
-function updateStatus (message, mediaIdStr) {
-  return new Promise((resolve, reject) => {
-    T.post('statuses/update',
-      { status: message, media_ids: [mediaIdStr] },
-      function (err, data, response) {
-        if (!err) {
-          resolve(JSON.stringify(data))
-        } else {
-          reject(new Error(JSON.stringify({ err: err.message })))
-        }
-      })
-  })
+async function updateStatus (message, mediaIdStr) {
+  try {
+    let res = await T.post('statuses/update', { status: message, media_ids: [mediaIdStr] })
+    return res.data
+  } catch (e) {
+    throw e
+  }
 }
 
-function uploadImage (message, mediaData) {
-  return new Promise((resolve, reject) => {
-    T.post('media/upload',
-      { media_data: mediaData },
-      function (err, data, response) {
-        if (!err) {
-          updateStatus(message, data.media_id_string)
-            .then(response => resolve(response))
-            .catch(error => reject(new Error(JSON.stringify(error))))
-        } else {
-          reject(new Error(JSON.stringify({ error: err.message })))
-        }
-      })
-  })
+async function uploadImage (message, mediaData) {
+  try {
+    let uploadRes = await T.post('media/upload', { media_data: mediaData })
+
+    try {
+      let postRes = await updateStatus(message, uploadRes.data.media_id_string)
+      return postRes
+    } catch (err) {
+      throw err
+    }
+  } catch (err) {
+    throw err
+  }
 }
 
 // Only MP4 format is supported for videos
-function uploadVideo (message, media) {
-  return new Promise((resolve, reject) => {
-    T.postMediaChunked({ file_path: media },
-      (err, data, response) => {
-        if (!err) {
-          updateStatus(message, data.media_id_string)
-            .then(response => resolve(response))
-            .catch(error => reject(new Error(JSON.stringify(error))))
+async function uploadVideo (message, media) {
+  try {
+    let uploadRes = await new Promise((resolve, reject) => {
+      T.postMediaChunked({ file_path: media }, function (err, data, response) {
+        if (err) {
+          reject(err)
         } else {
-          reject(new Error(JSON.stringify({ err: err.message })))
+          resolve(data)
         }
       })
-  })
+    })
+
+    try {
+      let postRes = await updateStatus(message, uploadRes.media_id_string)
+      return postRes
+    } catch (err) {
+      throw err
+    }
+  } catch (err) {
+    throw err
+  }
 }
 
 module.exports = {
-  run: (options, req) => {
-    return new Promise((resolve, reject) => {
-      const tweet = Object.assign({}, settings, options)
-      const message = tweet.message
-      var media = tweet.media
+  run: async (options) => {
+    const tweet = Object.assign({}, settings, options)
+    const message = tweet.message
+    var media = tweet.media
 
-      if (media === undefined && (req && req.files)) {
-        media = req.files[0].buffer.toString('base64')
-      }
-
-      // Supported formats: JPG, PNG, GIF, WEBP, MP4
-      if (media) {
-        if (med.isBase64(media)) {
-          uploadImage(message, media)
-            .then(response => resolve(response))
-            .catch(error => reject(new Error(JSON.stringify(error))))
-        } else if (med.isFile(media)) {
-          med.getMimeType(media)
-            .then(type => {
-              if (type === 'video/mp4') {
-                uploadVideo(message, media)
-                  .then(response => resolve(response))
-                  .catch(error => reject(new Error(JSON.stringify(error))))
-              } else {
-                med.fileToBase64(media)
-                  .then(data => {
-                    uploadImage(message, data)
-                      .then(response => resolve(response))
-                      .catch(error => reject(new Error(JSON.stringify(error))))
-                  })
-                  .catch(error => reject(new Error(JSON.stringify(error))))
-              }
-            })
-            .catch(error => reject(new Error(error)))
-        } else if (med.isURL(media)) {
-          med.urlToBase64(media)
-            .then(data => {
-              uploadImage(message, data)
-                .then(response => resolve(response))
-                .catch(error => reject(new Error(JSON.stringify(error))))
-            })
-            .catch(error => reject(new Error(JSON.stringify(error))))
+    // Supported formats: JPG, PNG, GIF, WEBP, MP4
+    try {
+      if (media && Array.isArray(media) && media.length > 0 && media[0]) { // If there are media to send
+        if (media[0].type.indexOf('image') > -1) {
+          let res = await uploadImage(message, media[0].content)
+          return res
+        } else if (media[0].type.indexOf('video') > -1) { // Video upload only works with path right now
+          if (!media[0].path) {
+            throw new Error('Video upload only works when media is a path to the local file. Ex: "media" : "/home/altruist/soixante.mp4"')
+          }
+          let res = await uploadVideo(message, media[0].path)
+          return res
         } else {
-          reject(new Error(JSON.stringify({
-            err: 'internal error',
-            details: "Could not determine media's type"
-          })))
+          throw new Error('Could not define media\'s type')
         }
-      } else if (message) {
-        // Text-only tweet
-        updateStatus(message)
-          .then(response => resolve(response))
-          .catch(error => reject(new Error(JSON.stringify(error))))
-      } else {
-        reject(new Error(JSON.stringify({
-          err: 'invalid request',
-          details: 'Error: No message or media in request'
-        })))
+      } else if (typeof message === 'string') { // If there is only a message to send
+        let res = await updateStatus(message)
+        return res
+      } else { // No message or media to send
+        throw new Error('Error: No message or media in request')
       }
-    })
+    } catch (e) {
+      throw e
+    }
   }
 }
