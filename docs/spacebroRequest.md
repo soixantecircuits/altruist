@@ -38,6 +38,7 @@ You can specify the actions you want to run for this request by passing an array
 
 The options object doesn't change from the one you send in an http POST request to altruist, with the exception of the media object.
 The media you want to send to your actions must be outside of your options object, with the first media being the root object you send through spacebro, and the other media being in the `details` property.
+The media objects follow the same format as the one you would send in an HTTP POST request: see [here](/postRequest.md#media)
 
 Here's a sample of the data you would send:
 ```

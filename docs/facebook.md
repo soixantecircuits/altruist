@@ -34,7 +34,7 @@ When logged in, you can post on your feed using JSON or form-data :
 curl -X POST -H "Content-Type: application/json" -d '{
   "message": "Hello Facebook!",
   "media": "/path/to/my/img.jpg"
-}' "http://localhost:6060/api/v1/actions/facebook"
+}' "http://localhost:36500/api/v1/actions/facebook"
 ```
 
 The 'media' option must be one of the following:
@@ -49,7 +49,7 @@ _**Note**: MP4 files MUST be local files on your system or url (no base64)_
 |name|type|required|description|
 |:---|:---|:---:|:---|
 |**message**|`string`|*if no media*|message to post on your feed|
-|**media**|`string` or `object` or `File`|*if no message*|image or video|
+|**media**|`array`|&minus;|array with the file to upload (more infos on sending media [here](/postRequest.md))|
 |**link**|`string`|&minus;|create a special post which links to a URL (only works if there is no media)|
 
 You can also set `message` and/or `media` into your config directly, if they don't need to be set by the user.

@@ -34,14 +34,14 @@ curl -X POST -H "Content-Type: multipart/form-data"
  -F "media=@your.file"
  -F "filename=uploadedFile.name"
  -F "uploadDirectoryPath=/targetDirectory/"
- "http://localhost:6060/api/v1/actions/dropbox"
+ "http://localhost:36500/api/v1/actions/dropbox"
 ```
 
 ## Options
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**media**|`file`|&times;|the file to upload|
+|**media**|`array`|&times;|array with the files to upload (more infos on sending media [here](/postRequest.md))|
 |**filename**|`string`|&minus;|a new name to assign to the uploaded file (only use it when uploading a single file)|
 |**path**|`string`|&minus;|the path to the directory to upload to|
 |**autoRename**|`boolean`|&minus;|should dropbox rename your file in case of conflict|

@@ -42,7 +42,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
       }]
     }]
   }
-}' "http://localhost:6060/api/v1/actions/mandrill"
+}' "http://localhost:36500/api/v1/actions/mandrill"
 ```
 
 ```html
@@ -72,11 +72,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |**vars.targeted**|`array`|&minus;||
 |**vars.targeted.target**|`string`|&minus;|address targeted|
 |**vars.targeted.vars**|`array`|&minus;|create/override `merge_vars` for the concerned address. Works the same as `vars.global`|
-|**media**|`object` or `string` or `File`|&minus;|can be a form data uploaded file, a path, a URL or an object with the media's infos|
-|**media.path**|`string`|&minus|(if media is an object) path to the local file|
-|**media.url**|`string`|&minus|(if media is an object) url to the file|
-|**media.content**|`string`|_if no path or url_|(if media is an object) base64 data from the media|
-|**media.name**|`string`|&minus;|(if media is an object) name of the media that you will retrieve via `cid:name`|
+|**media**|`array`|&minus;|array with the files to attach to your mail (more infos on sending media [here](/postRequest.md))|
 
 ##### Examples
 

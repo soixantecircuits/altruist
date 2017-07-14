@@ -32,19 +32,19 @@ curl -X POST -H "Content-Type: application/json" -d '{
     "path": "/path/or/url",
     "filename": "example.txt"
     }]
-}' "http://localhost:6060/api/v1/actions/smtp"
+}' "http://localhost:36500/api/v1/actions/smtp"
 ```
 
 Attach files uploaded by form-data
 ```cURL
-curl -X POST -H "Content-Type: multipart/form-data; boundary=----xxxxxxxxxxxxxxxx"
+curl -X POST -H "Content-Type: multipart/form-data"
 -F "from=from@email.net"
 -F "to=to@email.org"
 -F "subject=example"
 -F "text=text part"
 -F "html=html part"
 -F "media=@file.ext"
-"http://localhost:6060/api/v1/actions/smtp"
+"http://localhost:36500/api/v1/actions/smtp"
 ```
 
 ## Options
@@ -58,5 +58,5 @@ The full list of parameters is available [here](https://github.com/nodemailer/no
 |**subject**|`string`|&minus;|the email's subject|
 |**text**|`string`|&minus;|text part of the email|
 |**html**|`string`|&minus;|html part of the email|
-|**media**|`file`|&minus;|file to upload and attach to the email|
+|**media**|`array`|&minus;|array with the files to attach to your mail (more infos on sending media [here](/postRequest.md))|
 |**attachments**|`array`|&minus;|array of attachment objects|

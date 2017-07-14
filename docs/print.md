@@ -19,7 +19,7 @@ In your `settings.json` file, you'll need to add the following configuration obj
 ```cURL
 curl -X POST -H "Content-Type: application/json" -d '{
   "media": "/path/to/image.jpg"
-}' "http://localhost:6060/api/v1/actions/print"
+}' "http://localhost:36500/api/v1/actions/print"
 ```
 
 ## Options

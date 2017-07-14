@@ -26,7 +26,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 	"password": "bar",
 	"hostname": "example:port",
 	"destination": "/target/directory/or/file"
-}' "http://localhost:6060/api/v1/actions/scp"
+}' "http://localhost:36500/api/v1/actions/scp"
 ```
 
 ## Options

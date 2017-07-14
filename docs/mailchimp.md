@@ -26,7 +26,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
       "lname": "Doe"
     }
   ]
-}' "http://localhost:6060/api/v1/actions/mailchimp"
+}' "http://localhost:36500/api/v1/actions/mailchimp"
 ```
 
 ## Options
