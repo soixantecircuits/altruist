@@ -18,7 +18,10 @@
       "tests/ava/*.js"
     ]
   },
-  "repository": "git@github.com:soixantecircuits/altruist.git",
+  "repository":{
+    "type": "git",
+    "url": "git+https://github.com/soixantecircuits/altruist.git"
+  },
   "dependencies": {
     "@slack/client": "^3.7.0",
     "body-parser": "^1.15.2",

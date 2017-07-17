@@ -8,6 +8,8 @@ const cors = require('cors')
 const passport = require('passport')
 const actions = require('./lib/action')
 const realtime = require('./lib/realtime')
+const stateServe = require('./lib/state-serve')
+var packageInfos = require('../package.json')
 
 let init = (settings, cb) => {
   const router = express.Router()
@@ -42,16 +44,21 @@ let init = (settings, cb) => {
 
   app.use(`/api/${version}`, router)
 
+  stateServe.init(app, {
+    app: {
+      name: packageInfos.name,
+      version: packageInfos.version,
+      site: {
+        url: packageInfos.repository.url,
+        name: packageInfos.name
+      }
+    }
+  })
+
   router.get('/status', (req, res) => {
     res.send('up')
   })
 
-  app.get('/', (req, res) => {
-    res.send(`
-      <h1>Altruist</h1>
-      <p><small>Go to the <a href="https://github.com/soixantecircuits/altruist" target="_blank">Altruist GitHub</a> for more details.</small></p>
-    `)
-  })
   actions.init(app, router, settings)
   app.listen(settings.server.port, (err) => {
     realtime.init(settings)
