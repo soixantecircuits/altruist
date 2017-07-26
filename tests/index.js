@@ -9,6 +9,7 @@ const settings = require('../settings/settings.dev.json')
 const port = settings.server.port
 
 test.before('setup server', t => {
+  settings.verbose = false
   altruist.init(settings)
 })
 

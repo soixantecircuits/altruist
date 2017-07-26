@@ -4,6 +4,8 @@ const spacebroClient = require('spacebro-client')
 const request = require('request')
 
 let init = (settings) => {
+  const log = settings.verbose === null ? true : settings.verbose
+
   spacebroClient.connect(settings.service.spacebro.host, settings.service.spacebro.port, {
     clientName: settings.service.spacebro.clientName,
     channelName: settings.service.spacebro.channelName,
@@ -12,15 +14,15 @@ let init = (settings) => {
   })
 
   spacebroClient.on('connect', () => {
-    console.log(`spacebro: ${settings.service.spacebro.clientName} connected to ${settings.service.spacebro.host}:${settings.service.spacebro.port}#${settings.service.spacebro.channelName}`)
+    log && console.log(`spacebro: ${settings.service.spacebro.clientName} connected to ${settings.service.spacebro.host}:${settings.service.spacebro.port}#${settings.service.spacebro.channelName}`)
   })
 
   spacebroClient.on('new-member', (data) => {
-    console.log(`spacebro: ${data.member} has joined.`)
+    log && console.log(`spacebro: ${data.member} has joined.`)
   })
 
   spacebroClient.on('disconnect', () => {
-    console.error('spacebro: connection lost.')
+    log && console.error('spacebro: connection lost.')
   })
 
   if (settings.autoshare) {
@@ -36,7 +38,7 @@ let init = (settings) => {
     {form: {filename: media.file || today.getTime(), media: media.url || media.path}, json: true},
     (err, httpResponse, body) => {
       if (err) {
-        console.error(err)
+        log && console.error(err)
       } else {
         const meta = Object.assign({}, media.meta, {
           socialite: {
@@ -44,7 +46,7 @@ let init = (settings) => {
           }
         })
         media.meta = meta
-        console.log(media)
+        log && console.log(media)
         spacebroClient.emit(settings.service.spacebro.outputMessage, media)
         // Cant't update the media if we do not have its id in media-manager. This only works when catching media-to-db event.
         // spacebroClient.emit('media-update', media)

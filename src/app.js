@@ -18,7 +18,9 @@ let init = (settings) => {
   const multer = require('multer')
   const upload = multer({ storage: multer.memoryStorage() })
 
-  app.use(morgan('dev'))
+  const log = settings.verbose === null ? true : settings.verbose
+
+  log && app.use(morgan('dev'))
   app.use(cors())
   app.use(bodyparser.urlencoded({ extended: true, limit: '50mb' }))
   app.use(bodyparser.json({ limit: '50mb' }))
@@ -55,7 +57,7 @@ let init = (settings) => {
   actions.init(app, router, settings)
   app.listen(settings.server.port, () => {
     realtime.init(settings)
-    console.log(`altruist running on: http://localhost:${settings.server.port} with actions: [ ${Object.keys(settings.actions)} ]`)
+    log && console.log(`altruist running on: http://localhost:${settings.server.port} with actions: [ ${Object.keys(settings.actions)} ]`)
   })
   return app
 }

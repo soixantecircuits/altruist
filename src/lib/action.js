@@ -23,6 +23,7 @@ let getActionModule = (actionName) => {
 let init = (app, router, settings) => {
   const authRedirectURL = settings.authRedirectURL ? settings.authRedirectURL : '/authRedirect'
   const authRedirect = []
+  const log = settings.verbose === null ? true : settings.verbose
 
   for (let action in settings.actions) {
     getActionModule(action)
@@ -39,22 +40,22 @@ let init = (app, router, settings) => {
                 try {
                   response = JSON.parse(response)
                 } catch (err) {
-                  console.error(response)
+                  log && console.error(response)
                 }
               }
               res.json(response)
             } catch (err) {
-              console.error('can not parse response')
+              log && console.error('can not parse response')
             }
           })
           .catch(reason => {
-            console.error(`An error occured with ${action}`)
+            log && console.error(`An error occured with ${action}`)
             if (reason instanceof Error) {
               try {
                 reason = JSON.parse(reason.message)
               } catch (err) {
-                console.log('Can\'t parse JSON response, must be a string')
-                console.error(reason.message)
+                log && console.log('Can\'t parse JSON response, must be a string')
+                log && console.error(reason.message)
               }
             }
             res.status(500).send(reason)
@@ -62,7 +63,7 @@ let init = (app, router, settings) => {
       })
     })
     .catch(err => {
-      console.warn(err)
+      log && console.warn(err)
     })
   }
 
