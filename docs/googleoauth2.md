@@ -2,7 +2,7 @@
 
 To be able to use Google's Oauth2 authentication and use altruist's actions like `youtube` or `googledrive`, you will need to create a Google API Console project.
 
-Go to [Google API Console](https://console.developers.google.com/) and create a new project.
+Go to [Google API Console](https://console.developers.google.com/) and [create a new project](https://console.developers.google.com/projectselector/apis/credentials).
 When your project is created, click on `Credentials` and select OAuth consent screen. You'll have to provide an email adress and a product name.
 
 After that, create new credentials for this project and select `OAuth client ID` and `Web application`.
