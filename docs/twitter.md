@@ -21,23 +21,20 @@ In your `settings.json` file, you'll need to add the following configuration obj
 curl -X POST -H "Content-Type: application/json" -d '{
   "message": "Hello Twitter !",
   "media": "/path/to/media"
-}' "http://localhost:6060/api/v1/actions/twitter"
+}' "http://localhost:36500/api/v1/actions/twitter"
 ```
 
 ## Options
 
+_*Only one media is sent per request for the moment*_
+
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**message**|`string`|&minus;|new tweet message|
-|**media**|`string`|&minus;|image or video|
-
-The 'media' option must be one of the following:
- * path to a file on your system (example: `/path/to/image.png`)
- * url (example: `http://some_site.com/image.png`)
- * base64 encoded string
+|**message**|`string`|_if no media_|new tweet message|
+|**media**|`array`|_if no message_|array with the image or video to upload (more infos on sending media [here](/postRequest.md))|
 
 Supported formats are **JPG**, **PNG**, **GIF**, **WEBP** (for images) and **MP4** (for videos)
 
-You can also set `message` and/or `media` into your config directly, if they don't need to be set by the user.
+You can also set `message` into your config directly, if they don't need to be set by the user.
 
 You **have** to provide at least one of the two options (be it in config or in request).

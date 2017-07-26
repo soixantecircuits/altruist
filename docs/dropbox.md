@@ -16,7 +16,8 @@ In your `settings.json` file, you'll need to add the following configuration obj
     "callbackURL": "/login/dropbox/return", // optional, this is the default value
     "failureURL": "/?failure=dropbox", // optional, this is the default value
     "successURL": "/?success=dropbox", // optional, this is the default value
-    "uploadDirectoryPath": "" // optional
+    "uploadDirectoryPath": "", // optional
+    "autoRename": true // optional
   }
 }
 ```
@@ -29,17 +30,18 @@ When the application is authorized, you can upload files to your dropbox using f
 `POST /api/v1/actions/dropbox`
 
 ```cURL
-curl -X POST -H "Content-Type: multipart/form-data; boundary=----xxxxxxxxxxxxxxxxxxxxx"
+curl -X POST -H "Content-Type: multipart/form-data"
  -F "media=@your.file"
  -F "filename=uploadedFile.name"
  -F "uploadDirectoryPath=/targetDirectory/"
- "http://localhost:6060/api/v1/actions/dropbox"
+ "http://localhost:36500/api/v1/actions/dropbox"
 ```
 
 ## Options
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**media**|`file`|&times;|the file to upload|
-|**filename**|`string`|&minus;|a new name to assign to the uploaded file|
-|**uploadDirectoryPath**|`string`|&minus;|the path to the directory to upload to|
+|**media**|`array`|&times;|array with the files to upload (more infos on sending media [here](/postRequest.md))|
+|**filename**|`string`|&minus;|a new name to assign to the uploaded file (only use it when uploading a single file)|
+|**path**|`string`|&minus;|the path to the directory to upload to|
+|**autoRename**|`boolean`|&minus;|should dropbox rename your file in case of conflict|

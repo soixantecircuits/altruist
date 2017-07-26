@@ -8,11 +8,19 @@ const altruist = require('../')
 const settings = require('../settings/settings.dev.json')
 const port = settings.server.port
 
-test.before('setup server', t => {
+test.before(t => {
   settings.verbose = false
   altruist.init(settings)
+  console.log(`Starting server on port ${port}...`)
+  console.log('Waiting for all actions to set up...\n')
 })
-
+test.before(async t => {
+  await new Promise(resolve => setTimeout(() => {
+    console.log('Everything is on track.\n')
+    t.pass()
+    resolve()
+  }, 1000))
+})
 test('server is running', t => {
   return axios.get(`http://127.0.0.1:${port}`)
   .then((res) => {
@@ -25,10 +33,10 @@ test('actions routes are availables', t => {
     .map(action =>
       axios.post(`http://127.0.0.1:${port}/api/v1/actions/${action}`)
       .then((res) => {
-        t.not(res.status, 404)
+        t.not(res.status, 404, action)
       })
       .catch((err) => {
-        t.not(err.response.status, 404)
+        t.not(err.response.status, 404, action)
       })
     )
   return axios.all(promises)
@@ -41,17 +49,16 @@ test('authentication routes are availables', t => {
       .map(redirect =>
         axios.get(`http://127.0.0.1:${port}${redirect.URL}`)
         .then((res) => {
-          t.not(res.status, 404)
+          t.not(res.status, 404, redirect.name)
         })
         .catch((err) => {
-          !err.response && t.fail()
-          err.response && t.not(err.response.status, 404)
+          !err.response && t.fail(redirect.name)
+          err.response && t.not(err.response.status, 404, redirect.name)
         })
       )
       return axios.all(promises)
     })
     .catch((err) => {
-      console.log(err)
-      t.fail()
+      t.fail(`error with route http://127.0.0.1:${port}${settings.authRedirectURL}`)
     })
 })

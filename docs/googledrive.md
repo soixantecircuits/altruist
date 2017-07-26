@@ -30,15 +30,13 @@ When logged in, you can upload files using form-data :
 ```cURL
 curl -X POST -H "Content-Type: multipart/form-data; boundary=----xxxxxxxxxxxxxxxxxxxxxxxx"
 -F "media=@your_file"
--F "filename=your_file_name"
 -F "uploadDirectoryID=xxxxxxxxxxxxxxxx"
-"http://localhost:6060/api/v1/actions/googledrive"
+"http://localhost:36500/api/v1/actions/googledrive"
 ```
 
 #### Options
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**media**|`file`|&times;|file to upload (the name doesn't matter)|
-|**filename**|`string`|&minus;|name to assign to the uploaded file|
+|**media**|`array`|&times;|array with the file to upload (more infos on sending media [here](/postRequest.md))|
 |**uploadDirectoryID**|`string`|&minus;|ID of the directory to upload to|

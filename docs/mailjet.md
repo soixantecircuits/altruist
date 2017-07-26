@@ -31,7 +31,7 @@ curl -X POST -H "Content-Type: multipart/form-data; boundary=----xxxxxxxxxxxxxxx
 -F "subject=Sending attached file to multiple adresses"
 -F "textPart=This is the simple text part."
 -F "htmlPart=<h3>This is the html part</h3>"
-"http://localhost:6060/api/v1/actions/mailjet"
+"http://localhost:36500/api/v1/actions/mailjet"
 ```
 
 ```cURL
@@ -48,7 +48,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 	"vars": {
 		"foo": "this is a variable for the template"
 	}
-}' "http://localhost:6060/api/v1/actions/mailjet"
+}' "http://localhost:36500/api/v1/actions/mailjet"
 ```
 
 #### Options
@@ -62,4 +62,4 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |**htmlPart**|`string`|_if no textPart and no templateID_|html version of the mail|
 |**templateID**|`string`|if no textPart and no htmlPart|id of the template to use|
 |**vars**|`string`|&minus;|object containing variables for the template(JSON formatted string)|
-|**media**|`file`|&minus;|file to attach to your mail. name doesn't matter. multiple files possible|
+|**media**|`array`|&minus;|array with the files to attach to your mail (more infos on sending media [here](/postRequest.md))|

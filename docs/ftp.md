@@ -23,7 +23,7 @@ Set "ssh" to `true` if you want to use SFTP instead
 curl -X POST -H "Content-Type: application/json" -d '{
   "source": "/path/to/local/file",
   "destination": "/path/to/remote/file"
-}' "http://localhost:6060/api/v1/actions/ftp"
+}' "http://localhost:36500/api/v1/actions/ftp"
 ```
 
 #### Options

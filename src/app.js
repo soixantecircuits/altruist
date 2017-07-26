@@ -9,7 +9,7 @@ const passport = require('passport')
 const actions = require('./lib/action')
 const realtime = require('./lib/realtime')
 
-let init = (settings) => {
+let init = (settings, cb) => {
   const router = express.Router()
   const app = express()
 
@@ -30,11 +30,11 @@ let init = (settings) => {
   app.use(passport.initialize())
   app.use(passport.session())
 
-  passport.serializeUser(function (user, cb) {
-    cb(null, user)
+  passport.serializeUser(function (user, callback) {
+    callback(null, user)
   })
-  passport.deserializeUser(function (obj, cb) {
-    cb(null, obj)
+  passport.deserializeUser(function (obj, callback) {
+    callback(null, obj)
   })
 
   app.use(`/api/${version}`, router)
@@ -54,10 +54,16 @@ let init = (settings) => {
       <p><small>Go to the <a href="https://github.com/soixantecircuits/altruist" target="_blank">Altruist GitHub</a> for more details.</small></p>
     `)
   })
+
   actions.init(app, router, settings)
-  app.listen(settings.server.port, () => {
+  app.listen(settings.server.port, (err) => {
     realtime.init(settings)
     log && console.log(`altruist running on: http://localhost:${settings.server.port} with actions: [ ${Object.keys(settings.actions)} ]`)
+    if (!err) {
+      cb && cb(null, {port: settings.server.port})
+    } else {
+      cb && cb(err)
+    }
   })
   return app
 }

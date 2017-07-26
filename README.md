@@ -40,43 +40,50 @@ then, provide a settings file:
 
 ```sh
 # get the template
-$ wget https://raw.githubusercontent.com/soixantecircuits/altruist/master/settings/settings.example.json
+$ wget https://raw.githubusercontent.com/soixantecircuits/altruist/master/settings/settings.default.json
 # rename it
-$ mv settings.example.json settings.json
-# profit
+$ mv settings.default.json settings.json
+# start altruist web server
 $ altruist --settings settings.json
 ```
 
 For details about what to write in the settings file, See the [Actions](#list-of-available-actions) section below.
 
-Then, from a server, an app or POSTMAN you can post to:
-
-```
-POST http://localhost:6060/api/v1/actions/{ACTION_NAME}
-```
-
 ## 👋 Usage
 
+To share with a service, you need to make a request to an action linked to this service.
 One action = one service
+
+When sending a request to an action, you can send different parameters to change the content you want to share and how you want to share it.
+Those parameters are called `options` and can be sent with any request. The way to send them changes a little depending on how you send your request.
+
+There are two ways to send your request:
+- Sending an HTTP POST request to the route of the action you want to run. More explanation [here](docs/postRequest.md)
+- Sending a [spacebro](https://github.com/spacebro/spacebro-client) event with media object. More explanation [here](docs/spacebroRequest.md)
+
+Some of the content you send with the options can also be set in your settings.
+This can be useful when you know you will always send the same content and don't want to bother sending the same options with your requests over and over.
+To know what you can put in your settings and what you can send in the options for an action, check the documentation for it below.
 
 ##### List of available actions:
 
-* [mailchimp](/docs/mailchimp.md)
-* [mandrill](/docs/mandrill.md)
-* [facebook](/docs/facebook.md)
-* [twitter](/docs/twitter.md)
-* [slack](/docs/slack.md)
-* [dropbox](/docs/dropbox.md)
-* [google drive](/docs/googledrive.md)
-* [youtube](/docs/youtube.md)
-* [instagram](/docs/instagram.md)
-* [mailjet](/docs/mailjet.md)
-* [smtp](/docs/smtp.md)
-* [scp](/docs/scp.md)
-* [ftp](/docs/ftp.md)
 * [1000mercis](/docs/1000mercis.md)
-* [socialite](/docs/socialite.md)
+* [dropbox](/docs/dropbox.md)
+* [facebook](/docs/facebook.md)
+* [ftp](/docs/ftp.md)
+* [google drive](/docs/googledrive.md)
+* [instagram](/docs/instagram.md)
+* [mailchimp](/docs/mailchimp.md)
+* [mailjet](/docs/mailjet.md)
+* [mandrill](/docs/mandrill.md)
 * [print](/docs/print.md)
+* [scp](/docs/scp.md)
+* [slack](/docs/slack.md)
+* [smtp](/docs/smtp.md)
+* [socialite](/docs/socialite.md)
+* [twitter](/docs/twitter.md)
+* [youtube](/docs/youtube.md)
+
 
 ⚠️  *Some actions may require that you log in before using them. You can get a list of those actions with their login url by sending a GET request to the url matching `authRedirect` in the settings file (`/authRedirect` by default).*
 

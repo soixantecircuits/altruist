@@ -38,11 +38,11 @@ curl -X POST -H "Content-Type: application/json" -d '{
       }],
       "media": [{
         "name": 'media.ext',
-        "content": "/path/to/my/media.ext"
+        "path": "/path/to/my/media.ext"
       }]
     }]
   }
-}' "http://localhost:7070/api/v1/actions/mandrill"
+}' "http://localhost:36500/api/v1/actions/mandrill"
 ```
 
 ```html
@@ -64,18 +64,15 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 #### Options
 
-*note: you can only attach one media*
-
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**email**|`string`|`array`|&times;|address(es) that will receive the email|
+|**email**|`string` or `array`|&times;|address(es) that will receive the email|
+|**mergeLanguage**|`string`|&minus;|string stating which merge language should be used for the template: `mailchimp` or `handlebars`|
 |**vars.globals**|`array`|&minus;|array of object defining your Mandrill `merge_vars` (with key = name and value = content)|
 |**vars.targeted**|`array`|&minus;||
 |**vars.targeted.target**|`string`|&minus;|address targeted|
 |**vars.targeted.vars**|`array`|&minus;|create/override `merge_vars` for the concerned address. Works the same as `vars.global`|
-|**media**|`Object`|&minus;||
-|**media.name**|`string`|&minus;|name of the media that you will retrieve via `cid:name`|
-|**media.content**|`string`|&minus;|Can be either a path the media (in the filesystem or via http) or straight base64 datas|
+|**media**|`array`|&minus;|array with the files to attach to your mail (more infos on sending media [here](/postRequest.md))|
 
 ##### Examples
 
@@ -85,8 +82,8 @@ let data = {
   email: 'user@site.com',
   vars: { globals: [{ share: 'http://path.to/url/of/user/page' }] }
   media: [
-    { name: 'video', content: '/path/to/video.mp4' },
-    { name: 'IMAGEID', content: '/path/to.thumbnail' }
+    { name: 'video', path: '/path/to/video.mp4' },
+    { name: 'IMAGEID', path: '/path/to.thumbnail' }
   ]
 }
 ```

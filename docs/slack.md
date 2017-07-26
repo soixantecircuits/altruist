@@ -1,7 +1,8 @@
 # Slack
 
 ## Setup
-
+First get your personal token [here](https://api.slack.com/tokens).  
+  
 In your `settings.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```json
@@ -19,7 +20,7 @@ In your `settings.json` file, you'll need to add the following configuration obj
 curl -X POST -H "Content-Type: application/json" -d '{
   "caption": "hello!",
   "media": "/path/to/my/img.jpg"
-}' "http://localhost:6060/api/v1/actions/slack"
+}' "http://localhost:36500/api/v1/actions/slack"
 ```
 
 ## Options
@@ -27,7 +28,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 |name|type|required|description|
 |:---|:---|:---:|:---|
 |**caption/message**|`string`|&minus;|text message. Required if no media sent|
-|**media**|`string`|&minus;|image or video|
+|**media**|`array`|&minus;|array with the image or video to upload (only works with files with a local path specified) (more infos on sending media [here](/postRequest.md))|
 
 The 'media' option must be one of the following:
  * path to a file on your system (example: `/path/to/image.png`)
