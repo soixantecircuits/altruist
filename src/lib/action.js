@@ -23,7 +23,7 @@ let getActionModule = (actionName) => {
 let init = (app, router, settings) => {
   const authRedirectURL = settings.authRedirectURL ? settings.authRedirectURL : '/authRedirect'
   const authRedirect = []
-  const log = settings.verbose === null ? true : settings.verbose
+  const log = settings.verbose === undefined ? true : settings.verbose
 
   for (let action in settings.actions) {
     getActionModule(action)

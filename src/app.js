@@ -18,7 +18,7 @@ let init = (settings) => {
   const multer = require('multer')
   const upload = multer({ storage: multer.memoryStorage() })
 
-  const log = settings.verbose === null ? true : settings.verbose
+  const log = settings.verbose === undefined ? true : settings.verbose
 
   log && app.use(morgan('dev'))
   app.use(cors())

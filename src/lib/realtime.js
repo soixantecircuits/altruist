@@ -4,7 +4,7 @@ const spacebroClient = require('spacebro-client')
 const request = require('request')
 
 let init = (settings) => {
-  const log = settings.verbose === null ? true : settings.verbose
+  const log = settings.verbose === undefined ? true : settings.verbose
 
   spacebroClient.connect(settings.service.spacebro.host, settings.service.spacebro.port, {
     clientName: settings.service.spacebro.clientName,
