@@ -6,10 +6,12 @@ const axios = require('axios')
 
 const altruist = require('../')
 const settings = require('../settings/settings.dev.json')
+const stubs = require('./stubs')
+
 const port = settings.server.port
 
 test.before(t => {
-  settings.verbose = false
+  // settings.verbose = false
   altruist.init(settings)
   console.log(`Starting server on port ${port}...`)
   console.log('Waiting for all actions to set up...\n')
@@ -58,7 +60,20 @@ test('authentication routes are availables', t => {
       )
       return axios.all(promises)
     })
-    .catch((err) => {
+    .catch(() => {
       t.fail(`error with route http://127.0.0.1:${port}${settings.authRedirectURL}`)
     })
+})
+test('actions routes are availables', t => {
+  const promises = Object.keys(settings.actions)
+    .map(action =>
+      axios.post(`http://127.0.0.1:${port}/api/v1/actions/${action}`, stubs[action])
+      .then((res) => {
+        t.is(res.data.code, 200, action)
+      })
+      .catch(() => {
+        t.fail(action)
+      })
+    )
+  return axios.all(promises)
 })
