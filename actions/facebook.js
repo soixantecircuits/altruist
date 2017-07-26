@@ -2,8 +2,10 @@
 
 const passport = require('passport')
 const FacebookStrategy = require('passport-facebook').Strategy
-var fb = new require('fb')
-const config = require('../src/lib/config')
+var FB = require('fb')
+var fb = new FB.Facebook()
+fb.options({ version: 'v2.8' })
+const settings = require('../src/lib/settings')
 const localStorage = require('../src/lib/localstorage')
 
 let facebookSession = JSON.parse(localStorage.getItem('facebook-session')) || {}
@@ -11,12 +13,12 @@ let userProfile = JSON.parse(localStorage.getItem('user-profile')) || {}
 let userAccounts = JSON.parse(localStorage.getItem('user-accounts')) || []
 let currentID = facebookSession.currentID
 
-const callbackURL = config.actions.facebook.callbackURL || '/login/facebook'
-const loginURL = config.actions.facebook.loginURL || '/login/facebook/return'
-const failureURL = config.actions.facebook.failureURL || '/?failure=facebook'
-const successURL = config.actions.facebook.successURL || '/?success=facebook'
-const profileURL = config.actions.facebook.profileURL || '/profile/facebook'
-const accountsURL = config.actions.facebook.accountsURL || '/accounts/facebook'
+const callbackURL = settings.actions.facebook.callbackURL || '/login/facebook'
+const loginURL = settings.actions.facebook.loginURL || '/login/facebook/return'
+const failureURL = settings.actions.facebook.failureURL || '/?failure=facebook'
+const successURL = settings.actions.facebook.successURL || '/?success=facebook'
+const profileURL = settings.actions.facebook.profileURL || '/profile/facebook'
+const accountsURL = settings.actions.facebook.accountsURL || '/accounts/facebook'
 
 function saveSession () {
   localStorage.setItem('facebook-session', JSON.stringify(facebookSession))
@@ -86,7 +88,7 @@ function getMediaType (media) {
   }
 }
 
-function handlePostRequest ({message, media}, resolve, reject) {
+function handlePostRequest ({message, link, media}, resolve, reject) {
   const isMedia = (media)
   const mediaType = getMediaType(media)
   const datas = {}
@@ -113,9 +115,13 @@ function handlePostRequest ({message, media}, resolve, reject) {
     }
   }
 
+  if (link) {
+    datas.link = link
+  }
+
   fb.api(`/${currentID}/${isMedia ? mediaType : 'feed'}`, 'post', datas, (res) => {
     if (!res || res.error) {
-      reject({ error: res.error.code, details: res.error.message })
+      reject(new Error(JSON.stringify({ err: res.error.code, details: res.error.message })))
     }
     resolve(res)
   })
@@ -123,25 +129,26 @@ function handlePostRequest ({message, media}, resolve, reject) {
 
 function auth (app) {
   passport.use(new FacebookStrategy({
-    clientID: config.actions.facebook.appID,
-    clientSecret: config.actions.facebook.appSecret,
-  callbackURL}, function (accessToken, refreshToken, profile, done) {
-    storeUserAccessToken(accessToken)
-    storeUserProfile(profile)
-    getPagesList(() => {
-      done(null, profile)
-    })
-  }))
+    clientID: settings.actions.facebook.appID,
+    clientSecret: settings.actions.facebook.appSecret,
+    callbackURL}, function (accessToken, refreshToken, profile, done) {
+      storeUserAccessToken(accessToken)
+      storeUserProfile(profile)
+      getPagesList(() => {
+        done(null, profile)
+      })
+    }))
 
   app.get(loginURL, passport.authenticate('facebook', {
+    authType: 'reauthenticate',
     scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions']
   }))
   app.get(callbackURL, passport.authenticate('facebook', {
     failureRedirect: failureURL
   }), (req, res) => {
     storeUserProfile(req.user)
-    if (config.actions.facebook.pageID) {
-      setID(config.actions.facebook.pageID)
+    if (settings.actions.facebook.pageID) {
+      setID(settings.actions.facebook.pageID)
     } else {
       setID(req.user.id)
     }
@@ -169,25 +176,26 @@ function run (options, request) {
   return new Promise((resolve, reject) => {
     const message = (options.message || options.caption)
       ? options.message || options.caption
-      : config.actions.facebook.message || ''
+      : settings.actions.facebook.message || ''
     const media = options.media
       ? options.media
-      : config.actions.facebook.media || ''
+      : settings.actions.facebook.media || ''
+    const link = options.link ? options.link : settings.actions.facebook.link
 
     if (!facebookSession || !facebookSession.userAccessToken) {
-      return reject({
-        error: 'invalid TOKEN',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid TOKEN',
         details: `No facebook user access token found in local storage. Please log in at ${loginURL}.`
-      })
-    } else if ((!message) && (!media) && !request.file) {
-      return reject({
-        error: 'invalid argument',
+      })))
+    } else if ((!message) && (!media) && (!request || !request.file) && link) {
+      return reject(new Error(JSON.stringify({
+        err: 'invalid argument',
         details: 'No message or media in facebook POST request.'
-      })
+      })))
     }
 
     // If multer detects a file upload, get the first file and set options to upload to facebook
-    if (request.files && request.files[0]) {
+    if (request && request.files && request.files[0]) {
       options.media = {
         isBinary: true,
         filename: request.files[0].originalname,
@@ -197,7 +205,7 @@ function run (options, request) {
     }
 
     setID(facebookSession.currentID)
-    handlePostRequest({ message, media}, resolve, reject)
+    handlePostRequest({message, link, media}, resolve, reject)
   })
 }
 
@@ -205,4 +213,5 @@ module.exports = {
   loginURL,
   auth,
   addRoutes,
-run}
+  run
+}

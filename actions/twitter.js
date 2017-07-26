@@ -1,14 +1,14 @@
 'use strict'
 
 const Twit = require('twit')
-const config = require('../src/lib/config')
+const settings = require('../src/lib/settings').actions.twitter
 const med = require('media-helper')
 
 const T = new Twit({
-  consumer_key: config.actions.twitter.consumer_key,
-  consumer_secret: config.actions.twitter.consumer_secret,
-  access_token: config.actions.twitter.access_token,
-  access_token_secret: config.actions.twitter.access_token_secret,
+  consumer_key: settings.consumer_key,
+  consumer_secret: settings.consumer_secret,
+  access_token: settings.access_token,
+  access_token_secret: settings.access_token_secret,
   timeout_ms: 60 * 1000
 })
 
@@ -18,8 +18,10 @@ function updateStatus (message, mediaIdStr) {
       { status: message, media_ids: [mediaIdStr] },
       function (err, data, response) {
         if (!err) {
-          resolve('Success')
-        } else { reject({ error: err.message }) }
+          resolve(JSON.stringify(data))
+        } else {
+          reject(new Error(JSON.stringify({ err: err.message })))
+        }
       })
   })
 }
@@ -32,9 +34,9 @@ function uploadImage (message, mediaData) {
         if (!err) {
           updateStatus(message, data.media_id_string)
             .then(response => resolve(response))
-            .catch(error => reject(error))
+            .catch(error => reject(new Error(JSON.stringify(error))))
         } else {
-          reject({ error: err.message })
+          reject(new Error(JSON.stringify({ error: err.message })))
         }
       })
   })
@@ -48,65 +50,73 @@ function uploadVideo (message, media) {
         if (!err) {
           updateStatus(message, data.media_id_string)
             .then(response => resolve(response))
-            .catch(error => reject(error))
-        } else { reject({ error: err.message }) }
+            .catch(error => reject(new Error(JSON.stringify(error))))
+        } else {
+          reject(new Error(JSON.stringify({ err: err.message })))
+        }
       })
   })
 }
 
 module.exports = {
-  run: (options) => {
+  run: (options, req) => {
     return new Promise((resolve, reject) => {
-      const message = (options.message || options.caption)
-        ? options.message || options.caption
-        : config.actions.twitter.message || ''
-      const media = options.media
-        ? options.media
-        : config.actions.twitter.media || ''
+      const tweet = Object.assign({}, settings, options)
+      const message = tweet.message
+      var media = tweet.media
+
+      if (media === undefined && (req && req.files)) {
+        media = req.files[0].buffer.toString('base64')
+      }
 
       // Supported formats: JPG, PNG, GIF, WEBP, MP4
       if (media) {
         if (med.isBase64(media)) {
           uploadImage(message, media)
             .then(response => resolve(response))
-            .catch(error => reject(error))
+            .catch(error => reject(new Error(JSON.stringify(error))))
         } else if (med.isFile(media)) {
           med.getMimeType(media)
             .then(type => {
               if (type === 'video/mp4') {
                 uploadVideo(message, media)
                   .then(response => resolve(response))
-                  .catch(error => reject(error))
+                  .catch(error => reject(new Error(JSON.stringify(error))))
               } else {
                 med.fileToBase64(media)
                   .then(data => {
                     uploadImage(message, data)
                       .then(response => resolve(response))
-                      .catch(error => reject(error))
+                      .catch(error => reject(new Error(JSON.stringify(error))))
                   })
-                  .catch(error => reject(error))
+                  .catch(error => reject(new Error(JSON.stringify(error))))
               }
             })
-            .catch(error => reject(error))
+            .catch(error => reject(new Error(error)))
         } else if (med.isURL(media)) {
           med.urlToBase64(media)
             .then(data => {
               uploadImage(message, data)
                 .then(response => resolve(response))
-                .catch(error => reject(error))
+                .catch(error => reject(new Error(JSON.stringify(error))))
             })
-            .catch(error => reject(error))
+            .catch(error => reject(new Error(JSON.stringify(error))))
+        } else {
+          reject(new Error(JSON.stringify({
+            err: 'internal error',
+            details: "Could not determine media's type"
+          })))
         }
       } else if (message) {
         // Text-only tweet
         updateStatus(message)
           .then(response => resolve(response))
-          .catch(error => reject(error))
+          .catch(error => reject(new Error(JSON.stringify(error))))
       } else {
-        reject({
-          error: 'invalid request',
+        reject(new Error(JSON.stringify({
+          err: 'invalid request',
           details: 'Error: No message or media in request'
-        })
+        })))
       }
     })
   }

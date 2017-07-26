@@ -1,44 +1,44 @@
 'use strict'
 
 const nodemailer = require('nodemailer')
-const config = require('../src/lib/config')
+const settings = require('../src/lib/settings')
 
 function run (options, request) {
   return new Promise((resolve, reject) => {
-    const user = options.user || config.actions.smtp.user
-    const password = options.password || config.actions.smtp.password
-    const smtpServer = options.smtpServer || config.actions.smtp.smtpServer
+    const user = options.user || settings.actions.smtp.user
+    const password = options.password || settings.actions.smtp.password
+    const smtpServer = options.smtpServer || settings.actions.smtp.smtpServer
 
     try {
       var transporter = nodemailer.createTransport(`smtps://${user}:${password}@${smtpServer}`)
-    } catch (e) {
-      return reject(e)
+    } catch (err) {
+      return reject(new Error(JSON.stringify(err)))
     }
 
-    if ((!options.from || options.from === '') && (!config.actions.smtp.from || config.actions.smtp.from === '')) {
-      return reject({
-        error: 'invalid request',
+    if ((!options.from || options.from === '') && (!settings.actions.smtp.from || settings.actions.smtp.from === '')) {
+      return reject(new Error(JSON.stringify({
+        err: 'invalid request',
         details: 'Parameter "from" is missing.'
-      })
+      })))
     }
     if (!options.to || options.to === '') {
-      return reject({
-        error: 'invalid request',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid request',
         details: 'Parameter "to" is missing.'
-      })
+      })))
     }
 
     const mailData = options
-    mailData.from = options.from || config.actions.smtp.from
+    mailData.from = options.from || settings.actions.smtp.from
     if (typeof mailData.attachments === 'string') {
       try {
         mailData.attachments = JSON.parse(mailData.attachments)
       } catch (err) {
-        return reject(err)
+        return reject(new Error(JSON.stringify(err)))
       }
     }
 
-    if (request.files && request.files.length > 0) {
+    if (request && request.files && request.files.length > 0) {
       mailData.attachments = mailData.attachments || []
       for (let i = 0; i < request.files.length; ++i) {
         mailData.attachments.push({
@@ -51,7 +51,7 @@ function run (options, request) {
 
     transporter.sendMail(mailData, function (err, res) {
       if (err) {
-        return reject(err)
+        return reject(new Error(JSON.stringify(err)))
       }
       return resolve(res)
     })
@@ -59,4 +59,5 @@ function run (options, request) {
 }
 
 module.exports = {
-run}
+  run
+}

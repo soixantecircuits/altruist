@@ -5,7 +5,7 @@
 You will need a Google API Console project to authenticate an account via OAuth2. If you do not have one set up, you can follow the instructions [here](/docs/googleoauth2.md).
 You need to activate Google+ API and Youtube Data API v3 for your application.
 
-In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+In your `settings.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```json
 "actions": {

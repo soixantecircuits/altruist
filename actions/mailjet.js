@@ -1,39 +1,40 @@
 'use strict'
 
-const config = require('../src/lib/config')
-const mediaUtils = require('../src/lib/media')
-const mailjet = require('node-mailjet').connect(config.actions.mailjet.apiKey, config.actions.mailjet.secretKey)
+const settings = require('../src/lib/settings')
+const mediaUtils = require('media-helper')
+const mailjet = require('node-mailjet').connect(settings.actions.mailjet.apiKey, settings.actions.mailjet.secretKey)
 
 function run (options, request) {
   return new Promise((resolve, reject) => {
-    if (!options.fromEmail && !config.actions.mailjet.fromEmail) {
-      reject({
-        error: 'missing parameter',
+    if (!options.fromEmail && !settings.actions.mailjet.fromEmail) {
+      return reject(new Error(JSON.stringify({
+        err: 'missing parameter',
         details: 'The "fromEmail" parameter is missing in the request.'
-      })
+      })))
     }
     if (!options.recipients) {
-      reject({
-        error: 'missing parameter',
+      return reject(new Error(JSON.stringify({
+        err: 'missing parameter',
         details: 'The "recipients" parameter is missing in the request.'
-      })
+      })))
     }
     if (!options.subject) {
-      reject({
-        error: 'missing parameter',
+      return reject(new Error(JSON.stringify({
+        err: 'missing parameter',
         details: 'The "subject" parameter is missing in the request.'
-      })
+      })))
     }
-    if (!options.textPart && !options.htmlPart && !options.templateID) {
-      reject({
-        error: 'missing parameter',
+    if (!options.textPart && !options.htmlPart && !options.templateID && !settings.actions.mailjet.templateID) {
+      return reject(new Error(JSON.stringify({
+        err: 'missing parameter',
         details: 'No "textPart" or "htmlPart" or "templateID" parameter was found in the request. Provide at least one of those parameters.'
-      })
+      })))
     }
 
-    let fromEmail = options.fromEmail || config.actions.mailjet.fromEmail
+    let fromEmail = options.fromEmail || settings.actions.mailjet.fromEmail
+    let templateID = options.templateID || settings.actions.mailjet.templateID
     let medias
-    if (request.files && request.files.length > 0) {
+    if (request && request.files && request.files.length > 0) {
       medias = []
       for (let i = 0; i < request.files.length; ++i) {
         medias[i] = {
@@ -46,12 +47,12 @@ function run (options, request) {
 
     let mailProperties = {
       'FromEmail': fromEmail,
-      'Recipients': JSON.parse(options.recipients),
+      'Recipients': options.recipients,
       'Subject': options.subject,
       'Text-part': options.textPart,
       'Html-part': options.htmlPart,
-      'MJ-TemplateID': options.templateID,
-      'MJ-TemplateLanguage': options.templateID ? true : false,
+      'MJ-TemplateID': templateID,
+      'MJ-TemplateLanguage': !!templateID,
       'Vars': options.vars ? JSON.parse(options.vars) : options.vars,
       'Attachments': medias
     }
@@ -62,10 +63,11 @@ function run (options, request) {
         return resolve(result)
       })
       .catch((error) => {
-        return reject(error)
+        return reject(new Error(JSON.stringify(error)))
       })
   })
 }
 
 module.exports = {
-run}
+  run
+}

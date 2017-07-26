@@ -3,7 +3,7 @@
 const passport = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 
-const config = require('../src/lib/config')
+const settings = require('../src/lib/settings')
 const localStorage = require('../src/lib/localstorage')
 const google = require('googleapis')
 
@@ -12,21 +12,21 @@ const magic = new mmmagic.Magic(mmmagic.MAGIC_MIME_TYPE)
 
 var driveSession = JSON.parse(localStorage.getItem('googledrive-session')) || { accessToken: '', refreshToken: '' }
 var userProfile = JSON.parse(localStorage.getItem('googledrive-profile')) || {}
-var uploadDirectoryID = config.actions.googledrive.uploadDirectoryID ? config.actions.googledrive.uploadDirectoryID : ''
+var uploadDirectoryID = settings.actions.googledrive.uploadDirectoryID ? settings.actions.googledrive.uploadDirectoryID : ''
 
-const loginURL = config.actions.googledrive.loginURL || '/login/gdrive'
-const callbackURL = config.actions.googledrive.callbackURL || '/login/gdrive/return'
-const failureURL = config.actions.googledrive.failureURL || '/?failure=drive'
-const successURL = config.actions.googledrive.successURL || '/?success=drive'
-const profileURL = config.actions.googledrive.profileURL || '/profile/gdrive'
+const loginURL = settings.actions.googledrive.loginURL || '/login/gdrive'
+const callbackURL = settings.actions.googledrive.callbackURL || '/login/gdrive/return'
+const failureURL = settings.actions.googledrive.failureURL || '/?failure=drive'
+const successURL = settings.actions.googledrive.successURL || '/?success=drive'
+const profileURL = settings.actions.googledrive.profileURL || '/profile/gdrive'
 
 var OAuth2 = google.auth.OAuth2
 var googleAuth = new OAuth2(
-  config.actions.googledrive.clientID,
-  config.actions.googledrive.clientSecret,
-  config.actions.googledrive.callbackURL
+  settings.actions.googledrive.clientID,
+  settings.actions.googledrive.clientSecret,
+  settings.actions.googledrive.callbackURL
 )
-var drive = google.drive({ version: 'v3', auth: googleAuth})
+var drive = google.drive({ version: 'v3', auth: googleAuth })
 
 function storeTokens (atoken, rtoken) {
   driveSession.accessToken = atoken
@@ -45,7 +45,7 @@ function uploadFile (options, resolve, reject) {
     mimeType: options.media.contentType
   }
   if (uploadDirectoryID !== '') {
-    fileResource.parents = [ uploadDirectoryID ]
+    fileResource.parents = [uploadDirectoryID]
   }
 
   drive.files.create({
@@ -56,10 +56,10 @@ function uploadFile (options, resolve, reject) {
     }
   }, (error, result) => {
     if (error) {
-      reject({
+      reject(new Error(JSON.stringify({
         error: error.errors[0].reason,
         details: error.errors[0].message
-      })
+      })))
     } else {
       resolve(result)
     }
@@ -68,8 +68,8 @@ function uploadFile (options, resolve, reject) {
 
 function auth (app) {
   passport.use(new GoogleStrategy({
-    clientID: config.actions.googledrive.clientID,
-    clientSecret: config.actions.googledrive.clientSecret,
+    clientID: settings.actions.googledrive.clientID,
+    clientSecret: settings.actions.googledrive.clientSecret,
     callbackURL: callbackURL
   },
     function (token, refreshToken, profile, done) {
@@ -108,15 +108,15 @@ function addRoutes (app) {
 function run (options, request) {
   return new Promise((resolve, reject) => {
     if (!driveSession || !driveSession.accessToken || driveSession.accessToken === '') {
-      return reject({
-        error: 'invalid token',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid token',
         details: 'No access token has been found. Please log in.'
-      })
-    } else if (!request.files || !request.files[0]) {
-      return reject({
-        error: 'invalid request',
+      })))
+    } else if (!request || !request.files || !request.files[0]) {
+      return reject(new Error(JSON.stringify({
+        err: 'invalid request',
         details: 'No file has been found. Please upload a file with your request.'
-      })
+      })))
     }
 
     options.media = {
@@ -127,20 +127,20 @@ function run (options, request) {
 
     magic.detect(options.media.data, (err, res) => {
       if (err) {
-        return reject({
-          error: 'mmmagic error',
+        return reject(new Error(JSON.stringify({
+          err: 'mmmagic error',
           details: err
-        })
+        })))
       }
       options.media.mimeType = res
 
       googleAuth.setCredentials({ access_token: driveSession.accessToken, refresh_token: driveSession.refreshToken })
       googleAuth.refreshAccessToken((err, tokens) => {
         if (err) {
-          return reject({
-            error: 'OAuth error',
+          return reject(new Error(JSON.stringify({
+            err: 'OAuth error',
             details: err
-          })
+          })))
         }
 
         storeTokens(tokens.access_token, driveSession.refreshToken)
@@ -155,4 +155,5 @@ module.exports = {
   loginURL,
   auth,
   addRoutes,
-run}
+  run
+}

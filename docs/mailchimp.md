@@ -2,7 +2,7 @@
 
 ## Setup
 
-In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+In your `settings.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```js
 "actions": {

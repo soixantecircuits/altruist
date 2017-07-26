@@ -1,23 +1,23 @@
 const path = require('path')
 const Client = require('instagram-private-api').V1
 
-const config = require('../src/lib/config').actions.instagram
-const cookiePath = path.join('/tmp', config.account + '.json')
+const settings = require('../src/lib/settings').actions.instagram
+const cookiePath = path.join('/tmp', settings.account + '.json')
 
-var device = new Client.Device(config.account)
+var device = new Client.Device(settings.account)
 var storage = new Client.CookieFileStorage(cookiePath)
 
 module.exports = {
   run: (options) => {
     return new Promise((resolve, reject) => {
       if (options.media === undefined || options.media === '') {
-        return reject({
-          error: 'invalid request',
+        return reject(new Error(JSON.stringify({
+          err: 'invalid request',
           details: 'Error: No media in request'
-        })
+        })))
       }
 
-      Client.Session.create(device, storage, config.account, config.password)
+      Client.Session.create(device, storage, settings.account, settings.password)
         .then((session) => {
           Client.Upload.photo(session, options.media)
             .then((upload) => {
@@ -25,10 +25,10 @@ module.exports = {
               return Client.Media.configurePhoto(session, upload.params.uploadId, options.caption)
             })
             .then((response) => resolve('Success'))
-            .catch((err) => reject({
-              error: err.name,
+            .catch((err) => reject(new Error(JSON.stringify({
+              err: err.name,
               details: err.message
-            }))
+            }))))
         })
     })
   }

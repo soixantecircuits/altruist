@@ -3,9 +3,9 @@
 You will need a Dropbox app to authenticate an account via OAuth2.
 If you do not have one set up, go to [this link](https://www.dropbox.com/developers/apps/create) and create an app using the Dropbox API with the full Dropbox access.
 Then, in your app's settings, you will have to add the URI matching `callbackURL` to the `Redirect URIs` section.
-Finally, copy your app key and your app secret to your `config.json` file, and you're all set!
+Finally, copy your app key and your app secret to your `settings.json` file, and you're all set!
 
-In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+In your `settings.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```js
 "actions": {

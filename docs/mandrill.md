@@ -1,27 +1,32 @@
-# Mandrill transactionnal emails
+### Mandrill transactionnal emails
 
-## Setup
+### Setup
 
-In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+For mandrill template, the default language is **handlebars**, you should use `{{}}` instead of `*||*`.
+
+In your `settings.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```json
   "actions": {
     "mandrill": {
       "APIkey": "",
-      "from": "Altruist 🚀 <altruist@example.com>",
+      "from": {
+        "name": "Altruist 🚀",
+        "email": "altruist@shh.ac"
+      },
       "subject": "Altruist",
       "template": "altruist-test"
     }
   }
 ```
 
-## Usage
+#### Usage
 
 `POST /api/v1/actions/mandrill`
 
 ```cURL
 curl -X POST -H "Content-Type: application/json" -d '{
-  "email": ["mail@example.com", "johndoe@example.com"],
+  "email": "mail@example.com",
   "vars": {
     "globals": [{
       "name": "Altruist"
@@ -30,10 +35,14 @@ curl -X POST -H "Content-Type: application/json" -d '{
       "target": "mail@example.com",
       "vars": [{
         "hello": "Hello mail,"
+      }],
+      "media": [{
+        "name": 'media.ext',
+        "content": "/path/to/my/media.ext"
       }]
     }]
   }
-}' "http://localhost:6060/api/v1/actions/mandrill"
+}' "http://localhost:7070/api/v1/actions/mandrill"
 ```
 
 ```html
@@ -46,18 +55,39 @@ curl -X POST -H "Content-Type: application/json" -d '{
   <body>
     {{#if hello}}<h2>{{hello}}</h2>{{/if}}
     <p>{{#if name}}{{name}} says{{/if}} hello !</p>
+    <img src="{{cid:media}}" />
   </body>
 </html>
 ```
 
 &rarr; [more](https://mandrill.zendesk.com/hc/en-us/articles/205582537-Using-Handlebars-for-Dynamic-Content) about Mandrill variables
 
-## Options
+#### Options
+
+*note: you can only attach one media*
 
 |name|type|required|description|
 |:---|:---|:---:|:---|
-|**email**|`string|array`|&times;|address(es) that will receive the email|
+|**email**|`string`|`array`|&times;|address(es) that will receive the email|
 |**vars.globals**|`array`|&minus;|array of object defining your Mandrill `merge_vars` (with key = name and value = content)|
 |**vars.targeted**|`array`|&minus;||
 |**vars.targeted.target**|`string`|&minus;|address targeted|
 |**vars.targeted.vars**|`array`|&minus;|create/override `merge_vars` for the concerned address. Works the same as `vars.global`|
+|**media**|`Object`|&minus;||
+|**media.name**|`string`|&minus;|name of the media that you will retrieve via `cid:name`|
+|**media.content**|`string`|&minus;|Can be either a path the media (in the filesystem or via http) or straight base64 datas|
+
+##### Examples
+
+###### Video with thumbnail
+```
+let data = { 
+  email: 'user@site.com',
+  vars: { globals: [{ share: 'http://path.to/url/of/user/page' }] }
+  media: [
+    { name: 'video', content: '/path/to/video.mp4' },
+    { name: 'IMAGEID', content: '/path/to.thumbnail' }
+  ]
+}
+```
+

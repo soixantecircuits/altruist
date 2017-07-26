@@ -21,7 +21,7 @@
 Thumbs.db
 ehthumbs.db
 
-# Folder config file
+# Folder settings file
 Desktop.ini
 
 # Recycle Bin used on file shares
@@ -114,10 +114,16 @@ jspm_packages
 # VS Code
 .vscode/*
 
-config/*.json
-!config/config.example.json
+# Vim
+*.swp
+*.swo
+
+tests/settings.json
+settings/*.json
+!settings/settings.default.json
 mock/fakedata.json
 mock/fakedata.json
 storage/*
 uploads/*
 scratch/*
+settings/settings.json.bk

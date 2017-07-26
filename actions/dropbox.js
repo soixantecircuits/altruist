@@ -4,16 +4,16 @@ const passport = require('passport')
 const DropboxStrategy = require('passport-dropbox-oauth2').Strategy
 const Dropbox = require('dropbox')
 
-const config = require('../src/lib/config')
+const settings = require('../src/lib/settings')
 const localStorage = require('../src/lib/localstorage')
 
 var dropboxSession = JSON.parse(localStorage.getItem('dropbox-session')) || { accessToken: '', refreshToken: '' }
 
-const loginURL = config.actions.dropbox.loginURL || '/login/dropbox'
-const callbackURL = config.actions.dropbox.callbackURL || '/login/dropbox/return'
-const failureURL = config.actions.dropbox.failureURL || '/?failure=dropbox'
-const successURL = config.actions.dropbox.successURL || '/?success=dropbox'
-const uploadDirectoryPath = config.actions.dropbox.uploadDirectoryPath ? config.actions.dropbox.uploadDirectoryPath : '/'
+const loginURL = settings.actions.dropbox.loginURL || '/login/dropbox'
+const callbackURL = settings.actions.dropbox.callbackURL || '/login/dropbox/return'
+const failureURL = settings.actions.dropbox.failureURL || '/?failure=dropbox'
+const successURL = settings.actions.dropbox.successURL || '/?success=dropbox'
+const uploadDirectoryPath = settings.actions.dropbox.uploadDirectoryPath ? settings.actions.dropbox.uploadDirectoryPath : '/'
 
 function storeTokens (aToken, rToken) {
   dropboxSession.accessToken = aToken
@@ -24,14 +24,13 @@ function storeTokens (aToken, rToken) {
 function auth (app) {
   passport.use(new DropboxStrategy({
     apiVersion: '2',
-    clientID: config.actions.dropbox.clientID,
-    clientSecret: config.actions.dropbox.clientSecret,
+    clientID: settings.actions.dropbox.clientID,
+    clientSecret: settings.actions.dropbox.clientSecret,
     callbackURL: callbackURL
   }, function (aToken, rToken, profile, done) {
     storeTokens(aToken, rToken)
     return done(null, profile)
   }))
-
   app.get(loginURL, passport.authenticate('dropbox-oauth2'))
   app.get(callbackURL, passport.authenticate('dropbox-oauth2', { failureRedirect: failureURL }), function (req, res) {
     res.redirect(successURL)
@@ -41,18 +40,17 @@ function auth (app) {
 function run (options, request) {
   return new Promise((resolve, reject) => {
     if (!dropboxSession || !dropboxSession.accessToken) {
-      return reject({
-        error: 'invalid token',
+      return reject(new Error(JSON.stringify({
+        err: 'invalid token',
         details: 'No access token has been found. Please log in.'
-      })
-    } else if (!request.files || !request.files[0]) {
-      return reject({
-        error: 'invalid request',
+      })))
+    } else if (request && (!request.files || !request.files[0])) {
+      return reject(new Error(JSON.stringify({
+        err: 'invalid request',
         details: 'No file has been found. Please upload a file with your request.'
-      })
+      })))
     }
 
-    let targetDir = options.uploadDirectoryPath && options.uploadDirectoryPath !== '' ? options.uploadDirectoryPath : uploadDirectoryPath
     let filename = options.filename && options.filename !== '' ? options.filename : request.files[0].originalname
 
     let dropbox = new Dropbox({accessToken: dropboxSession.accessToken})
@@ -61,13 +59,13 @@ function run (options, request) {
         resolve(res)
       })
       .catch(function (error) {
-        reject(error)
+        reject(new Error(JSON.stringify(error)))
       })
   })
 }
 
-module.exports =
-  {
-    loginURL,
-    auth,
-  run}
+module.exports = {
+  loginURL,
+  auth,
+  run
+}

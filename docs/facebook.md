@@ -3,9 +3,9 @@
 You will need a Facebook app to authenticate an account via OAuth2.
 If you do not have one set up, you can follow the instructions on the [facebook app development documentation](https://developers.facebook.com/docs/apps/register).
 Choose `website` as a platform for your app. When your app is created, go to the settings and add the domain the app will be running on in `App Domains`.
-Get your app ID and your app secret, and copy them to your `config.json` file.
+Get your app ID and your app secret, and copy them to your `settings.json` file.
 
-In your `config.json` file, you'll need to add the following configuration object to the `actions` property:
+In your `settings.json` file, you'll need to add the following configuration object to the `actions` property:
 
 ```js
 "actions": {
