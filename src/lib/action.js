@@ -30,7 +30,9 @@ async function runAction (actionName, options) {
     let response = await actionModules[actionName].run(options)
 
     if (typeof response === 'string') {
-      response = JSON.parse(response)
+      try {
+        response = JSON.parse(response)
+      } catch (ignore) {}
     }
     return response
   } catch (reason) {
