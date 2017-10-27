@@ -44,19 +44,12 @@ Here's a minimal sample of the data you would send:
 
 ```
 {
-  filename: 'myfile.jpg',
-  type: 'image/jpg',
-  url: 'http://127.0.0.1:9966/send.jpg',
-  meta: {
-    altruist: {
-      action: ['socialite'],
-      filename
-    }
-  }
+  file: 'myfile.jpg',
+  url: 'http://127.0.0.1:9966/send.jpg'
 }
 ```
 
-It's important to notice that any data or options (media, filename, email address, token, etc) you would send should go into the `meta.altruist` property of the object you send. Also, the file(s) have to be served over HTTP.
+It's important to notice that the file(s) have to be served over HTTP.
 
 Here's a full sample of the data you would send:
 
@@ -80,17 +73,9 @@ Here's a full sample of the data you would send:
       "url": "http://photomat.te/9015b3a3ff393e39"
     }
   },
-  "meta": {
-    "altruist": {
-      "action": [
-        "mandrill",
-        "googledrive"
-      ],
-      "from": "photomaton@soixantecircuits.fr",
-      "to": "example@soixantecircuits.fr",
-      "templateID": "16337312"
-    }
-  }
+  "from": "photomaton@soixantecircuits.fr",
+  "to": "example@soixantecircuits.fr",
+  "templateID": "16337312"
 }
 ```
 
