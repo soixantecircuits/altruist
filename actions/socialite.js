@@ -6,11 +6,11 @@ const request = require('request')
 const baseURL = settings.baseURL
 const route = settings.uploadRoute
 
-function formDataFile (value, name, type) {
+function formDataFile (value, filename, type) {
   return {
     value: value,
     options: {
-      filename: name,
+      filename,
       contentType: type
     }
   }
@@ -38,7 +38,7 @@ function run (options, req) {
     let formData = {
       bucket: options.bucket || settings.bucket,
       token: options.token || settings.token,
-      name: options.filename,
+      filename: options.filename,
       file: null
     }
 

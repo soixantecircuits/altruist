@@ -53,6 +53,8 @@ In your `settings.json` file, you'll need to add the following configuration obj
 }
 ```
 
+> If your URL (baseURL + uploadRoute) is not correct, you'll get a 404 error HTML page as a response.
+
 #### Usage
 
 You can upload pictures via a POST request:

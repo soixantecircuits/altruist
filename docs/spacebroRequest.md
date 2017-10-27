@@ -40,7 +40,26 @@ The options object doesn't change from the one you send in an http POST request 
 The media you want to send to your actions must be outside of your options object, with the first media being the root object you send through spacebro, and the other media being in the `details` property.
 The media objects follow the same format as the one you would send in an HTTP POST request: see [here](/docs/postRequest.md#media)
 
-Here's a sample of the data you would send:
+Here's a minimal sample of the data you would send:
+
+```
+{
+  filename: 'myfile.jpg',
+  type: 'image/jpg',
+  url: 'http://127.0.0.1:9966/send.jpg',
+  meta: {
+    altruist: {
+      action: ['socialite'],
+      filename
+    }
+  }
+}
+```
+
+It's important to notice that any data or options (media, filename, email address, token, etc) you would send should go into the `meta.altruist` property of the object you send. Also, the file(s) have to be served over HTTP.
+
+Here's a full sample of the data you would send:
+
 ```
 {
   "_id": "235b3535f32aab55325",

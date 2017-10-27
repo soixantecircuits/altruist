@@ -50,7 +50,8 @@ async function handleSpacebroRequest (media) {
       await formatOptionsMedia(options, media)
 
       actionNames.forEach((actionName) => {
-        actionHelper.runAction(actionName, options)
+        actionHelper
+          .runAction(actionName, options)
           .then(res => {
             emitSuccessEvent(actionName, media, res)
           })
