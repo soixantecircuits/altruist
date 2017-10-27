@@ -6,11 +6,11 @@ const request = require('request')
 const baseURL = settings.baseURL
 const route = settings.uploadRoute
 
-function formDataFile (value, filename, type) {
+function formDataFile (value, name, type) {
   return {
     value: value,
     options: {
-      filename,
+      filename: name,
       contentType: type
     }
   }
@@ -31,19 +31,19 @@ function sendRequest (formData) {
 function run (options, req) {
   return new Promise((resolve, reject) => {
     // Prepare data to post to the socialite server
-    if (options.filename === undefined) {
-      reject(new Error('No filename provided in request'))
+    if (!options.name && !options.file) {
+      reject(new Error('No name provided in request'))
     }
 
     let formData = {
       bucket: options.bucket || settings.bucket,
       token: options.token || settings.token,
-      filename: options.filename,
+      name: options.name || options.file,
       file: null
     }
 
     if (options.media && Array.isArray(options.media) && options.media.length > 0) {
-      formData.file = formDataFile(Buffer.from(options.media[0].content, 'base64'), options.filename, options.media[0].type)
+      formData.file = formDataFile(Buffer.from(options.media[0].content, 'base64'), formData.name, options.media[0].type)
       sendRequest(formData)
         .then(body => resolve(body))
         .catch(error => reject(error))

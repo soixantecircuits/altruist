@@ -3,6 +3,7 @@
 const spacebroClient = require('spacebro-client')
 const actionHelper = require('./action')
 const requestHelper = require('./request')
+const mh = require('media-helper')
 
 var autoshareActions = []
 var successEvent
@@ -17,11 +18,11 @@ function getActions (options) {
 
 function extractMediaProperties (media) {
   return { // extract only the properties needed by altruist
-    name: media.name,
-    type: media.type,
-    path: media.path,
-    url: media.url,
-    content: media.content
+    path: mh.isFile(media.path) ? path : '',
+    content: media.content || null,
+    name: media.name || media.file || media.filename,
+    url: media.url || media.src,
+    type: media.type || ''
   }
 }
 
@@ -40,26 +41,25 @@ async function formatOptionsMedia (options, media) {
 }
 
 async function handleSpacebroRequest (media) {
+  console.log(`* received media ${media.file} from ${media._from}`)
   try {
-    if (media.meta && media.meta.altruist) {
-      // get the parameters to send to actions
-      let options = media.meta.altruist
-      // get the actions to run in an array
-      let actionNames = getActions(options)
-      // get the media in the options object and format them for altruist
-      await formatOptionsMedia(options, media)
+    // get the parameters to send to actions
+    let options = media.meta ? media.meta.altruist || {} : media
+    // get the actions to run in an array
+    let actionNames = getActions(options)
+    // get the media in the options object and format them for altruist
+    await formatOptionsMedia(options, media)
 
-      actionNames.forEach((actionName) => {
-        actionHelper
-          .runAction(actionName, options)
-          .then(res => {
-            emitSuccessEvent(actionName, media, res)
-          })
-          .catch(err => {
-            emitFailureEvent(actionName, media, err)
-          })
-      })
-    }
+    actionNames.forEach((actionName) => {
+      actionHelper
+        .runAction(actionName, options)
+        .then(res => {
+          emitSuccessEvent(actionName, media, res)
+        })
+        .catch(err => {
+          emitFailureEvent(actionName, media, err)
+        })
+    })
   } catch (e) {
     emitFailureEvent('', media, e)
   }
@@ -72,10 +72,11 @@ function emitSuccessEvent (action, media, data) {
     code: 200,
     response: data
   }
-  media.meta.altruistResponse = response
 
   try {
-    spacebroClient.emit(successEvent, media)
+    console.log(`* action ${action} successful`)
+    console.log(response)
+    spacebroClient.emit(successEvent, response)
   } catch (e) {
     log && console.error('Error on emit success event', e)
     log && console.error('Response: ', media)
@@ -92,17 +93,16 @@ function emitFailureEvent (action, media, err) {
       if (typeof errorResponse === 'object') {
         errorResponse.action = action
         errorResponse.success = false
-        media.meta.altruistResponse = errorResponse
-        spacebroClient.emit(failureEvent, media)
+        spacebroClient.emit(failureEvent, errorResponse)
       } else {
         // Assuming errorResponse is a string
-        media.meta.altruistResponse = {
+        const altruistResponse = {
           action,
           success: false,
           code: 500,
           response: errorResponse
         }
-        spacebroClient.emit(failureEvent, media)
+        spacebroClient.emit(failureEvent, altruistResponse)
       }
     }
   }
