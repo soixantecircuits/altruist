@@ -6,23 +6,19 @@ const mh = require('media-helper')
 
 const baseURL = settings.baseURL
 const route = settings.uploadRoute
+const url = `${baseURL}${route}`
 
-function formDataFile (value, name, type) {
+function createFileFormData (value, name, contentType) {
   return {
-    value: value,
-    options: {
-      filename: name,
-      contentType: type
-    }
+    value,
+    options: { name, contentType }
   }
 }
 
 function sendRequest (formData) {
   return new Promise((resolve, reject) => {
-    request.post({
-      url: `${baseURL}${route}`,
-      formData: formData
-    }, (err, res, body) => {
+    request.post({ url, formData }, (err, res, body) => {
+      console.log(body)
       if (err || res.statusCode !== 200) {
         reject({ error: err || `${res.statusCode} ${res.statusMessage}` })
       } else {
@@ -47,11 +43,11 @@ function run (options, req) {
     }
 
     if (options.media && Array.isArray(options.media) && options.media.length > 0) {
-      mh
-        .toBuffer(options.media[0].content)
-        .then((buffer) => {
-          formData.file = formDataFile(buffer, formData.name, options.media[0].type)
-          // formData.file = formDataFile(Buffer.from(options.media[0].content, 'base64'), formData.name, options.media[0].type)
+      const content = Buffer.from(options.media[0].content, 'base64')
+      mh.getMimeType(content)
+        .then((type) => {
+          formData.file = createFileFormData(content, formData.name, type)
+          console.log(formData)
           sendRequest(formData)
             .then(body => resolve(body))
             .catch(error => reject(error))
