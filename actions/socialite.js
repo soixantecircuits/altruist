@@ -2,6 +2,7 @@
 
 const settings = require('../src/lib/settings').actions.socialite
 const request = require('request')
+const mh = require('media-helper')
 
 const baseURL = settings.baseURL
 const route = settings.uploadRoute
@@ -22,8 +23,11 @@ function sendRequest (formData) {
       url: `${baseURL}${route}`,
       formData: formData
     }, (err, res, body) => {
-      err && reject(new Error(err))
-      resolve(body)
+      if (err || res.statusCode !== 200) {
+        reject({ error: err || `${res.statusCode} ${res.statusMessage}` })
+      } else {
+        resolve(body)
+      }
     })
   })
 }
@@ -43,10 +47,16 @@ function run (options, req) {
     }
 
     if (options.media && Array.isArray(options.media) && options.media.length > 0) {
-      formData.file = formDataFile(Buffer.from(options.media[0].content, 'base64'), formData.name, options.media[0].type)
-      sendRequest(formData)
-        .then(body => resolve(body))
-        .catch(error => reject(error))
+      mh
+        .toBuffer(options.media[0].content)
+        .then((buffer) => {
+          formData.file = formDataFile(buffer, formData.name, options.media[0].type)
+          // formData.file = formDataFile(Buffer.from(options.media[0].content, 'base64'), formData.name, options.media[0].type)
+          sendRequest(formData)
+            .then(body => resolve(body))
+            .catch(error => reject(error))
+        })
+        .catch(reject)
     } else {
       reject(new Error('No media provided in request'))
     }

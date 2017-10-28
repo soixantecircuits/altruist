@@ -32,15 +32,16 @@ async function runAction (actionName, options) {
     if (typeof response === 'string') {
       try {
         response = JSON.parse(response)
+        if (response.error) {
+          throw response.error
+        }
       } catch (ignore) {}
     }
     return response
   } catch (reason) {
     log && console.error(`An error occured with ${actionName}`)
-    if (reason instanceof Error) {
-      log && console.error(reason)
-      throw reason
-    }
+    log && console.error(reason)
+    throw new Error(reason)
   }
 }
 
