@@ -57,24 +57,23 @@ async function formatMedia (media) {
     }
 
     return null
-  } catch (e) {
-    console.error('Error when formatting media', e)
+  } catch (error) {
+    console.error('Error when formatting media', error)
     return null
   }
 }
 
-async function formatOptionsMedia (options) {
-  // If there is already a media in the options, put it in an array
-  if (options.media && Array.isArray(options.media) === false) {
-    options.media = [options.media]
-  } else if (!options.media) {
-    options.media = []
+async function formatOptionsMedia ({ media }) {
+  if (media && Array.isArray(media) === false) {
+    media = [media]
+  } else if (!media) {
+    media = []
   }
 
   try {
-    options.media = await Promise.all(_.map(options.media, formatMedia))
-  } catch (e) {
-    return e
+    return await Promise.all(_.map(media, formatMedia))
+  } catch (error) {
+    return { error }
   }
 }
 

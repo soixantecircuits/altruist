@@ -49,7 +49,7 @@ async function handlePostRequest (action, req, res) {
   var options = req.body
 
   try {
-    await requestHelper.formatOptionsMedia(options)
+    options.media = await requestHelper.formatOptionsMedia(options)
     // If files are uploaded through form-data, add them to the options object
     await requestHelper.getFormDataFiles(options, req)
 

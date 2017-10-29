@@ -5,9 +5,9 @@ const actionHelper = require('./action')
 const requestHelper = require('./request')
 const mh = require('media-helper')
 
-var autoshareActions = []
-var successEvent
-var failureEvent
+let autoshareActions = []
+let successEvent = 'altruist-relatime-success'
+let failureEvent = 'altruist-relatime-failure'
 let log = true
 
 function getActions (options) {
@@ -37,7 +37,7 @@ async function formatOptionsMedia (options, media) {
 
   options.media = mediaArray
   // apply the generic formatting
-  await requestHelper.formatOptionsMedia(options)
+  return await requestHelper.formatOptionsMedia(options.media)
 }
 
 async function handleSpacebroRequest (media) {
@@ -45,12 +45,10 @@ async function handleSpacebroRequest (media) {
   try {
     // get the parameters to send to actions
     let options = media.meta ? media.meta.altruist || {} : media
-    // get the actions to run in an array
-    let actionNames = getActions(options)
     // get the media in the options object and format them for altruist
-    await formatOptionsMedia(options, media)
+    options.media = await formatOptionsMedia({ media })
 
-    actionNames.forEach((actionName) => {
+    getActions(options).forEach((actionName) => {
       actionHelper
         .runAction(actionName, options)
         .then(res => {
@@ -60,7 +58,7 @@ async function handleSpacebroRequest (media) {
           emitFailureEvent(actionName, media, err)
         })
     })
-  } catch (e) {
+  } catch (error) {
     emitFailureEvent('', media, e)
   }
 }
@@ -84,26 +82,24 @@ function emitSuccessEvent (action, media, data) {
 }
 
 function emitFailureEvent (action, media, err) {
-  if (err instanceof Error) {
-    var errorResponse = err.message
-    try {
-      // the error's message might be a stringified object
-      errorResponse = JSON.parse(errorResponse)
-    } finally {
-      if (typeof errorResponse === 'object') {
-        errorResponse.action = action
-        errorResponse.success = false
-        spacebroClient.emit(failureEvent, errorResponse)
-      } else {
-        // Assuming errorResponse is a string
-        const altruistResponse = {
-          action,
-          success: false,
-          code: 500,
-          response: errorResponse
-        }
-        spacebroClient.emit(failureEvent, altruistResponse)
+  console.log(`* failure on action '${action}'`)
+  console.error(err)
+  let response = null
+  try {
+    response = JSON.parse(err.message)
+  } finally {
+    if (typeof response === 'object') {
+      response.action = action
+      response.success = false
+      spacebroClient.emit(failureEvent, response)
+    } else {
+      const altruistResponse = {
+        action,
+        success: false,
+        code: 500,
+        response
       }
+      spacebroClient.emit(failureEvent, altruistResponse)
     }
   }
 }
