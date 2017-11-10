@@ -23,6 +23,12 @@ In your `settings.json` file, you'll need to add the following configuration obj
 }
 ```
 
+|name|type|required|description|
+|:---|:---|:---:|:---|
+|**appID**|`string`|*yes*|You're app ID|
+|**appSecret**|`string`|*yes*|You're app secret Token|
+|**pageID**|`string`|*no*|The ID of the page you need to manage|
+
 ## Usage
 
 Before being able to post, you will need to log in facebook by going to the url matching `loginURL` in your config file (don't forget the prefix of `http://localhost:6060`) and authorizing the application.
