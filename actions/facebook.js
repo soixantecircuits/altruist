@@ -88,7 +88,7 @@ function getMediaType (media) {
   }
 }
 
-function handlePostRequest ({message, link, media}, resolve, reject) {
+function handlePostRequest ({message, link, media, albumID}, resolve, reject) {
   const isMedia = (media)
   const mediaType = getMediaType(media)
   const datas = {}
@@ -119,12 +119,21 @@ function handlePostRequest ({message, link, media}, resolve, reject) {
     datas.link = link
   }
 
-  fb.api(`/${currentID}/${isMedia ? mediaType : 'feed'}`, 'post', datas, (res) => {
-    if (!res || res.error) {
-      reject(new Error(JSON.stringify({ err: res.error.code, details: res.error.message })))
-    }
-    resolve(res)
-  })
+  if (albumID) {
+    fb.api(`/${albumID}/photos`, 'post', datas, (res) => {
+      if (!res || res.error) {
+        reject(new Error(JSON.stringify({ err: res.error.code, details: res.error.message })))
+      }
+      resolve(res)
+    })
+  } else {
+    fb.api(`/${currentID}/${isMedia ? mediaType : 'feed'}`, 'post', datas, (res2ter) => {
+      if (!res2ter || res2ter.error) {
+        reject(new Error(JSON.stringify({ err: res2ter.error.code, details: res2ter.error.message })))
+      }
+      resolve(res2ter)
+    })
+  }
 }
 
 function auth (app) {
@@ -141,7 +150,7 @@ function auth (app) {
 
   app.get(loginURL, passport.authenticate('facebook', {
     authType: 'reauthenticate',
-    scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions']
+    scope: ['pages_show_list', 'manage_pages', 'publish_pages', 'publish_actions', 'user_photos']
   }))
   app.get(callbackURL, passport.authenticate('facebook', {
     failureRedirect: failureURL
@@ -181,6 +190,7 @@ function run (options, request) {
       ? options.media
       : settings.actions.facebook.media || ''
     const link = options.link ? options.link : settings.actions.facebook.link
+    const albumID = options.albumID ? options.albumID : ''
 
     if (!facebookSession || !facebookSession.userAccessToken) {
       return reject(new Error(JSON.stringify({
@@ -205,7 +215,7 @@ function run (options, request) {
     }
 
     setID(facebookSession.currentID)
-    handlePostRequest({message, link, media}, resolve, reject)
+    handlePostRequest({message, link, media, albumID}, resolve, reject)
   })
 }
 
