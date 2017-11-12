@@ -4657,10 +4657,11 @@ source-map@~0.2.0:
   dependencies:
     amdefine ">=0.0.4"
 
-spacebro-client@0.4.0-beta.5:
-  version "0.4.0-beta.5"
-  resolved "https://registry.yarnpkg.com/spacebro-client/-/spacebro-client-0.4.0-beta.5.tgz#daff297525f7689ce46821b40fbb9dea8f7dbea8"
+spacebro-client@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/spacebro-client/-/spacebro-client-0.4.2.tgz#409df691e0b412ad157c2be6b82265cffbb959b3"
   dependencies:
+    assignment "^2.2.1"
     babel-runtime "6.23.0"
     chalk "1.1.3"
     eslint "^4.1.1"

@@ -9,11 +9,25 @@
     "spacebro": {
       "host": "spacebro.space",
       "port": 3333,
-      "clientName": "altruist",
       "channelName": "media-stream",
-      "inputMessage": "new-media-from-etna",
-      "successMessage": "altruist-success",
-      "failureMessage": "altruist-failure"
+      "client": {
+        "name": "altruist",
+        "description": "Share media to multiple online services",
+				"in": {
+					"inMedia": {
+						"eventName": "inMedia",
+						"description": "Input media",
+						"type": "all"
+					}
+				},
+				"out": {
+					"response": {
+						"eventName": "response",
+						"description": "Response after uploading media. Can be error or success",
+						"type": "all"
+					}
+        }
+      }
     }
   },
   "autoshare":{

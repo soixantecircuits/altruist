@@ -1,14 +1,14 @@
 'use strict'
 
-const spacebroClient = require('spacebro-client')
+const { SpacebroClient } = require('spacebro-client')
 const actionHelper = require('./action')
 const requestHelper = require('./request')
 const mh = require('media-helper')
+var settings = require('standard-settings').getSettings()
 
 var autoshareActions = []
-var successEvent
-var failureEvent
 let log = true
+let spacebro = null
 
 function getActions (options) {
   let actions = options.action || autoshareActions
@@ -77,7 +77,7 @@ function emitSuccessEvent (action, media, data) {
   try {
     console.log(`* action ${action} successful`)
     console.log(response)
-    spacebroClient.emit(successEvent, response)
+    spacebro.emit(settings.service.spacebro.client['out'].response.eventName, response)
   } catch (e) {
     log && console.error('Error on emit success event', e)
     log && console.error('Response: ', media)
@@ -94,7 +94,7 @@ function emitFailureEvent (action, media, err) {
       if (typeof errorResponse === 'object') {
         errorResponse.action = action
         errorResponse.success = false
-        spacebroClient.emit(failureEvent, errorResponse)
+        spacebro.emit(settings.service.spacebro.client['out'].response.eventName, errorResponse)
       } else {
         // Assuming errorResponse is a string
         const altruistResponse = {
@@ -103,7 +103,7 @@ function emitFailureEvent (action, media, err) {
           code: 500,
           response: errorResponse
         }
-        spacebroClient.emit(failureEvent, altruistResponse)
+        spacebro.emit(settings.service.spacebro.client['out'].response.eventName, altruistResponse)
       }
     }
   }
@@ -111,32 +111,17 @@ function emitFailureEvent (action, media, err) {
 let init = (settings) => {
   log = settings.verbose === undefined ? true : settings.verbose
 
-  spacebroClient.connect(settings.service.spacebro.host, settings.service.spacebro.port, {
-    clientName: settings.service.spacebro.clientName,
-    channelName: settings.service.spacebro.channelName,
-    verbose: false,
-    sendBack: false
+  spacebro = new SpacebroClient()
+
+  spacebro.on('connect', () => {
+    log && console.log(`spacebro: ${settings.service.spacebro.client.name} connected to ${settings.service.spacebro.host}:${settings.service.spacebro.port}#${settings.service.spacebro.channelName}`)
   })
 
-  if (settings.autoshare && settings.autoshare.action) {
-    autoshareActions = settings.autoshare.action
-  }
-  successEvent = settings.service.spacebro.successMessage
-  failureEvent = settings.service.spacebro.failureMessage
-
-  spacebroClient.on('connect', () => {
-    log && console.log(`spacebro: ${settings.service.spacebro.clientName} connected to ${settings.service.spacebro.host}:${settings.service.spacebro.port}#${settings.service.spacebro.channelName}`)
-  })
-
-  spacebroClient.on('new-member', (data) => {
-    log && console.log(`spacebro: ${data.member} has joined.`)
-  })
-
-  spacebroClient.on('disconnect', () => {
+  spacebro.on('disconnect', () => {
     log && console.error('spacebro: connection lost.')
   })
 
-  spacebroClient.on(settings.service.spacebro.inputMessage, (data) => {
+  spacebro.on(settings.service.spacebro.client['in'].inMedia.eventName, (data) => {
     handleSpacebroRequest(data)
   })
 }
