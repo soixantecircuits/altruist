@@ -51,11 +51,11 @@
     },
     "mandrill": {
       "APIkey": "",
-      "from": {
+      "//from": {
         "name": "Altruist 🚀",
         "email": "altruist@shh.ac"
       },
-      "subject": "Altruist",
+      "//subject": "Altruist",
       "template": "altruist-test"
     },
     "facebook": {

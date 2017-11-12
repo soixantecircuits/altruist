@@ -1,14 +1,9 @@
 'use strict'
 
 const _ = require('lodash')
-const path = require('path')
-const med = require('media-helper')
 const settings = require('../src/lib/settings')
 
 const API_KEY = settings.actions.mandrill.APIkey
-const from = settings.actions.mandrill.from
-const subject = settings.actions.mandrill.subject
-const template = settings.actions.mandrill.template
 
 const Mandrill = require('mandrill-api/mandrill')
 const mandrill = new Mandrill.Mandrill(API_KEY)
@@ -28,7 +23,7 @@ function mapMandrillTargeted (obj) {
   }
 }
 
-function sendMail (params) {
+function sendMedia (params) {
   return new Promise((resolve, reject) => {
     mandrill.messages.sendTemplate(params, (result) => {
       resolve(result)
@@ -38,56 +33,82 @@ function sendMail (params) {
   })
 }
 
-async function run (options) {
-  try {
-    options.vars = options.vars
+function standardMediaToApiMedia (media) {
+  let apiMeta = media.meta.altruist.mandrill
+  let options = {
+    vars: apiMeta.vars
+  }
+  options.vars = options.vars
       ? typeof options.vars === 'object'
         ? options.vars
         : JSON.parse(options.vars)
       : {}
 
-    const params = {
-      template_name: template,
-      template_content: {},
-      message: {
-        to: [{
-          email: options.email
-        }],
-        from_email: from.email,
-        from_name: from.name,
-        subject: subject,
-        merge: true,
-        attachments: [],
-        images: [],
-        merge_language: options.mergeLanguage || 'handlebars',
-        global_merge_vars: options.vars.globals ? options.vars.globals.map(v => mapMandrillGlobals(v)) : [],
-        merge_vars: options.vars.targeted ? options.vars.targeted.map(v => mapMandrillTargeted(v)) : []
-      }
+  let apiMedia = {
+    template_name: apiMeta.template,
+    template_content: {},
+    message: {
+      to: [{
+        email: apiMeta.to.email
+      }],
+      merge: true,
+      attachments: [],
+      images: [],
+      merge_language: options.mergeLanguage || 'handlebars',
+      global_merge_vars: options.vars.globals ? options.vars.globals.map(v => mapMandrillGlobals(v)) : [],
+      merge_vars: options.vars.targeted ? options.vars.targeted.map(v => mapMandrillTargeted(v)) : []
     }
+  }
+  if (apiMeta.from && apiMeta.from.email) {
+    apiMedia.message.from_email = apiMeta.from.email
+  }
+  if (apiMeta.from && apiMeta.from.name) {
+    apiMedia.message.from_name = apiMeta.from.name
+  }
+  if (apiMeta.subject) {
+    apiMedia.message.subject = apiMeta.subject
+  }
+  let medias = media.array
+  let images = _.filter(medias, media => /image/.test(media.type))
 
-    if (options.media && Array.isArray(options.media) && options.media.length > 0) {
-      let images = _.filter(options.media, media => /image/.test(media.type))
+  images.forEach(image => {
+    apiMedia.message.images.push({
+      name: image.name || 'IMAGEID',
+      type: image.type,
+      content: image.base64
+    })
+  })
 
-      images.forEach(image => {
-        params.message.images.push({
-          name: image.name || 'IMAGEID',
-          type: image.type,
-          content: image.content
-        })
-      })
-
-      options.media.forEach(media => {
-        if (/image/.test(media.type) === false) {
-          params.message.attachments.push({
-            name: media.name || /video/.test(media.type) ? media.type.replace('/', '.') : 'FILE',
-            type: media.type,
-            content: media.content
-          })
-        }
+  medias.forEach(media => {
+    if (/image/.test(media.type) === false) {
+      apiMedia.message.attachments.push({
+        name: media.name || /video/.test(media.type) ? media.type.replace('/', '.') : 'FILE',
+        type: media.type,
+        content: media.base64
       })
     }
+  })
 
-    let res = await sendMail(params)
+  return apiMedia
+}
+
+async function checkMedia (media) {
+  if (!media.type) {
+    await media.getMimeType()
+  }
+  if (!media.base64) {
+    await media.getBase64()
+  }
+  if (!media.filename) {
+    media.getFilename()
+  }
+}
+
+async function run (media) {
+  try {
+    await checkMedia(media)
+    media = standardMediaToApiMedia(media)
+    let res = await sendMedia(media)
     return res
   } catch (err) {
     throw err

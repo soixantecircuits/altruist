@@ -105,6 +105,7 @@ function emitFailureEvent (action, media, err) {
     try {
       // the error's message might be a stringified object
       errorResponse = JSON.parse(errorResponse)
+    } catch (ignore) {
     } finally {
       if (typeof errorResponse === 'object') {
         errorResponse.action = action
@@ -121,6 +122,8 @@ function emitFailureEvent (action, media, err) {
         spacebro.emit(settings.service.spacebro.client['out'].response.eventName, altruistResponse)
       }
     }
+  } else {
+    console.error('not an Error: ' + err)
   }
 }
 let init = (settings) => {

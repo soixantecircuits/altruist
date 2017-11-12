@@ -36,10 +36,15 @@ async function runAction (actionName, options) {
     }
     return response
   } catch (reason) {
+    let res = reason
     log && console.error(`An error occured with ${actionName}`)
+    log && console.error(res)
     if (reason instanceof Error) {
-      log && console.error(reason)
-      throw reason
+      throw res
+    } else if (typeof reason === 'object') {
+      throw new Error(JSON.stringify(res, null, 2))
+    } else {
+      throw new Error(res)
     }
   }
 }

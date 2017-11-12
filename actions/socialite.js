@@ -7,23 +7,11 @@ const fs = require('fs')
 const baseURL = settings.baseURL
 const route = settings.uploadRoute
 
-/*
-function formDataFile (value, name, type) {
-  return {
-    value: value,
-    options: {
-      filename: name,
-      contentType: type
-    }
-  }
-}
-*/
-
-function sendRequest (formData) {
+function sendMedia (media) {
   return new Promise((resolve, reject) => {
     request.post({
       url: `${baseURL}${route}`,
-      formData: formData
+      formData: media
     }, (err, res, body) => {
       err && reject(new Error(err))
       resolve(body)
@@ -57,17 +45,18 @@ async function checkMedia (media) {
   }
 }
 
-function run (options, req) {
+function run (media) {
   return new Promise((resolve, reject) => {
     // Prepare data to post to the socialite server
-    checkMedia(options)
+    checkMedia(media)
     .then(() => {
-      let media = standardMediaToApiMedia(options)
+      media = standardMediaToApiMedia(media)
 
-      sendRequest(media)
+      sendMedia(media)
         .then(body => resolve(body))
         .catch(error => reject(error))
     })
+    .catch(error => reject(error))
   })
 }
 
