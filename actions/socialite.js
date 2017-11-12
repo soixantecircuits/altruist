@@ -2,10 +2,12 @@
 
 const settings = require('../src/lib/settings').actions.socialite
 const request = require('request')
+const fs = require('fs')
 
 const baseURL = settings.baseURL
 const route = settings.uploadRoute
 
+/*
 function formDataFile (value, name, type) {
   return {
     value: value,
@@ -15,6 +17,7 @@ function formDataFile (value, name, type) {
     }
   }
 }
+*/
 
 function sendRequest (formData) {
   return new Promise((resolve, reject) => {
@@ -28,28 +31,43 @@ function sendRequest (formData) {
   })
 }
 
+function standardMediaToApiMedia (media) {
+  let apiMeta = media.meta.altruist.socialite
+  let apiMedia = {
+    bucket: apiMeta.bucket,
+    token: apiMeta.token,
+    name: media.filename,
+    file: {
+      value: fs.createReadStream(media.path),
+      options: {
+        filename: media.filename,
+        contentType: media.type
+      }
+    }
+  }
+  return apiMedia
+}
+
+async function checkMedia (media) {
+  if (!media.type) {
+    await media.getMimeType()
+  }
+  if (!media.filename) {
+    media.getFilename()
+  }
+}
+
 function run (options, req) {
   return new Promise((resolve, reject) => {
     // Prepare data to post to the socialite server
+    checkMedia(options)
+    .then(() => {
+      let media = standardMediaToApiMedia(options)
 
-    let formData = {
-      bucket: options.bucket || settings.bucket,
-      token: options.token || settings.token,
-      name: options.media[0].file || options.media[0].name,
-      file: null
-    }
-    if (!formData.name) {
-      reject(new Error('No name provided in request'))
-    }
-
-    if (options.media && Array.isArray(options.media) && options.media.length > 0) {
-      formData.file = formDataFile(Buffer.from(options.media[0].content, 'base64'), formData.name, options.media[0].type)
-      sendRequest(formData)
+      sendRequest(media)
         .then(body => resolve(body))
         .catch(error => reject(error))
-    } else {
-      reject(new Error('No media provided in request'))
-    }
+    })
   })
 }
 

@@ -7,6 +7,7 @@ const spacebro = new SpacebroClient()
 setTimeout(function () {
   spacebro.emit(settings.service.spacebro.client['in'].inMedia.eventName, {
     url: 'http://snapbox01.estu.la:36700/?action=snapshot',
+    file: 'test.jpg',
     meta: {
       altruist: {
         action: ['socialite']

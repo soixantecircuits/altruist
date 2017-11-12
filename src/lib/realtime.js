@@ -2,20 +2,24 @@
 
 const { SpacebroClient } = require('spacebro-client')
 const actionHelper = require('./action')
-const requestHelper = require('./request')
+// const requestHelper = require('./request')
+const { Media } = require('./Media')
 const mh = require('media-helper')
-var settings = require('standard-settings').getSettings()
+const assignment = require('assignment')
+const standardSettings = require('standard-settings')
+var settings = standardSettings.getSettings()
 
-var autoshareActions = []
+// var autoshareActions = []
 let log = true
 let spacebro = null
 
-function getActions (options) {
-  let actions = options.action || autoshareActions
+function getActions (media) {
+  let actions = media.meta.altruist.action
   actions = Array.isArray(actions) ? actions : [actions] // make sure that actions is an array
   return actions
 }
 
+/*
 function extractMediaProperties (media) {
   return { // extract only the properties needed by altruist
     // path: mh.isFile(media.path) ? path : '',
@@ -26,7 +30,9 @@ function extractMediaProperties (media) {
     type: media.type || ''
   }
 }
+*/
 
+/*
 async function formatOptionsMedia (options, media) {
   let mediaArray = [extractMediaProperties(media)]
   // if there are other media to send, put them in the array as well
@@ -40,20 +46,29 @@ async function formatOptionsMedia (options, media) {
   // apply the generic formatting
   await requestHelper.formatOptionsMedia(options)
 }
+*/
 
 async function handleSpacebroRequest (media) {
   console.log(`* received media ${media.file} from ${media._from}`)
   try {
-    // get the parameters to send to actions
-    let options = media.meta ? media.meta.altruist || {} : media
-    // get the actions to run in an array
-    let actionNames = getActions(options)
-    // get the media in the options object and format them for altruist
-    await formatOptionsMedia(options, media)
+    media = new Media(media)
+    // add default meta from settings
+    media.meta = standardSettings.getMeta(media)
+    if (!mh.isFile(media.path) && media.url) {
+      let filePath = await media.urlToPath()
+      console.log('media downloaded to ' + filePath)
+    }
+    // add meta
+    media.meta = assignment(media.meta, {
+      altruist: settings.actions
+    })
 
+    // get the actions to run in an array
+    let actionNames = getActions(media)
+    // run
     actionNames.forEach((actionName) => {
       actionHelper
-        .runAction(actionName, options)
+        .runAction(actionName, media)
         .then(res => {
           emitSuccessEvent(actionName, media, res)
         })

@@ -30,8 +30,15 @@
       }
     }
   },
-  "autoshare":{
-    "action": []
+  "folder": {
+    "output" : "/tmp"
+  },
+  "media":{
+    "meta":{
+      "altruist":{
+        "action": []
+      }
+    }
   },
   "actions": {
     "mailchimp": {
