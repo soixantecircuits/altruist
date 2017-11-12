@@ -8,12 +8,11 @@ spacebroClient.connect(config.service.spacebro.host, config.service.spacebro.por
 })
 
 setTimeout(function () {
-  spacebroClient.emit('altruist-test-input', {
-    path: '/home/mina/Downloads/profile.jpg',
+  spacebroClient.emit('new-media-from-etna', {
+    url: 'http://snapbox01.estu.la:36700/?action=snapshot',
     meta: {
       altruist: {
-        action: ['instagram'],
-        message: 'oi'
+        action: ['socialite']
       }
     }
   })

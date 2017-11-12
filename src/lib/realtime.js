@@ -18,9 +18,10 @@ function getActions (options) {
 
 function extractMediaProperties (media) {
   return { // extract only the properties needed by altruist
-    path: mh.isFile(media.path) ? path : '',
+    // path: mh.isFile(media.path) ? path : '',
     content: media.content || null,
     name: media.name || media.file || media.filename,
+    file: media.file || media.name || media.filename,
     url: media.url || media.src,
     type: media.type || ''
   }

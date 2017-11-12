@@ -31,15 +31,15 @@ function sendRequest (formData) {
 function run (options, req) {
   return new Promise((resolve, reject) => {
     // Prepare data to post to the socialite server
-    if (!options.name && !options.file) {
-      reject(new Error('No name provided in request'))
-    }
 
     let formData = {
       bucket: options.bucket || settings.bucket,
       token: options.token || settings.token,
-      name: options.name || options.file,
+      name: options.media[0].file || options.media[0].name,
       file: null
+    }
+    if (!formData.name) {
+      reject(new Error('No name provided in request'))
     }
 
     if (options.media && Array.isArray(options.media) && options.media.length > 0) {
