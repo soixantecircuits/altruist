@@ -81,7 +81,9 @@ class Media {
 
   urlToPath () {
     return new Promise((resolve, reject) => {
-      if (!mediaHelper.isFile(this.path)) {
+      if (this.path && mediaHelper.isFile(this.path)) {
+        resolve(this.path)
+      } else {
         let filePath = path.join(settings.folder.output, this.getFilename())
         request(this.url)
           .pipe(fs.createWriteStream(filePath))
@@ -90,8 +92,6 @@ class Media {
             resolve(filePath)
           })
           .on('error', reject)
-      } else {
-        resolve(this.path)
       }
     })
   }
@@ -101,7 +101,7 @@ class Media {
       for (var prop in this.details) {
         if (this.details.hasOwnProperty(prop)) {
           let media = this.details[prop]
-          if (!mediaHelper.isFile(media.path) && media.url) {
+          if ((!media.path || !mediaHelper.isFile(media.path)) && media.url) {
             media = new Media(media)
             await media.urlToPath()
             this.details[prop] = media
@@ -112,7 +112,7 @@ class Media {
   }
 
   getFilename () {
-    this.filename = this.filename || this.file || path.basename(this.path) || (this.url && path.basename(this.url))
+    this.filename = this.filename || this.file || (this.path && path.basename(this.path)) || (this.url && path.basename(this.url))
     return this.filename
   }
 }

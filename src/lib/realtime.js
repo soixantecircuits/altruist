@@ -4,7 +4,6 @@ const { SpacebroClient } = require('spacebro-client')
 const actionHelper = require('./action')
 // const requestHelper = require('./request')
 const { Media } = require('./Media')
-const mh = require('media-helper')
 const assignment = require('assignment')
 const standardSettings = require('standard-settings')
 var settings = standardSettings.getSettings()
@@ -49,15 +48,12 @@ async function formatOptionsMedia (options, media) {
 */
 
 async function handleSpacebroRequest (media) {
-  console.log(`* received media ${media.file} from ${media._from}`)
   try {
     media = new Media(media)
+    console.log(`* received media ${media.getFilename()} from ${media._from}`)
     // add default meta from settings
     media.meta = standardSettings.getMeta(media)
-    if (!mh.isFile(media.path) && media.url) {
-      let filePath = await media.urlToPath()
-      console.log('media downloaded to ' + filePath)
-    }
+
     // add meta
     media.meta = assignment(media.meta, {
       altruist: settings.actions
@@ -65,7 +61,6 @@ async function handleSpacebroRequest (media) {
 
     // get the actions to run in an array
     let actionNames = getActions(media)
-    console.log('actions:' + actionNames)
     // run
     actionNames.forEach((actionName) => {
       actionHelper
@@ -77,6 +72,9 @@ async function handleSpacebroRequest (media) {
           emitFailureEvent(actionName, media, err)
         })
     })
+    if (actionNames.length === 0) {
+      log && console.log('No action to run for this media. Should you add one in the meta or in settings?')
+    }
   } catch (e) {
     emitFailureEvent('', media, e)
   }
@@ -103,6 +101,7 @@ function emitSuccessEvent (action, media, data) {
 function emitFailureEvent (action, media, err) {
   if (err instanceof Error) {
     var errorResponse = err.message
+    log && console.error('Error: ', errorResponse)
     try {
       // the error's message might be a stringified object
       errorResponse = JSON.parse(errorResponse)

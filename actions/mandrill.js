@@ -62,9 +62,9 @@ function standardMediaToApiMedia (media) {
   if (apiMeta.to) {
     if (Array.isArray(apiMeta.to)) {
       apiMedia.message.to = apiMedia.message.to.concat(apiMeta.to)
-    } else if (typeof apiMeta.to.email === 'string') {
+    } else if (typeof apiMeta.to === 'string') {
       apiMedia.message.to.push({
-        email: apiMeta.to.email
+        email: apiMeta.to
       })
     }
   }
@@ -116,10 +116,19 @@ async function checkMedia (media) {
 }
 
 function standardMetaToApiMeta (media) {
+  let apiMeta = media.meta.altruist.mandrill
   if (media.meta.email) {
-    let apiMeta = media.meta.altruist.mandrill
     apiMeta = assignment(apiMeta, {
       to: media.meta.email
+    })
+  }
+  if (media.meta.share) {
+    apiMeta = assignment(apiMeta, {
+      vars: {
+        globals: [{
+          share: media.meta.share
+        }]
+      }
     })
   }
   return media

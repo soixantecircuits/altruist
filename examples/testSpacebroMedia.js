@@ -22,7 +22,8 @@ setTimeout(function () {
   })
   */
   spacebro.emit(settings.service.spacebro.client['in'].inMedia.eventName, {
-    path: '/home/emmanuel/Downloads/2017-11-10T20-37-27-779.mp4',
+    // path: '/home/emmanuel/Downloads/2017-11-10T20-37-27-779.mp4',
+    url: 'http://10.11.12.57:36101/2017-08-26T18-20-19-451.mp4',
     details: {
       thumbnail: {
         url: 'http://snapbox01.estu.la:36700/?action=snapshot',
@@ -30,13 +31,10 @@ setTimeout(function () {
       }
     },
     meta: {
+      email: 'e@soixantecircuits.fr',
+      share: 'http://soixantecircuits.fr',
       altruist: {
-        action: ['socialite'],
-        mandrill: {
-          to: {
-            email: 'e@soixantecircuits.fr'
-          }
-        }
+        action: ['mandrill']
       }
     }
   })
