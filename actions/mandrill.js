@@ -7,6 +7,7 @@ const API_KEY = settings.actions.mandrill.APIkey
 
 const Mandrill = require('mandrill-api/mandrill')
 const mandrill = new Mandrill.Mandrill(API_KEY)
+const assignment = require('assignment')
 
 function mapMandrillGlobals (obj) {
   const name = Object.getOwnPropertyNames(obj)[0]
@@ -34,6 +35,7 @@ function sendMedia (params) {
 }
 
 function standardMediaToApiMedia (media) {
+  media = standardMetaToApiMeta(media)
   let apiMeta = media.meta.altruist.mandrill
   let options = {
     vars: apiMeta.vars
@@ -72,15 +74,17 @@ function standardMediaToApiMedia (media) {
   let images = _.filter(medias, media => /image/.test(media.type))
 
   images.forEach(image => {
-    apiMedia.message.images.push({
-      name: image.name || 'IMAGEID',
-      type: image.type,
-      content: image.base64
-    })
+    if (image.base64) {
+      apiMedia.message.images.push({
+        name: image.name || 'IMAGEID',
+        type: image.type,
+        content: image.base64
+      })
+    }
   })
 
   medias.forEach(media => {
-    if (/image/.test(media.type) === false) {
+    if (/image/.test(media.type) === false && media.base64) {
       apiMedia.message.attachments.push({
         name: media.name || /video/.test(media.type) ? media.type.replace('/', '.') : 'FILE',
         type: media.type,
@@ -102,6 +106,18 @@ async function checkMedia (media) {
   if (!media.filename) {
     media.getFilename()
   }
+}
+
+function standardMetaToApiMeta (media) {
+  if (media.meta.email) {
+    let apiMeta = media.meta.altruist.mandrill
+    apiMeta = assignment(apiMeta, {
+      to: {
+        email: media.meta.email
+      }
+    })
+  }
+  return media
 }
 
 async function run (media) {

@@ -51,7 +51,6 @@ function run (media) {
     checkMedia(media)
     .then(() => {
       media = standardMediaToApiMedia(media)
-
       sendMedia(media)
         .then(body => resolve(body))
         .catch(error => reject(error))

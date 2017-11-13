@@ -43,7 +43,13 @@ class Media {
       for (var prop in this.details) {
         if (this.details.hasOwnProperty(prop)) {
           let media = this.details[prop]
-          media.base64 = await mediaHelper.fileToBase64(media.path)
+          if (typeof media === 'object') {
+            if (media.path) {
+              media.base64 = await mediaHelper.fileToBase64(media.path)
+            } else {
+              console.error('media ' + JSON.stringify(media, null, 2) + ' misses a path. Is url missing too?')
+            }
+          }
         }
       }
     }
@@ -95,7 +101,7 @@ class Media {
       for (var prop in this.details) {
         if (this.details.hasOwnProperty(prop)) {
           let media = this.details[prop]
-          if (!mediaHelper.isFile(media.path)) {
+          if (!mediaHelper.isFile(media.path) && media.url) {
             media = new Media(media)
             await media.urlToPath()
             this.details[prop] = media

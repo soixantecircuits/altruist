@@ -65,6 +65,7 @@ async function handleSpacebroRequest (media) {
 
     // get the actions to run in an array
     let actionNames = getActions(media)
+    console.log('actions:' + actionNames)
     // run
     actionNames.forEach((actionName) => {
       actionHelper

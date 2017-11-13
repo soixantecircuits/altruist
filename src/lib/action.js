@@ -27,6 +27,7 @@ function getActionModule (actionName) {
 
 async function runAction (actionName, options) {
   try {
+    log && console.log(`* Running action ${actionName}`)
     let response = await actionModules[actionName].run(options)
 
     if (typeof response === 'string') {
