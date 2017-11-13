@@ -50,15 +50,22 @@ function standardMediaToApiMedia (media) {
     template_name: apiMeta.template,
     template_content: {},
     message: {
-      to: [{
-        email: apiMeta.to.email
-      }],
+      to: [],
       merge: true,
       attachments: [],
       images: [],
       merge_language: options.mergeLanguage || 'handlebars',
       global_merge_vars: options.vars.globals ? options.vars.globals.map(v => mapMandrillGlobals(v)) : [],
       merge_vars: options.vars.targeted ? options.vars.targeted.map(v => mapMandrillTargeted(v)) : []
+    }
+  }
+  if (apiMeta.to) {
+    if (Array.isArray(apiMeta.to)) {
+      apiMedia.message.to = apiMedia.message.to.concat(apiMeta.to)
+    } else if (typeof apiMeta.to.email === 'string') {
+      apiMedia.message.to.push({
+        email: apiMeta.to.email
+      })
     }
   }
   if (apiMeta.from && apiMeta.from.email) {
@@ -112,9 +119,7 @@ function standardMetaToApiMeta (media) {
   if (media.meta.email) {
     let apiMeta = media.meta.altruist.mandrill
     apiMeta = assignment(apiMeta, {
-      to: {
-        email: media.meta.email
-      }
+      to: media.meta.email
     })
   }
   return media
