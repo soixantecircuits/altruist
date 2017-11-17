@@ -58,6 +58,9 @@
       "//subject": "Altruist",
       "template": "altruist-test"
     },
+    "mandrillPlusSocialite": {
+      "doNotSentMediaButOnlyThumbnailInEmail": true
+    },
     "facebook": {
       "appID": "abcd-xyz",
       "appSecret": "shhh",

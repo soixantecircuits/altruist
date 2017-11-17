@@ -36,39 +36,47 @@ class Media {
   }
 
   async getBase64 () {
-    await this.urlToPath()
-    this.base64 = await mediaHelper.fileToBase64(this.path)
-    if (this.details) {
-      await this.urlToPathDetails()
-      for (var prop in this.details) {
-        if (this.details.hasOwnProperty(prop)) {
-          let media = this.details[prop]
-          if (typeof media === 'object') {
-            if (media.path) {
-              media.base64 = await mediaHelper.fileToBase64(media.path)
-            } else {
-              console.error('media ' + JSON.stringify(media, null, 2) + ' misses a path. Is url missing too?')
+    if (this.isMedia()) {
+      await this.urlToPath()
+      this.base64 = await mediaHelper.fileToBase64(this.path)
+      if (this.details) {
+        await this.urlToPathDetails()
+        for (var prop in this.details) {
+          if (this.details.hasOwnProperty(prop)) {
+            let media = this.details[prop]
+            if (typeof media === 'object') {
+              if (media.path) {
+                media.base64 = await mediaHelper.fileToBase64(media.path)
+              } else {
+                console.error('media ' + JSON.stringify(media, null, 2) + ' misses a path. Is url missing too?')
+              }
             }
           }
         }
       }
+      return this.base64
+    } else {
+      return ''
     }
-    return this.base64
   }
 
   async getMimeType () {
-    await this.urlToPath()
-    this.type = await mediaHelper.getMimeType(this.path)
-    if (this.details) {
-      await this.urlToPathDetails()
-      for (var prop in this.details) {
-        if (this.details.hasOwnProperty(prop)) {
-          let media = this.details[prop]
-          media.type = await mediaHelper.getMimeType(media.path)
+    if (this.isMedia()) {
+      await this.urlToPath()
+      this.type = await mediaHelper.getMimeType(this.path)
+      if (this.details) {
+        await this.urlToPathDetails()
+        for (var prop in this.details) {
+          if (this.details.hasOwnProperty(prop)) {
+            let media = this.details[prop]
+            media.type = await mediaHelper.getMimeType(media.path)
+          }
         }
       }
+      return this.type
+    } else {
+      return 'application/json'
     }
-    return this.type
   }
 
   get array () {
@@ -85,15 +93,23 @@ class Media {
         resolve(this.path)
       } else {
         let filePath = path.join(settings.folder.output, this.getFilename())
-        request(this.url)
-          .pipe(fs.createWriteStream(filePath))
-          .on('finish', () => {
-            this.path = filePath
-            resolve(filePath)
-          })
-          .on('error', reject)
+        if (this.url) {
+          request(this.url)
+            .pipe(fs.createWriteStream(filePath))
+            .on('finish', () => {
+              this.path = filePath
+              resolve(filePath)
+            })
+            .on('error', reject)
+        } else {
+          reject(new Error('no path, no url'))
+        }
       }
     })
+  }
+
+  isMedia () {
+    return this.path || this.url
   }
 
   async urlToPathDetails () {

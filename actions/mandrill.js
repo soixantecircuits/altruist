@@ -82,6 +82,7 @@ function standardMediaToApiMedia (media) {
 
   images.forEach(image => {
     if (image.base64) {
+      console.log('attach ' + image.filename)
       apiMedia.message.images.push({
         name: image.name || 'IMAGEID',
         type: image.type,
@@ -92,6 +93,7 @@ function standardMediaToApiMedia (media) {
 
   medias.forEach(media => {
     if (/image/.test(media.type) === false && media.base64) {
+      console.log('attach ' + media.filename)
       apiMedia.message.attachments.push({
         name: media.name || /video/.test(media.type) ? media.type.replace('/', '.') : 'FILE',
         type: media.type,
