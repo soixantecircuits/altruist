@@ -54,7 +54,11 @@ setTimeout(function () {
       email: 'emmanuel@soixantecircuits.fr',
       share: 'http://soixantecircuits.fr',
       altruist: {
-        action: ['mandrillPlusSocialite']
+        action: ['mandrillPlusSocialite'],
+        mandrillPlusSocialite: {
+          doNotSendMediaInEmail: true,
+          doNotSendThumbnailInEmail: false
+        }
       }
     }
   })

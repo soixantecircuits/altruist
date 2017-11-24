@@ -12,10 +12,14 @@ async function run (media) {
     let resSocialite = await socialite.run(media)
 
     // mandrill
-    if (apiMeta.doNotSentMediaButOnlyThumbnailInEmail) {
-      if (media.details && media.details.thumbnail) {
-        media.details.thumbnail = assignment(media.details.thumbnail, {meta: media.meta})
-        media = new Media(media.details.thumbnail)
+    if (apiMeta.doNotSendMediaInEmail) {
+      if (apiMeta.doNotSendThumbnailInEmail) {
+        media = new Media({meta: media.meta})
+      } else {
+        if (media.details && media.details.thumbnail) {
+          media.details.thumbnail = assignment(media.details.thumbnail, {meta: media.meta})
+          media = new Media(media.details.thumbnail)
+        }
       }
     }
     media.meta.share = JSON.parse(resSocialite).url

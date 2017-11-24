@@ -55,9 +55,9 @@ async function handleSpacebroRequest (media) {
     media.meta = standardSettings.getMeta(media)
 
     // add meta
-    media.meta = assignment(media.meta, {
+    media.meta = assignment({
       altruist: settings.actions
-    })
+    }, media.meta)
 
     // get the actions to run in an array
     let actionNames = getActions(media)

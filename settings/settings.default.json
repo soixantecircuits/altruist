@@ -59,7 +59,8 @@
       "template": "altruist-test"
     },
     "mandrillPlusSocialite": {
-      "doNotSentMediaButOnlyThumbnailInEmail": true
+      "doNotSendMediaInEmail": false,
+      "doNotSendThumbnailInEmail": false
     },
     "facebook": {
       "appID": "abcd-xyz",
