@@ -144,7 +144,11 @@ let init = (settings) => {
   })
 
   spacebro.on(settings.service.spacebro.client['in'].inMedia.eventName, (data) => {
-    handleSpacebroRequest(data)
+    try {
+      handleSpacebroRequest(data)
+    } catch (e) {
+      log && console.error('Error: ', e)
+    }
   })
 }
 
