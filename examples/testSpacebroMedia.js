@@ -59,7 +59,10 @@ setTimeout(function () {
           doNotSendMediaInEmail: true,
           doNotSendThumbnailInEmail: false
         }
-      }
+      } /*,
+      altruistResponse: {
+        stuff: 'things'
+      } */
     }
   })
   console.log('Event emitted')

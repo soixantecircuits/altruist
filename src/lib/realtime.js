@@ -53,6 +53,9 @@ async function handleSpacebroRequest (media) {
     console.log(`* received media ${media.getFilename()} from ${media._from}`)
     // add default meta from settings
     media.meta = standardSettings.getMeta(media)
+    if (media.meta.altruistResponse) {
+      throw Error('media was already processed by altruist, please delete media.meta.altruistReponse to use again')
+    }
 
     // add meta
     media.meta = assignment({
@@ -84,9 +87,9 @@ function emitSuccessEvent (action, media, data) {
   let response = {
     action,
     success: true,
-    code: 200,
-    response: data
+    code: 200
   }
+  response = Object.assign(response, data)
 
   try {
     console.log(`* action ${action} successful`)

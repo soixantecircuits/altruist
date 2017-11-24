@@ -6,6 +6,7 @@ const { Media } = require('../src/lib/Media')
 
 async function run (media) {
   try {
+    let originalMedia = JSON.parse(JSON.stringify(media))
     let apiMeta = media.meta.altruist.mandrillPlusSocialite
 
     // socialite
@@ -22,13 +23,16 @@ async function run (media) {
         }
       }
     }
-    media.meta.share = JSON.parse(resSocialite).url
+    resSocialite = JSON.parse(resSocialite)
+    media.meta.share = resSocialite.url
     console.log('socialite url' + media.meta.share)
     let resMandrill = await mandrill.run(media)
 
     // return
+    resMandrill = resMandrill[0]
     resMandrill.socialite = resSocialite
-    return resMandrill
+    originalMedia.meta.altruistResponse = resMandrill
+    return originalMedia
   } catch (err) {
     throw err
   }
