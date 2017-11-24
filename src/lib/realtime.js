@@ -48,14 +48,14 @@ async function formatOptionsMedia (options, media) {
 */
 
 async function handleSpacebroRequest (media) {
+  if (media && media.meta && media.meta.altruistResponse) {
+    throw Error('media was already processed by altruist, please delete media.meta.altruistReponse to use again')
+  }
   try {
     media = new Media(media)
     console.log(`* received media ${media.getFilename()} from ${media._from}`)
     // add default meta from settings
     media.meta = standardSettings.getMeta(media)
-    if (media.meta.altruistResponse) {
-      throw Error('media was already processed by altruist, please delete media.meta.altruistReponse to use again')
-    }
 
     // add meta
     media.meta = assignment({
@@ -113,17 +113,18 @@ function emitFailureEvent (action, media, err) {
       if (typeof errorResponse === 'object') {
         errorResponse.action = action
         errorResponse.success = false
-        spacebro.emit(settings.service.spacebro.client['out'].response.eventName, errorResponse)
       } else {
         // Assuming errorResponse is a string
-        const altruistResponse = {
+        errorResponse = {
           action,
           success: false,
           code: 500,
           response: errorResponse
         }
-        spacebro.emit(settings.service.spacebro.client['out'].response.eventName, altruistResponse)
       }
+      media.meta.altruistResponse = errorResponse
+      errorResponse = Object.assign(errorResponse, media)
+      spacebro.emit(settings.service.spacebro.client['out'].response.eventName, errorResponse)
     }
   } else {
     console.error('not an Error: ' + err)
